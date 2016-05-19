@@ -16,5 +16,6 @@
 - include: test-install-memcached.yml
 
 - include: test-install-rabbitmq.yml
+  when: groups['rabbitmq_all'] is defined
 
 - include: test-install-galera.yml

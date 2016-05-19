@@ -1,0 +1,103 @@
+---
+# Copyright 2015, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# General Environment Settings
+external_lb_vip_address: 10.100.100.101
+internal_lb_vip_address: 10.100.100.101
+debug: true
+
+# LXC Settings
+lxc_net_address: 10.100.100.1
+lxc_net_netmask: 255.255.255.0
+lxc_net_dhcp_range: 10.100.100.2,10.100.100.99
+lxc_net_bridge: lxcbr0
+lxc_kernel_options:
+  - { key: 'fs.inotify.max_user_instances', value: 1024 }
+
+# Galera Settings
+galera_root_password: secrete
+galera_root_user: root
+galera_innodb_buffer_pool_size: 512M
+galera_innodb_log_buffer_size: 32M
+galera_server_id: "{{ inventory_hostname | string_2_int }}"
+galera_wsrep_node_name: "{{ inventory_hostname }}"
+galera_wsrep_provider_options:
+  - { option: "gcache.size", value: "32M" }
+galera_server_id: "{{ inventory_hostname | string_2_int }}"
+
+# Memcache Settings
+memcached_listen: 10.100.100.101
+memcached_servers: 10.100.100.101
+memcached_encryption_key: "secrete"
+
+# Keystone Settings
+keystone_messaging_enabled: false
+keystone_admin_user_name: admin
+keystone_admin_tenant_name: admin
+keystone_auth_admin_password: "SuperSecretePassword"
+keystone_service_adminuri_insecure: false
+keystone_service_internaluri_insecure: false
+keystone_service_internaluri: "http://{{ internal_lb_vip_address }}:5000"
+keystone_service_internalurl: "{{ keystone_service_internaluri }}/v3"
+keystone_service_adminuri: "http://{{ internal_lb_vip_address }}:35357"
+keystone_service_adminurl: "{{ keystone_service_adminuri }}/v3"
+keystone_service_password: "secrete"
+keystone_galera_database: keystone
+keystone_galera_address: 10.100.100.101
+keystone_container_mysql_password: "SuperSecrete"
+keystone_venv_tag: "testing"
+keystone_developer_mode: true
+keystone_git_install_branch: master
+keystone_requirements_git_install_branch: master
+keystone_service_region: RegionOne
+
+# Swift specific settings
+swift_storage_address: "{{ ansible_ssh_host }}"
+swift_container_mysql_password: "SuperSecrete"
+swift_dispersion_password: "secrete"
+swift_hash_path_prefix: "secrete_prefx"
+swift_hash_path_suffix: "secrete_suffix"
+swift_service_password: "secrete"
+swift_developer_mode: true
+swift_git_install_branch: master
+swift_venv_tag: untagged
+swift_venv_bin: "/openstack/venvs/swift-{{ swift_venv_tag }}/bin"
+swift_service_publicuri: "http://10.100.100.102:8080"
+swift_service_adminuri: "http://10.100.100.102:8080"
+swift_service_internaluri: "http://10.100.100.102:8080"
+swift_replication_address: "{{ replication_address }}"
+swift:
+  storage_network: eth1
+  repl_network: eth3
+  part_power: 8
+  drives:
+    - name: swift1
+    - name: swift2
+  mount_point: /openstack
+  storage_policies:
+    - policy:
+        name: gold
+        index: 0
+        repl_number: 3
+        default: True
+swift_proxy_server_conf_overrides:
+  "filter:keystoneauth":
+    reseller_prefix: "AUTH, SERVICE"
+    "SERVICE_service_roles": "test5"
+
+# openrc settings
+openrc_os_password: "{{ keystone_auth_admin_password }}"
+openrc_os_domain_name: "Default"
+openrc_os_auth_url: "http://{{ internal_lb_vip_address }}:5000/v3"

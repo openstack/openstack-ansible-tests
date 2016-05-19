@@ -1,0 +1,86 @@
+---
+# Copyright 2015, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Swift setup
+  hosts: swift_hosts
+  user: root
+  gather_facts: true
+  pre_tasks:
+  - name: Ensure xfsprogs is installed on localhost
+    apt:
+      name: xfsprogs
+      state: present
+    delegate_to: "{{ physical_host }}"
+    run_once: true
+  - name: Ensure xfsprogs is installed on containers
+    apt:
+      name: xfsprogs
+      state: present
+  - name: Openstack directory Create
+    file:
+      state: directory
+      path: "/openstack/{{ item }}"
+    with_items:
+      - 'swift1'
+      - 'swift2'
+  - name: Create sparse Swift files
+    shell: "truncate -s 1024G /opt/{{container_name}}_{{ item }}.img"
+    args:
+      creates: "/opt/{{ container_name}}_{{ item }}.img"
+    with_items:
+      - 'swift1'
+      - 'swift2'
+    register: swift_create
+    delegate_to: "{{ physical_host }}"
+  - name: Format the Swift files
+    filesystem:
+      fstype: xfs
+      dev: "/opt/{{ container_name}}_{{ item }}.img"
+    when: swift_create | changed
+    with_items:
+      - 'swift1'
+      - 'swift2'
+    delegate_to: "{{ physical_host }}"
+  - name: Create the Swift fstab entries and mount the file systems
+    mount:
+      name: "/srv/{{ container_name }}_{{ item }}"
+      src: "/opt/{{ container_name }}_{{ item }}.img"
+      fstype: xfs
+      opts: 'loop,noatime,nodiratime,nobarrier,logbufs=8'
+      passno: 0
+      dump: 0
+      state: mounted
+    with_items:
+      - 'swift1'
+      - 'swift2'
+    register: mount_status
+    until: mount_status | success
+    retries: 5
+    delay: 2
+    delegate_to: "{{ physical_host }}"
+  - name: Swift extra lxc config
+    lxc_container:
+      name: "{{ container_name }}"
+      container_config:
+        - "lxc.mount.entry=/srv/{{ container_name }}_swift1 openstack/swift1 none bind 0 0"
+        - "lxc.mount.entry=/srv/{{ container_name }}_swift2 openstack/swift2 none bind 0 0"
+    delegate_to: "{{ physical_host }}"
+  - name: Wait for ssh to be available
+    local_action:
+      module: wait_for
+      port: "{{ ansible_ssh_port | default('22') }}"
+      host: "{{ ansible_ssh_host | default(inventory_hostname) }}"
+      search_regex: OpenSSH
+      delay: 1

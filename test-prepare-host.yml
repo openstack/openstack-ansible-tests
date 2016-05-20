@@ -49,9 +49,11 @@
     - name: Create bridges
       shell: /sbin/brctl addbr {{ item.name }} || true
       with_items: bridges
+      when: bridges is defined
     - name: IP bridges
       command: /sbin/ifconfig {{ item.name }} {{ item.ip_addr }} netmask 255.255.255.0
       with_items: bridges
+      when: bridges is defined
     - name: Add iptables rule to ensure ssh checksum is correct
       command: /sbin/iptables -A POSTROUTING -t mangle -p tcp --dport 22 -j CHECKSUM --checksum-fill
   roles:

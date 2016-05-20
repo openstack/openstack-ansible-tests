@@ -13,14 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Configure the host
-- include: test-setup-host.yml
+# Prepare the user ssh keys
+- include: test-prepare-keys.yml
 
-# Install MariaDB/Memcached
-- include: test-install-infra.yml
+# Prepare the host
+- include: test-prepare-host.yml
 
-# Install Keystone
-- include: test-install-keystone.yml
-
-# Install Swift
-- include: test-install-swift.yml
+# Prepare the containers
+- include: test-prepare-containers.yml

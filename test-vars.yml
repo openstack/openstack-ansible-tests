@@ -50,7 +50,6 @@ memcached_servers: "{{ hostvars[groups['memcached_all'][0]]['ansible_ssh_host'] 
 memcached_encryption_key: "secrete"
 
 # Keystone Settings
-keystone_messaging_enabled: false
 keystone_admin_user_name: admin
 keystone_admin_tenant_name: admin
 keystone_auth_admin_password: "SuperSecretePassword"

@@ -18,6 +18,14 @@
   user: root
   gather_facts: true
   pre_tasks:
+    - name: Set keystone_messaging fact no rabbit
+      set_fact:
+        keystone_messaging_enabled: false
+      when: groups['rabbitmq_all'] is not defined
+    - name: Set keystone_messaging fact rabbit
+      set_fact:
+        keystone_messaging_enabled: true
+      when: groups['rabbitmq_all'] is defined
     - name: Create DB for service
       mysql_db:
         login_user: "root"

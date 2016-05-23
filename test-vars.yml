@@ -55,6 +55,8 @@ keystone_admin_tenant_name: admin
 keystone_auth_admin_password: "SuperSecretePassword"
 keystone_service_adminuri_insecure: false
 keystone_service_internaluri_insecure: false
+keystone_service_publicuri: "http://{{ hostvars[groups['keystone_all'][0]]['ansible_ssh_host'] }}:5000"
+keystone_service_publicurl: "{{ keystone_service_publicuri }}/v3"
 keystone_service_internaluri: "http://{{ hostvars[groups['keystone_all'][0]]['ansible_ssh_host'] }}:5000"
 keystone_service_internalurl: "{{ keystone_service_internaluri }}/v3"
 keystone_service_adminuri: "http://{{ hostvars[groups['keystone_all'][0]]['ansible_ssh_host'] }}:35357"
@@ -74,6 +76,26 @@ keystone_developer_mode: true
 keystone_git_install_branch: master
 keystone_requirements_git_install_branch: master
 keystone_service_region: RegionOne
+
+# Glance specific settings
+glance_service_publicuri: "http://{{ hostvars[groups['glance_all'][0]]['ansible_ssh_host'] }}:9292"
+glance_service_publicurl: "{{ glance_service_publicuri }}"
+glance_service_internaluri: "http://{{ hostvars[groups['glance_all'][0]]['ansible_ssh_host'] }}:9292"
+glance_service_internalurl: "{{ glance_service_internaluri }}"
+glance_service_adminuri: "http://{{ hostvars[groups['glance_all'][0]]['ansible_ssh_host'] }}:9292"
+glance_service_adminurl: "{{ glance_service_adminuri }}"
+glance_container_mysql_password: "SuperSecrete"
+glance_developer_mode: true
+glance_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_ssh_host'] }}"
+glance_galera_database: glance
+glance_git_install_branch: master
+glance_profiler_hmac_key: "secrete"
+glance_rabbitmq_password: "secrete"
+glance_rabbitmq_userid: glance
+glance_rabbitmq_vhost: /glance
+glance_requirements_git_install_branch: master
+glance_service_password: "secrete"
+glance_venv_tag: "testing"
 
 # Swift specific settings
 swift_storage_address: "{{ ansible_ssh_host }}"

@@ -14,8 +14,9 @@
 # limitations under the License.
 
 # General Environment Settings
-external_lb_vip_address: 10.100.100.101
-internal_lb_vip_address: 10.100.100.101
+# NB the vip addresses aren't used, we specify per service
+external_lb_vip_address: 127.0.0.1
+internal_lb_vip_address: 127.0.0.1
 debug: true
 
 # LXC Settings
@@ -39,10 +40,13 @@ galera_server_id: "{{ inventory_hostname | string_2_int }}"
 
 # RabbitMQ Settings
 rabbitmq_cookie_token: secrete
+rabbitmq_servers: "{{ hostvars[groups['rabbitmq_all'][0]]['ansible_ssh_host'] }}"
+rabbitmq_use_ssl: true
+rabbitmq_port: 5671
 
 # Memcache Settings
-memcached_listen: 10.100.100.101
-memcached_servers: 10.100.100.101
+memcached_listen: "{{ hostvars[groups['memcached_all'][0]]['ansible_ssh_host'] }}"
+memcached_servers: "{{ hostvars[groups['memcached_all'][0]]['ansible_ssh_host'] }}"
 memcached_encryption_key: "secrete"
 
 # Keystone Settings
@@ -52,13 +56,19 @@ keystone_admin_tenant_name: admin
 keystone_auth_admin_password: "SuperSecretePassword"
 keystone_service_adminuri_insecure: false
 keystone_service_internaluri_insecure: false
-keystone_service_internaluri: "http://{{ internal_lb_vip_address }}:5000"
+keystone_service_internaluri: "http://{{ hostvars[groups['keystone_all'][0]]['ansible_ssh_host'] }}:5000"
 keystone_service_internalurl: "{{ keystone_service_internaluri }}/v3"
-keystone_service_adminuri: "http://{{ internal_lb_vip_address }}:35357"
+keystone_service_adminuri: "http://{{ hostvars[groups['keystone_all'][0]]['ansible_ssh_host'] }}:35357"
 keystone_service_adminurl: "{{ keystone_service_adminuri }}/v3"
 keystone_service_password: "secrete"
+keystone_rabbitmq_password: "secrete"
+keystone_rabbitmq_port: 5671
+keystone_rabbitmq_servers: "{{ hostvars[groups['rabbitmq_all'][0]]['ansible_ssh_host'] }}"
+keystone_rabbitmq_use_ssl: true
+keystone_rabbitmq_userid: keystone
+keystone_rabbitmq_vhost: /keystone
 keystone_galera_database: keystone
-keystone_galera_address: 10.100.100.101
+keystone_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_ssh_host'] }}"
 keystone_container_mysql_password: "SuperSecrete"
 keystone_venv_tag: "testing"
 keystone_developer_mode: true
@@ -77,9 +87,9 @@ swift_developer_mode: true
 swift_git_install_branch: master
 swift_venv_tag: untagged
 swift_venv_bin: "/openstack/venvs/swift-{{ swift_venv_tag }}/bin"
-swift_service_publicuri: "http://10.100.100.102:8080"
-swift_service_adminuri: "http://10.100.100.102:8080"
-swift_service_internaluri: "http://10.100.100.102:8080"
+swift_service_publicuri: "http://{{ hostvars[groups['swift_proxy'][0]]['ansible_ssh_host'] }}:8080"
+swift_service_adminuri: "http://{{ hostvars[groups['swift_proxy'][0]]['ansible_ssh_host'] }}:8080"
+swift_service_internaluri: "http://{{ hostvars[groups['swift_proxy'][0]]['ansible_ssh_host'] }}:8080"
 swift_replication_address: "{{ replication_address }}"
 swift:
   storage_network: eth1
@@ -103,4 +113,4 @@ swift_proxy_server_conf_overrides:
 # openrc settings
 openrc_os_password: "{{ keystone_auth_admin_password }}"
 openrc_os_domain_name: "Default"
-openrc_os_auth_url: "http://{{ internal_lb_vip_address }}:5000/v3"
+openrc_os_auth_url: "http://{{ hostvars[groups['keystone_all'][0]]['ansible_ssh_host'] }}:5000/v3"

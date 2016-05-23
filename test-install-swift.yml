@@ -27,6 +27,6 @@
         - inventory_hostname in groups['swift_all']
         - hostvars[inventory_hostname]['container_networks']['replication_address']['address'] is defined
   roles:
-    - role: "openstack-ansible-os_swift"
+    - role: "{{ swift_rolename | default('os_swift') }}"
   vars_files:
     - test-vars.yml

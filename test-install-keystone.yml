@@ -55,7 +55,7 @@
       tags:
         - mysql-db-setup
   roles:
-    - role: "openstack-ansible-os_keystone"
+    - role: "{{ keystone_rolename | default('os_keystone') }}"
   vars_files:
     - test-vars.yml
 

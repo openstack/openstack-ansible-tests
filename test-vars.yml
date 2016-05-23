@@ -37,6 +37,9 @@ galera_wsrep_provider_options:
   - { option: "gcache.size", value: "32M" }
 galera_server_id: "{{ inventory_hostname | string_2_int }}"
 
+# RabbitMQ Settings
+rabbitmq_cookie_token: secrete
+
 # Memcache Settings
 memcached_listen: 10.100.100.101
 memcached_servers: 10.100.100.101

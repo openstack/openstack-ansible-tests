@@ -60,6 +60,6 @@
       delegate_to: "{{ groups['galera_all'][0] }}"
       when: inventory_hostname == groups['glance_all'][0]
   roles:
-    - role: "{{ rolename | basename }}"
+    - role: "openstack-ansible-os_glance"
   vars_files:
     - test-vars.yml

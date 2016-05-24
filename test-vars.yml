@@ -50,6 +50,7 @@ memcached_servers: "{{ hostvars[groups['memcached_all'][0]]['ansible_ssh_host'] 
 memcached_encryption_key: "secrete"
 
 # Keystone Settings
+keystone_ssl: True
 keystone_admin_user_name: admin
 keystone_admin_tenant_name: admin
 keystone_auth_admin_password: "SuperSecretePassword"
@@ -96,6 +97,74 @@ glance_rabbitmq_vhost: /glance
 glance_requirements_git_install_branch: master
 glance_service_password: "secrete"
 glance_venv_tag: "testing"
+glance_host: "{{ hostvars[groups['glance_all'][0]]['ansible_ssh_host'] }}"
+glance_service_port: 9292
+
+# Nova specific settings
+nova_api_container_mysql_password: "SuperSecrete"
+nova_api_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_ssh_host'] }}"
+nova_container_mysql_password: "SuperSecrete"
+nova_developer_mode: true
+nova_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_ssh_host'] }}"
+nova_galera_database: nova
+nova_git_install_branch: master
+nova_keystone_auth_plugin: password
+nova_management_address: "{{ ansible_ssh_host }}"
+nova_metadata_port: 8775
+nova_metadata_host: "{{ hostvars[groups['nova_api_metadata'][0]]['ansible_ssh_host'] }}"
+nova_metadata_proxy_secret: "secrete"
+nova_novncproxy_vncserver_listen: localhost
+nova_novncproxy_vncserver_proxyclient_address: localhost
+nova_rabbitmq_password: "secrete"
+nova_rabbitmq_userid: nova
+nova_rabbitmq_vhost: /nova
+nova_requirements_git_install_branch: master
+nova_program_name: nova-api-os-compute
+nova_service_adminuri: "http://{{ hostvars[groups['nova_api_os_compute'][0]]['ansible_ssh_host'] }}:8774"
+nova_service_adminurl: "{{ nova_service_adminuri }}/v2.1/%(tenant_id)s"
+nova_service_publicuri: "http://{{ hostvars[groups['nova_api_os_compute'][0]]['ansible_ssh_host'] }}:8774"
+nova_service_publicurl: "{{ nova_service_publicuri }}/v2.1/%(tenant_id)s"
+nova_service_internaluri: "http://{{ hostvars[groups['nova_api_os_compute'][0]]['ansible_ssh_host'] }}:8774"
+nova_service_internalurl: "{{ nova_service_internaluri }}/v2.1/%(tenant_id)s"
+nova_spice_html5proxy_base_uri: "http://{{ hostvars[groups['nova_console'][0]]['ansible_ssh_host'] }}:6082"
+nova_spice_html5proxy_base_url: "{{ nova_spice_html5proxy_base_uri }}/spice_auto.html"
+nova_service_password: "secrete"
+nova_service_project_domain_id: default
+nova_service_project_name: service
+nova_service_region: RegionOne
+nova_service_user_domain_id: default
+nova_service_user_name: nova
+nova_venv_bin: "/openstack/venvs/nova-{{ nova_venv_tag }}/bin"
+nova_venv_tag: "testing"
+nova_virt_type: qemu
+
+# Neutron specific settings
+neutron_container_mysql_password: SuperSecrete
+neutron_developer_mode: true
+neutron_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_ssh_host'] }}"
+neutron_galera_database: neutron
+neutron_git_install_branch: master
+neutron_ha_vrrp_auth_password: secrete
+neutron_management_address: "{{ hostvars[groups['neutron_agent'][0]]['ansible_ssh_host'] }}"
+neutron_rabbitmq_password: secrete
+neutron_rabbitmq_userid: neutron
+neutron_rabbitmq_vhost: /neutron
+neutron_requirements_git_install_branch: master
+neutron_service_publicuri: "http://{{ hostvars[groups['neutron_agent'][0]]['ansible_ssh_host'] }}:9696"
+neutron_service_publicurl: "{{ neutron_service_publicuri }}"
+neutron_service_adminuri: "http://{{ hostvars[groups['neutron_agent'][0]]['ansible_ssh_host'] }}:9696"
+neutron_service_adminurl: "{{ neutron_service_adminuri }}"
+neutron_service_internaluri: "http://{{ hostvars[groups['neutron_agent'][0]]['ansible_ssh_host'] }}:9696"
+neutron_serivce_internalurl: "{{ neutron_service_internaluri }}"
+neutron_service_password: "secrete"
+neutron_service_project_name: service
+neutron_service_region: RegionOne
+neutron_service_user_name: neutron
+neutron_venv_tag: testing
+
+# Cinder specific settings
+cinder_backends_rbd_inuse: false
+cinder_ceph_client: cinder
 
 # Swift specific settings
 swift_storage_address: "{{ ansible_ssh_host }}"
@@ -130,6 +199,25 @@ swift_proxy_server_conf_overrides:
   "filter:keystoneauth":
     reseller_prefix: "AUTH, SERVICE"
     "SERVICE_service_roles": "test5"
+
+# Tempest specific settings
+tempest_developer_mode: True
+tempest_git_install_branch: master
+tempest_venv_tag: "{{ tempest_git_install_branch }}"
+# tempest_venv_bin is the same as the default in os_tempest role, but we set
+# it again here so we can refer to it in test-nova-functional.yml
+tempest_venv_bin: "/opt/tempest_{{ tempest_venv_tag }}/bin"
+tempest_log_dir: "/var/log/"
+tempest_main_group: glance_all
+tempest_service_available_aodh: False
+tempest_service_available_ceilometer: False
+tempest_service_available_cinder: False
+tempest_service_available_glance: True
+tempest_service_available_heat: False
+tempest_service_available_horizon: False
+tempest_service_available_neutron: True
+tempest_service_available_nova: True
+tempest_service_available_swift: False
 
 # openrc settings
 openrc_os_password: "{{ keystone_auth_admin_password }}"

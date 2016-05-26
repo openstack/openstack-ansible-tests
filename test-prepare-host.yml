@@ -16,6 +16,8 @@
 - name: Playbook for configuring the LXC host
   hosts: localhost
   pre_tasks:
+    - name: Clear iptables rules
+      shell: ./iptables-clear.sh
     - name: Update apt cache
       apt:
         update_cache: yes

@@ -13,14 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Configure the host
-- include: test-setup-host.yml
-
-# Install MariaDB/Memcached
-- include: test-install-infra.yml
-
-# Install Keystone
-- include: test-install-keystone.yml
-
-# Install Swift
-- include: test-install-swift.yml
+# Include here all the functional tests for the test repo.
+- name: Playbook for deploying nova
+  hosts: localhost
+  user: root
+  gather_facts: true
+  tasks:
+    - debug:
+        msg: "Functional tests to be included here"

@@ -81,6 +81,28 @@
       when: inventory_hostname == groups['nova_all'][0]
       tags:
         - mysql-db-setup
+    - name: Create API DB for service
+      mysql_db:
+        login_user: "{{ galera_root_user }}"
+        login_password: "{{ galera_root_password }}"
+        login_host: "{{ nova_api_galera_address }}"
+        name: "{{ nova_api_galera_database }}"
+        state: "present"
+      when: inventory_hostname == groups['nova_all'][0]
+    - name: Grant access to the API DB for the service
+      mysql_user:
+        login_user: "{{ galera_root_user }}"
+        login_password: "{{ galera_root_password }}"
+        login_host: "{{ nova_api_galera_address }}"
+        name: "{{ nova_api_galera_user }}"
+        password: "{{ nova_api_container_mysql_password }}"
+        host: "{{ item }}"
+        state: "present"
+        priv: "{{ nova_api_galera_database }}.*:ALL"
+      with_items:
+        - "localhost"
+        - "%"
+      when: inventory_hostname == groups['nova_all'][0]
   roles:
     - role: "{{ nova_rolename | default('os_nova') }}"
   vars_files:

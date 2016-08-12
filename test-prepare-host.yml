@@ -37,17 +37,62 @@
       set_fact:
         lxc_container_cache_files:
           - { src: '/etc/pip.conf', dest: '/etc/pip.conf' }
-          - { src: '/etc/apt/apt.conf.d/99unauthenticated', dest: '/etc/apt/apt.conf.d/99unauthenticated' }
       when: nodepool.stat.exists | bool
     - name: Determine the existing Ubuntu repo configuration
+      when: ansible_os_family == 'Debian'
       shell: 'awk "/^deb .*ubuntu\/? {{ ansible_distribution_release }} main/ {print \$2; exit}" /etc/apt/sources.list'
       register: ubuntu_repo
       changed_when: false
     - name: Set apt repo facts based on discovered information
+      when: ansible_os_family == 'Debian'
       set_fact:
         lxc_container_template_main_apt_repo: "{{ ubuntu_repo.stdout }}"
         lxc_container_template_security_apt_rep: "{{ ubuntu_repo.stdout }}"
+        uca_apt_repo_url: "{{ ubuntu_repo_url.stdout | netorigin }}/ubuntu-cloud-archive"
+  roles:
+    - role: "lxc_hosts"
   post_tasks:
+    - name: Ensure that /etc/network/interfaces.d/ exists
+      file:
+        path: /etc/network/interfaces.d/
+        state: directory
+      tags:
+        - networking-dir-create
+
+    - name: Copy network configuration
+      template:
+        src: test-nova-interfaces.cfg.j2
+        dest: /etc/network/interfaces.d/nova_interfaces.cfg
+      register: nova_interfaces
+      tags:
+        - networking-interfaces-file
+
+    - name: Ensure our interfaces.d configuration files are loaded automatically
+      lineinfile:
+        dest: /etc/network/interfaces
+        line: "source /etc/network/interfaces.d/*.cfg"
+      tags:
+        - networking-interfaces-load
+
+    - name: Shut down the network interfaces
+      command: "ifdown {{ item }}"
+      when: nova_interfaces | changed
+      with_items:
+        - br-mgmt
+        - br-vlan
+        - br-vxlan
+      tags:
+        - networking-interfaces-stop
+
+    - name: Start the network interfaces
+      command: "ifup {{ item }}"
+      when: nova_interfaces | changed
+      with_items:
+        - br-mgmt
+        - br-vlan
+        - br-vxlan
+      tags:
+        - networking-interfaces-start
     - name: Create bridges
       shell: /sbin/brctl addbr {{ item.name }} || true
       with_items: bridges
@@ -58,7 +103,17 @@
       when: bridges is defined
     - name: Add iptables rule to ensure ssh checksum is correct
       command: /sbin/iptables -A POSTROUTING -t mangle -p tcp --dport 22 -j CHECKSUM --checksum-fill
-  roles:
-    - role: "lxc_hosts"
+    - name: Add iptables rules for lxc natting
+      command: /usr/local/bin/lxc-system-manage iptables-create
+
+    #TODO (evrardjp) - cleanup to latest standard:
+    - name: Install pip packages
+      command: /usr/local/bin/pip install {{ item }}
+      register: install_packages
+      until: install_packages|success
+      retries: 5
+      delay: 2
+      with_items:
+        - lxc-python2
   vars_files:
     - test-vars.yml

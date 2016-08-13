@@ -26,6 +26,27 @@
       set_fact:
         keystone_messaging_enabled: true
       when: groups['rabbitmq_all'] is defined
+    - name: Ensure rabbitmq vhost
+      rabbitmq_vhost:
+        name: "{{ keystone_rabbitmq_vhost }}"
+        state: "present"
+      delegate_to: "{{ groups['rabbitmq_all'][0] }}"
+      when:
+        - inventory_hostname == groups['keystone_all'][0]
+        - groups['rabbitmq_all'] is defined
+    - name: Ensure rabbitmq user
+      rabbitmq_user:
+        user: "{{ keystone_rabbitmq_userid }}"
+        password: "{{ keystone_rabbitmq_password }}"
+        vhost: "{{ keystone_rabbitmq_vhost }}"
+        configure_priv: ".*"
+        read_priv: ".*"
+        write_priv: ".*"
+        state: "present"
+      delegate_to: "{{ groups['rabbitmq_all'][0] }}"
+      when:
+        - inventory_hostname == groups['keystone_all'][0]
+        - groups['rabbitmq_all'] is defined
     - name: Create DB for service
       mysql_db:
         login_user: "root"

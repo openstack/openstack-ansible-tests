@@ -18,11 +18,11 @@
 #       inventory
 - name: Playbook for establishing ssh keys
   hosts: localhost
-  become_user: "{{ ansible_ssh_user }}"
-  pre_tasks:
+  become_user: root
+  tasks:
     - name: Create ssh key pair for root
       user:
-        name: "{{ ansible_ssh_user }}"
+        name: root
         generate_ssh_key: "yes"
         ssh_key_bits: 2048
         ssh_key_file: ".ssh/id_rsa"

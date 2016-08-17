@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- include: destroy_containers.yml
+  when: destroy_first | default(True) | bool
 - name: Playbook for creating containers
   hosts: all_containers
   gather_facts: false

@@ -1,0 +1,10 @@
+auto br-mgmt
+iface br-mgmt inet static
+    bridge_stp off
+    bridge_waitport 0
+    bridge_fd 0
+    # Notice the bridge port is the vlan tagged interface
+    bridge_ports none
+    address 10.100.101.1
+    netmask 255.255.255.0
+    offload-sg off

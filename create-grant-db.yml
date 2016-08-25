@@ -20,7 +20,7 @@
     name: "{{ db_name }}"
     state: "present"
   delegate_to: "{{ groups['galera_all'][0] }}"
-  when: inventory_hostname == "{{ host_name }}"
+  run_once: True
 - name: Grant access to the DB for the service
   mysql_user:
     login_user: "root"
@@ -35,4 +35,4 @@
     - "localhost"
     - "%"
   delegate_to: "{{ groups['galera_all'][0] }}"
-  when: inventory_hostname == "{{ host_name }}"
+  run_once: True

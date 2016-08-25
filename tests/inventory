@@ -1,0 +1,30 @@
+[all]
+localhost ansible_connection=local ansible_become=True
+infra1 ansible_ssh_host=10.100.101.2 ansible_host=10.100.101.2 ansible_become=True ansible_user=root
+keystone1 ansible_ssh_host=10.100.101.3 ansible_host=10.100.101.3 ansible_become=True ansible_user=root
+keystone2 ansible_ssh_host=10.100.101.4 ansible_host=10.100.101.4 ansible_become=True ansible_user=root
+
+[all_containers]
+infra1
+keystone1
+keystone2
+
+[rabbitmq_all]
+infra1
+
+[galera_all]
+infra1
+
+[memcached_all]
+infra1
+
+[service_all:children]
+rabbitmq_all
+galera_all
+memcached_all
+
+[keystone_all]
+keystone1
+keystone2
+
+[utility_all]

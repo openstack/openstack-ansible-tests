@@ -16,12 +16,9 @@
 - name: Playbook for configuring the LXC host
   hosts: localhost
   pre_tasks:
+    - include: "common-tasks/test-force-package-cache-update.yml"
     - name: Clear iptables rules
       shell: "{{ playbook_dir }}/iptables-clear.sh"
-    - name: Update apt cache
-      apt:
-        update_cache: yes
-      when: ansible_os_family == 'Debian'
     - name: Ensure roots new public ssh key is in authorized_keys
       authorized_key:
         user: root

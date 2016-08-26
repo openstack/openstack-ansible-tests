@@ -40,8 +40,8 @@ galera_server_id: "{{ inventory_hostname | string_2_int }}"
 # RabbitMQ Settings
 rabbitmq_cookie_token: secrete
 rabbitmq_servers: "{{ hostvars[groups['rabbitmq_all'][0]]['ansible_ssh_host'] }}"
-rabbitmq_use_ssl: true
-rabbitmq_port: 5671
+rabbitmq_use_ssl: False
+rabbitmq_port: 5672
 
 # Memcache Settings
 memcached_listen: "{{ hostvars[groups['memcached_all'][0]]['ansible_ssh_host'] }}"
@@ -63,9 +63,9 @@ keystone_service_adminuri: "http://{{ hostvars[groups['keystone_all'][0]]['ansib
 keystone_service_adminurl: "{{ keystone_service_adminuri }}/v3"
 keystone_service_password: "secrete"
 keystone_rabbitmq_password: "secrete"
-keystone_rabbitmq_port: 5671
+keystone_rabbitmq_port: 5672
 keystone_rabbitmq_servers: "{{ hostvars[groups['rabbitmq_all'][0]]['ansible_ssh_host'] }}"
-keystone_rabbitmq_use_ssl: true
+keystone_rabbitmq_use_ssl: False
 keystone_rabbitmq_userid: keystone
 keystone_rabbitmq_vhost: /keystone
 keystone_galera_database: keystone

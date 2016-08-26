@@ -17,6 +17,7 @@
   hosts: localhost
   pre_tasks:
     - include: "common-tasks/test-force-package-cache-update.yml"
+    - include: "common-tasks/test-set-nodepool-vars.yml"
     - name: Clear iptables rules
       shell: "{{ playbook_dir }}/iptables-clear.sh"
     - name: Ensure roots new public ssh key is in authorized_keys
@@ -26,26 +27,6 @@
         manage_dir: no
     - set_fact:
         lxc_container_ssh_key: "{{ hostvars['localhost']['lxc_container_ssh_key'] }}"
-    - name: Check if this is an OpenStack-CI nodepool instance
-      stat:
-        path: /etc/nodepool/provider
-      register: nodepool
-    - name: Set the files to copy into the container cache for OpenStack-CI instances
-      set_fact:
-        lxc_container_cache_files:
-          - { src: '/etc/pip.conf', dest: '/etc/pip.conf' }
-      when: nodepool.stat.exists | bool
-    - name: Determine the existing Ubuntu repo configuration
-      when: ansible_os_family == 'Debian'
-      shell: 'awk "/^deb .*ubuntu\/? {{ ansible_distribution_release }} main/ {print \$2; exit}" /etc/apt/sources.list'
-      register: ubuntu_repo
-      changed_when: false
-    - name: Set apt repo facts based on discovered information
-      when: ansible_os_family == 'Debian'
-      set_fact:
-        lxc_container_template_main_apt_repo: "{{ ubuntu_repo.stdout }}"
-        lxc_container_template_security_apt_rep: "{{ ubuntu_repo.stdout }}"
-        uca_apt_repo_url: "{{ ubuntu_repo_url.stdout | netorigin }}/ubuntu-cloud-archive"
   roles:
     - role: "lxc_hosts"
   post_tasks:
@@ -61,6 +42,8 @@
         src: "{{ network_conf_filename }}"
         dest: /etc/network/interfaces.d/test_interfaces.cfg
       register: network_interfaces
+      when:
+        - network_conf_filename is defined
 
     - name: Ensure our interfaces.d configuration files are loaded automatically
       lineinfile:
@@ -71,12 +54,16 @@
 
     - name: Shut down the network interfaces
       command: "ifdown {{ item }}"
-      when: network_interfaces | changed
+      when:
+        - network_interfaces | changed
+        - network_conf_filename is defined
       with_items: bridges
 
     - name: Start the network interfaces
       command: "ifup {{ item }}"
-      when: network_interfaces | changed
+      when:
+        - network_interfaces | changed
+        - network_conf_filename is defined
       with_items: bridges
 
     - name: Add iptables rule to ensure ssh checksum is correct
@@ -97,7 +84,5 @@
     - name: Add iptables rules for lxc natting
       command: /usr/local/bin/lxc-system-manage iptables-create
 
-  roles:
-    - role: "lxc_hosts"
   vars_files:
     - test-vars.yml

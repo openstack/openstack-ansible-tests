@@ -17,18 +17,4 @@
   hosts: all
   gather_facts: false
   tasks:
-    - name: Check if this is an OpenStack-CI nodepool instance
-      stat:
-        path: /etc/nodepool/provider
-      register: nodepool
-      delegate_to: localhost
-    - name: Determine the existing Ubuntu repo URL (only on OpenStack-CI)
-      shell: 'awk "/^deb .*ubuntu\/? {{ ansible_distribution_release }} main/ {print \$2; exit}" /etc/apt/sources.list'
-      register: ubuntu_repo_url
-      changed_when: false
-      when: ansible_pkg_mgr == 'apt' and nodepool.stat.exists == True
-      delegate_to: localhost
-    - name: Set Ubuntu Cloud Archive repo URL based on discovered information
-      set_fact:
-        uca_apt_repo_url: "{{ ubuntu_repo_url.stdout | netorigin }}/ubuntu-cloud-archive"
-      when: ansible_pkg_mgr == 'apt' and nodepool.stat.exists == True
+    - include: "common-tasks/test-set-nodepool-vars.yml"

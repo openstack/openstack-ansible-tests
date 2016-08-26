@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- include: setting-nodepool-variables.yml
+
 - name: Make /lib/modules accessible on neutron_agent containers
   hosts: neutron_agent
   user: root
@@ -56,57 +58,15 @@
       with_items:
         - libffi-dev
       when: inventory_hostname in groups['neutron_all']
-    - name: Ensure rabbitmq vhost
-      rabbitmq_vhost:
-        name: "{{ neutron_rabbitmq_vhost }}"
-        state: "present"
-      delegate_to: "{{ groups['rabbitmq_all'][0] }}"
-      when: inventory_hostname == groups['neutron_all'][0]
-      tags:
-        - neutron-rabbitmq
-        - neutron-rabbitmq-vhost
-    - name: Ensure rabbitmq user
-      rabbitmq_user:
-        user: "{{ neutron_rabbitmq_userid }}"
-        password: "{{ neutron_rabbitmq_password }}"
-        vhost: "{{ neutron_rabbitmq_vhost }}"
-        configure_priv: ".*"
-        read_priv: ".*"
-        write_priv: ".*"
-        state: "present"
-      delegate_to: "{{ groups['rabbitmq_all'][0] }}"
-      when: inventory_hostname == groups['neutron_all'][0]
-      tags:
-        - neutron-rabbitmq
-        - neutron-rabbitmq-user
-    - name: Create DB for service
-      mysql_db:
-        login_user: "root"
-        login_password: "secrete"
-        login_host: "localhost"
-        name: "{{ neutron_galera_database }}"
-        state: "present"
-      delegate_to: "{{ groups['galera_all'][0] }}"
-      when: inventory_hostname == groups['neutron_all'][0]
-      tags:
-        - mysql-db-setup
-    - name: Grant access to the DB for the service
-      mysql_user:
-        login_user: "root"
-        login_password: "secrete"
-        login_host: "localhost"
-        name: "{{ neutron_galera_database }}"
-        password: "{{ neutron_container_mysql_password }}"
-        host: "{{ item }}"
-        state: "present"
-        priv: "{{ neutron_galera_database }}.*:ALL"
-      with_items:
-        - "localhost"
-        - "%"
-      delegate_to: "{{ groups['galera_all'][0] }}"
-      when: inventory_hostname == groups['neutron_all'][0]
-      tags:
-        - mysql-db-setup
+    - include: ensure-rabbitmq.yml
+      vhost_name: "{{ neutron_rabbitmq_vhost }}"
+      user_name: "{{ neutron_rabbitmq_userid }}"
+      user_password: "{{ neutron_rabbitmq_password }}"
+      host_name: groups['neutron_all'][0]
+    - include: create-grant-db.yml
+      db_name: "{{ neutron_galera_database }}"
+      db_password: "{{ neutron_container_mysql_password }}"
+      host_name: groups['neutron_all'][0]
   roles:
     - role: "{{ neutron_rolename | default('os_neutron') }}"
   vars_files:

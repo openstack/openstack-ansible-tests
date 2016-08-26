@@ -1,0 +1,34 @@
+---
+# Copyright 2015, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Setting nodepool variables
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check if this is an OpenStack-CI nodepool instance
+      stat:
+        path: /etc/nodepool/provider
+      register: nodepool
+      delegate_to: localhost
+    - name: Determine the existing Ubuntu repo URL (only on OpenStack-CI)
+      shell: 'awk "/^deb .*ubuntu\/? {{ ansible_distribution_release }} main/ {print \$2; exit}" /etc/apt/sources.list'
+      register: ubuntu_repo_url
+      changed_when: false
+      when: ansible_pkg_mgr == 'apt' and nodepool.stat.exists == True
+      delegate_to: localhost
+    - name: Set Ubuntu Cloud Archive repo URL based on discovered information
+      set_fact:
+        uca_apt_repo_url: "{{ ubuntu_repo_url.stdout | netorigin }}/ubuntu-cloud-archive"
+      when: ansible_pkg_mgr == 'apt' and nodepool.stat.exists == True

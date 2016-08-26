@@ -18,63 +18,18 @@
   user: root
   gather_facts: true
   pre_tasks:
-    - name: Set keystone_messaging fact no rabbit
+    - name: Set keystone_messaging fact
       set_fact:
-        keystone_messaging_enabled: false
-      when: groups['rabbitmq_all'] is not defined
-    - name: Set keystone_messaging fact rabbit
-      set_fact:
-        keystone_messaging_enabled: true
-      when: groups['rabbitmq_all'] is defined
-    - name: Ensure rabbitmq vhost
-      rabbitmq_vhost:
-        name: "{{ keystone_rabbitmq_vhost }}"
-        state: "present"
-      delegate_to: "{{ groups['rabbitmq_all'][0] }}"
-      when:
-        - inventory_hostname == groups['keystone_all'][0]
-        - groups['rabbitmq_all'] is defined
-    - name: Ensure rabbitmq user
-      rabbitmq_user:
-        user: "{{ keystone_rabbitmq_userid }}"
-        password: "{{ keystone_rabbitmq_password }}"
-        vhost: "{{ keystone_rabbitmq_vhost }}"
-        configure_priv: ".*"
-        read_priv: ".*"
-        write_priv: ".*"
-        state: "present"
-      delegate_to: "{{ groups['rabbitmq_all'][0] }}"
-      when:
-        - inventory_hostname == groups['keystone_all'][0]
-        - groups['rabbitmq_all'] is defined
-    - name: Create DB for service
-      mysql_db:
-        login_user: "root"
-        login_password: "secrete"
-        login_host: "localhost"
-        name: "{{ keystone_galera_database }}"
-        state: "present"
-      delegate_to: "{{ groups['galera_all'][0] }}"
-      when: inventory_hostname == groups['keystone_all'][0]
-      tags:
-        - mysql-db-setup
-    - name: Grant access to the DB for the service
-      mysql_user:
-        login_user: "{{ galera_root_user }}"
-        login_password: "{{ galera_root_password }}"
-        login_host: "localhost"
-        name: "{{ keystone_galera_database }}"
-        password: "{{ keystone_container_mysql_password }}"
-        host: "{{ item }}"
-        state: "present"
-        priv: "{{ keystone_galera_database }}.*:ALL"
-      with_items:
-        - "localhost"
-        - "%"
-      delegate_to: "{{ groups['galera_all'][0] }}"
-      when: inventory_hostname == groups['keystone_all'][0]
-      tags:
-        - mysql-db-setup
+        keystone_messaging_enabled: "{{ groups['rabbitmq_all'] is defined }}"
+    - include: ensure-rabbitmq.yml
+      vhost_name: "{{ keystone_rabbitmq_vhost }}"
+      user_name: "{{ keystone_rabbitmq_userid }}"
+      user_password: "{{ keystone_rabbitmq_password }}"
+      host_name: groups['keystone_all'][0]
+    - include: create-grant-db.yml
+      db_name: "{{ keystone_galera_database }}"
+      db_password: "{{ keystone_container_mysql_password }}"
+      host_name: groups['keystone_all'][0]
   roles:
     - role: "{{ keystone_rolename | default('os_keystone') }}"
   vars_files:

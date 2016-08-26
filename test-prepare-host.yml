@@ -58,11 +58,9 @@
 
     - name: Copy network configuration
       template:
-        src: test-nova-interfaces.cfg.j2
-        dest: /etc/network/interfaces.d/nova_interfaces.cfg
-      register: nova_interfaces
-      tags:
-        - networking-interfaces-file
+        src: "{{ network_conf_filename }}"
+        dest: /etc/network/interfaces.d/test_interfaces.cfg
+      register: network_interfaces
 
     - name: Ensure our interfaces.d configuration files are loaded automatically
       lineinfile:
@@ -73,31 +71,14 @@
 
     - name: Shut down the network interfaces
       command: "ifdown {{ item }}"
-      when: nova_interfaces | changed
-      with_items:
-        - br-mgmt
-        - br-vlan
-        - br-vxlan
-      tags:
-        - networking-interfaces-stop
+      when: network_interfaces | changed
+      with_items: bridges
 
     - name: Start the network interfaces
       command: "ifup {{ item }}"
-      when: nova_interfaces | changed
-      with_items:
-        - br-mgmt
-        - br-vlan
-        - br-vxlan
-      tags:
-        - networking-interfaces-start
-    - name: Create bridges
-      shell: /sbin/brctl addbr {{ item.name }} || true
+      when: network_interfaces | changed
       with_items: bridges
-      when: bridges is defined
-    - name: IP bridges
-      command: /sbin/ifconfig {{ item.name }} {{ item.ip_addr }} netmask 255.255.255.0
-      with_items: bridges
-      when: bridges is defined
+
     - name: Add iptables rule to ensure ssh checksum is correct
       command: /sbin/iptables -A POSTROUTING -t mangle -p tcp --dport 22 -j CHECKSUM --checksum-fill
     - name: Add iptables rules for lxc natting
@@ -112,5 +93,11 @@
       delay: 2
       with_items:
         - lxc-python2
+
+    - name: Add iptables rules for lxc natting
+      command: /usr/local/bin/lxc-system-manage iptables-create
+
+  roles:
+    - role: "lxc_hosts"
   vars_files:
     - test-vars.yml

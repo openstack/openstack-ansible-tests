@@ -1,0 +1,24 @@
+## Sample network configuration file. This file would go into the repo itself.
+## Adjust the file as necessary and put the required network interfaces.
+## Remember the "bridges" setting in your localhost hostvars would need to match the interfaces defined here.
+## You would reference the file by adding "network_conf_filename: my_network_file.cfg.j2"
+
+auto br-mgmt
+iface br-mgmt inet static
+    bridge_stp off
+    bridge_waitport 0
+    bridge_fd 0
+    bridge_ports none
+    address 10.100.101.1
+    netmask 255.255.255.0
+    offload-sg off
+
+auto br-storage
+iface br-storage inet static
+    bridge_stp off
+    bridge_waitport 0
+    bridge_fd 0
+    bridge_ports none
+    address 10.100.102.1
+    netmask 255.255.255.0
+    offload-sg off

@@ -29,6 +29,9 @@
         lxc_container_ssh_key: "{{ hostvars['localhost']['lxc_container_ssh_key'] }}"
   roles:
     - role: "lxc_hosts"
+      lxc_net_address: 10.100.100.1
+      lxc_net_dhcp_range: 10.100.100.8,10.100.100.253
+      lxc_net_bridge: lxcbr0
   post_tasks:
     - name: Ensure that /etc/network/interfaces.d/ exists
       file:

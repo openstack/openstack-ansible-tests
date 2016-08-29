@@ -18,6 +18,8 @@
 #       inventory
 - name: Playbook for establishing ssh keys
   hosts: localhost
+  connection: local
+  gather_facts: false
   become_user: root
   tasks:
     - name: Create ssh key pair for root
@@ -31,3 +33,7 @@
       register: key_get
     - set_fact:
         lxc_container_ssh_key: "{{ key_get.stdout }}"
+    - name: Ensure root can ssh to localhost
+      authorized_key:
+        user: "root"
+        key: "{{ lxc_container_ssh_key }}"

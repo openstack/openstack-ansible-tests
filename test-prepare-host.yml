@@ -20,11 +20,6 @@
     - include: "common-tasks/test-set-nodepool-vars.yml"
     - name: Clear iptables rules
       shell: "{{ playbook_dir }}/iptables-clear.sh"
-    - name: Ensure roots new public ssh key is in authorized_keys
-      authorized_key:
-        user: root
-        key: "{{ hostvars['localhost']['lxc_container_ssh_key'] }}"
-        manage_dir: no
     - set_fact:
         lxc_container_ssh_key: "{{ hostvars['localhost']['lxc_container_ssh_key'] }}"
   roles:

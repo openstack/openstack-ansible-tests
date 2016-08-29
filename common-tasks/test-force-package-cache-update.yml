@@ -18,9 +18,3 @@
     update_cache: true
   when:
     - ansible_pkg_mgr == 'apt'
-
-- name: First ensure yum cache is always refreshed
-  yum:
-    update_cache: true
-  when:
-    - ansible_pkg_mgr == 'yum'

@@ -43,6 +43,10 @@
       db_name: "{{ nova_galera_database }}"
       db_password: "{{ nova_container_mysql_password }}"
       host_name: groups['nova_all'][0]
+    - include: create-grant-db.yml
+      db_name: "{{ nova_api_galera_database }}"
+      db_password: "{{ nova_container_mysql_password }}"
+      host_name: groups['nova_all'][0]
   roles:
     - role: "{{ nova_rolename | default('os_nova') }}"
   vars_files:

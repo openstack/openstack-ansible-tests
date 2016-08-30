@@ -13,27 +13,94 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# NOTE: we use become_user because setting become: no or become: false
-#       doesn't seem to override the ansible_become=true in the
-#       inventory
 - name: Playbook for establishing ssh keys
   hosts: localhost
   connection: local
   gather_facts: false
-  become_user: root
+  become: true
   tasks:
+    - name: Ensure root has a .ssh directory
+      file:
+        path: /root/.ssh
+        state: directory
+        owner: root
+        group: root
+        mode: 0700
+
     - name: Create ssh key pair for root
       user:
         name: root
-        generate_ssh_key: "yes"
+        generate_ssh_key: yes
         ssh_key_bits: 2048
-        ssh_key_file: ".ssh/id_rsa"
-    - name: Get the calling user's key
-      command: cat ~/.ssh/id_rsa.pub
-      register: key_get
-    - set_fact:
-        lxc_container_ssh_key: "{{ key_get.stdout }}"
+        ssh_key_file: /root/.ssh/id_rsa
+
+    - name: Get root private key
+      command: cat /root/.ssh/id_rsa
+      register: private_key_get
+      changed_when: false
+
+    - name: Get root public key
+      command: cat /root/.ssh/id_rsa.pub
+      register: public_key_get
+      changed_when: false
+
+    - name: Set key facts
+      set_fact:
+        root_public_key: "{{ public_key_get.stdout }}"
+        root_private_key: "{{ private_key_get.stdout }}"
+        lxc_container_ssh_key: "{{ public_key_get.stdout }}"
+
     - name: Ensure root can ssh to localhost
       authorized_key:
         user: "root"
-        key: "{{ lxc_container_ssh_key }}"
+        key: "{{ root_public_key }}"
+
+
+- name: Playbook for establishing user ssh keys
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+    # Shell used because facts may not be ready yet
+    - name: Get user home directory
+      shell: "getent passwd '{{ ansible_ssh_user }}' | cut -d':' -f6"
+      register: user_home
+      changed_when: false
+
+    - name: Set local user home fact
+      set_fact:
+        calling_user_home: "{{ user_home.stdout }}"
+
+    - name: Ensure user has a .ssh directory
+      file:
+        path: "{{ calling_user_home }}/.ssh"
+        state: directory
+        owner: "{{ ansible_ssh_user }}"
+        group: "{{ ansible_ssh_user }}"
+        mode: 0700
+      when: ansible_ssh_user != 'root'
+
+    - name: Ensure user has the known private key
+      copy:
+        content: "{{ root_private_key }}"
+        dest: "{{ calling_user_home }}/.ssh/id_rsa"
+        owner: "{{ ansible_ssh_user }}"
+        group: "{{ ansible_ssh_user }}"
+        mode: "0600"
+      when: ansible_ssh_user != 'root'
+
+    - name: Ensure user has the known public key
+      copy:
+        content: "{{ root_public_key }}"
+        dest: "{{ calling_user_home }}/.ssh/id_rsa.pub"
+        owner: "{{ ansible_ssh_user }}"
+        group: "{{ ansible_ssh_user }}"
+        mode: "0600"
+      when: ansible_ssh_user != 'root'
+
+    - name: Ensure local user can ssh to localhost
+      authorized_key:
+        user: "{{ ansible_ssh_user }}"
+        key: "{{ root_public_key }}"
+      when: ansible_ssh_user != 'root'

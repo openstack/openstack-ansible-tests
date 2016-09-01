@@ -45,4 +45,5 @@
   set_fact:
     uca_apt_repo_url: "{{ ubuntu_repo_url.stdout | netorigin }}/ubuntu-cloud-archive"
   when:
+    - nodepool.stat.exists | bool
     - ansible_pkg_mgr == 'apt'

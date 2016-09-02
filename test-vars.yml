@@ -224,3 +224,6 @@ tempest_service_available_swift: False
 openrc_os_password: "{{ keystone_auth_admin_password }}"
 openrc_os_domain_name: "Default"
 openrc_os_auth_url: "http://{{ hostvars[groups['keystone_all'][0]]['ansible_ssh_host'] }}:5000/v3"
+
+# Network configuration settings
+network_conf_filename: "{{ ansible_os_family | lower }}-network-interfaces.cfg.j2"

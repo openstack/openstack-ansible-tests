@@ -2,12 +2,10 @@
 localhost ansible_connection=local ansible_become=True
 infra1 ansible_ssh_host=10.1.0.2 ansible_host=10.1.0.2 ansible_become=True ansible_user=root
 keystone1 ansible_ssh_host=10.1.0.3 ansible_host=10.1.0.3 ansible_become=True ansible_user=root
-keystone2 ansible_ssh_host=10.1.0.4 ansible_host=10.1.0.4 ansible_become=True ansible_user=root
 
 [all_containers]
 infra1
 keystone1
-keystone2
 
 [rabbitmq_all]
 infra1
@@ -25,6 +23,6 @@ memcached_all
 
 [keystone_all]
 keystone1
-keystone2
 
 [utility_all]
+keystone1

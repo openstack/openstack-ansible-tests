@@ -63,8 +63,8 @@ keystone_service_adminuri: "http://{{ hostvars[groups['keystone_all'][0]]['ansib
 keystone_service_adminurl: "{{ keystone_service_adminuri }}/v3"
 keystone_service_password: "secrete"
 keystone_rabbitmq_password: "secrete"
-keystone_rabbitmq_port: 5672
-keystone_rabbitmq_servers: "{{ hostvars[groups['rabbitmq_all'][0]]['ansible_ssh_host'] }}"
+keystone_rabbitmq_port: "{{ rabbitmq_port }}"
+keystone_rabbitmq_servers: "{{ rabbitmq_servers }}"
 keystone_rabbitmq_use_ssl: False
 keystone_rabbitmq_userid: keystone
 keystone_rabbitmq_vhost: /keystone
@@ -91,6 +91,8 @@ glance_galera_database: glance
 glance_git_install_branch: master
 glance_profiler_hmac_key: "secrete"
 glance_rabbitmq_password: "secrete"
+glance_rabbitmq_port:  "{{ rabbitmq_port }}"
+glance_rabbitmq_servers: "{{ rabbitmq_servers }}"
 glance_rabbitmq_userid: glance
 glance_rabbitmq_vhost: /glance
 glance_requirements_git_install_branch: master
@@ -117,6 +119,8 @@ nova_metadata_proxy_secret: "secrete"
 nova_novncproxy_vncserver_listen: localhost
 nova_novncproxy_vncserver_proxyclient_address: localhost
 nova_rabbitmq_password: "secrete"
+nova_rabbitmq_port:  "{{ rabbitmq_port }}"
+nova_rabbitmq_servers: "{{ rabbitmq_servers }}"
 nova_rabbitmq_userid: nova
 nova_rabbitmq_vhost: /nova
 nova_requirements_git_install_branch: master
@@ -148,6 +152,8 @@ neutron_git_install_branch: master
 neutron_ha_vrrp_auth_password: secrete
 neutron_management_address: "{{ hostvars[groups['neutron_agent'][0]]['ansible_ssh_host'] }}"
 neutron_rabbitmq_password: secrete
+neutron_rabbitmq_port:  "{{ rabbitmq_port }}"
+neutron_rabbitmq_servers: "{{ rabbitmq_servers }}"
 neutron_rabbitmq_userid: neutron
 neutron_rabbitmq_vhost: /neutron
 neutron_requirements_git_install_branch: master

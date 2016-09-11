@@ -13,24 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Prepare the user ssh keys
-- include: playbooks/test-prepare-keys.yml
-
-# Prepare the host
-- include: playbooks/test-prepare-host.yml
-
-# Prepare the containers
-- include: playbooks/test-prepare-containers.yml
-
-# Install RabbitMQ/MariaDB/Memcached
-- include: playbooks/test-install-infra.yml
-
-# Install Keystone
-- include: playbooks/test-install-keystone.yml
-
-# Install Tempest
-- include: playbooks/test-install-tempest.yml
-
-# Test test repository
-# TODO(andymccr): Add additional tests for now start with just keystone
-- include: test-tests-functional.yml
+# Run tempest identity tests on one keystone host.
+- name: Playbook for functional testing keystone
+  hosts: utility_all[0]
+  user: root
+  gather_facts: false
+  tasks:
+    # TODO(andymccr): add credentials functionality to keystone and remove the "credentials" exclusion.
+    - name: Run tempest
+      shell: |
+        . {{ tempest_venv_bin }}/activate
+        {{ tempest_venv_bin | dirname }}/run_tempest.sh --no-virtual-env ${RUN_TEMPEST_OPTS} '^tempest.api.identity*'
+      environment:
+        RUN_TEMPEST_OPTS: "--serial"
+  vars_files:
+    - playbooks/test-vars.yml

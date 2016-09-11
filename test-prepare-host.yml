@@ -72,14 +72,14 @@
       when:
         - (network_interfaces_rhel | changed) or (network_interfaces_deb | changed)
         - network_conf_filename is defined
-      with_items: bridges
+      with_items: "{{ bridges }}"
 
     - name: Start the network interfaces
       command: "ifup {{ item }}"
       when:
         - (network_interfaces_rhel | changed) or (network_interfaces_deb | changed)
         - network_conf_filename is defined
-      with_items: bridges
+      with_items: "{{ bridges }}"
 
     - name: Add iptables rule to ensure ssh checksum is correct
       command: /sbin/iptables -A POSTROUTING -t mangle -p tcp --dport 22 -j CHECKSUM --checksum-fill

@@ -14,6 +14,7 @@
 # limitations under the License.
 - name: Playbook for destroying test containers
   hosts: all_container
+  become: true
   gather_facts: false
   tasks:
     - name: Destroy a container

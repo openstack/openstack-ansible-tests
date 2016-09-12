@@ -62,11 +62,9 @@
       vhost_name: "{{ neutron_rabbitmq_vhost }}"
       user_name: "{{ neutron_rabbitmq_userid }}"
       user_password: "{{ neutron_rabbitmq_password }}"
-      host_name: groups['neutron_all'][0]
     - include: create-grant-db.yml
       db_name: "{{ neutron_galera_database }}"
       db_password: "{{ neutron_container_mysql_password }}"
-      host_name: groups['neutron_all'][0]
   roles:
     - role: "{{ neutron_rolename | default('os_neutron') }}"
   vars_files:

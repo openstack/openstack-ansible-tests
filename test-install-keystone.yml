@@ -25,11 +25,9 @@
       vhost_name: "{{ keystone_rabbitmq_vhost }}"
       user_name: "{{ keystone_rabbitmq_userid }}"
       user_password: "{{ keystone_rabbitmq_password }}"
-      host_name: groups['keystone_all'][0]
     - include: create-grant-db.yml
       db_name: "{{ keystone_galera_database }}"
       db_password: "{{ keystone_container_mysql_password }}"
-      host_name: groups['keystone_all'][0]
   roles:
     - role: "{{ keystone_rolename | default('os_keystone') }}"
   vars_files:

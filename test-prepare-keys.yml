@@ -64,7 +64,7 @@
   tasks:
     # Shell used because facts may not be ready yet
     - name: Get user home directory
-      shell: "getent passwd '{{ ansible_ssh_user }}' | cut -d':' -f6"
+      shell: "getent passwd '{{ ansible_user }}' | cut -d':' -f6"
       register: user_home
       changed_when: false
 
@@ -76,31 +76,31 @@
       file:
         path: "{{ calling_user_home }}/.ssh"
         state: directory
-        owner: "{{ ansible_ssh_user }}"
-        group: "{{ ansible_ssh_user }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         mode: 0700
-      when: ansible_ssh_user != 'root'
+      when: ansible_user != 'root'
 
     - name: Ensure user has the known private key
       copy:
         content: "{{ root_private_key }}"
         dest: "{{ calling_user_home }}/.ssh/id_rsa"
-        owner: "{{ ansible_ssh_user }}"
-        group: "{{ ansible_ssh_user }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         mode: "0600"
-      when: ansible_ssh_user != 'root'
+      when: ansible_user != 'root'
 
     - name: Ensure user has the known public key
       copy:
         content: "{{ root_public_key }}"
         dest: "{{ calling_user_home }}/.ssh/id_rsa.pub"
-        owner: "{{ ansible_ssh_user }}"
-        group: "{{ ansible_ssh_user }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         mode: "0600"
-      when: ansible_ssh_user != 'root'
+      when: ansible_user != 'root'
 
     - name: Ensure local user can ssh to localhost
       authorized_key:
-        user: "{{ ansible_ssh_user }}"
+        user: "{{ ansible_user }}"
         key: "{{ root_public_key }}"
-      when: ansible_ssh_user != 'root'
+      when: ansible_user != 'root'

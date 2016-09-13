@@ -22,11 +22,9 @@
       vhost_name: "{{ glance_rabbitmq_vhost }}"
       user_name: "{{ glance_rabbitmq_userid }}"
       user_password: "{{ glance_rabbitmq_password }}"
-      host_name: groups['glance_all'][0]
     - include: create-grant-db.yml
       db_name: "{{  glance_galera_database }}"
       db_password: "{{ glance_container_mysql_password }}"
-      host_name: groups['glance_all'][0]
   roles:
     - role: "{{ glance_rolename | default('os_glance') }}"
   vars_files:

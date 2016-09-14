@@ -19,6 +19,10 @@ external_lb_vip_address: 127.0.0.1
 internal_lb_vip_address: 127.0.0.1
 debug: true
 
+## Container destruction when testing repeatedly
+force_containers_destroy: True
+force_containers_data_destroy: True
+
 # LXC Settings
 lxc_net_address: 10.100.100.1
 lxc_net_netmask: 255.255.255.0

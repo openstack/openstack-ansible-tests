@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 - name: Playbook for destroying test containers
-  hosts: all_container
+  hosts: all_containers
   become: true
   gather_facts: false
   tasks:
@@ -52,4 +52,5 @@
         - force_containers_data_destroy | bool
       tags:
         - container-directories-data
-
+  vars_files:
+    - test-vars.yml

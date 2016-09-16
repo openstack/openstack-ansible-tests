@@ -13,10 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: Playbook for creating containers
+  hosts: localhost
+  become: true
+  gather_facts: true
+
 - include: destroy_containers.yml
   when: destroy_first | default(True) | bool
+
 - name: Playbook for creating containers
   hosts: all_containers
+  serial: 1
   become: true
   gather_facts: false
   roles:

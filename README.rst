@@ -1,92 +1,90 @@
 OpenStack-Ansible testing
 =========================
 
-This is a PoC for centralizing the testing within OpenStack-Ansible.
-Aiming to move out the common pieces so that changes that affect
-testing don't have to occur in every single repository.
-This allows you to run the common set of plays based on your requirements,
-and will work based on the inventory specs.
-The aim is to avoid (as much as possible) the requirement to change the same
-thing in 50 different places.
+This is the ``openstack-ansible-tests`` repository, providing a framework and
+consolidation of testing configuration and playbooks. This can be used to
+integrate new projects, and ensure that code duplication is minimized whilst
+allowing the addition of new testing scenarios with greater ease.
 
-Steps so far:
+Roles Currently using the ``openstack-ansible-tests`` repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#. Move out playbooks for role installs
-#. Move out variables to become a ``test-default`` vars.
-#. Genericize rolename calls
+- openstack-ansible-galera_server
+- openstack-ansible-tests
+- openstack-ansible-os_rally
+- openstack-ansible-memcached_server
+- openstack-ansible-openstack_hosts
+- openstack-ansible-repo_build
+- openstack-ansible-repo_server
+- openstack-ansible-lxc_container_create
+- openstack-ansible-os_keystone
+- openstack-ansible-os_aodh
+- openstack-ansible-os_zaqar
 
-General notes
-~~~~~~~~~~~~~
+Variables are generic and based on inventory so variable overrides should be
+able to be very minimal.
 
-I've patched some issues that I've put upstream (Mostly for nova):
+Role Integration
+~~~~~~~~~~~~~~~~
 
-| https://review.openstack.org/#/c/321472/
-| https://review.openstack.org/#/c/321148/
+To enable the ``openstack-ansible-tests`` repository add the following to your
+repositories tox.ini, at the bottom of the ``[testenv:ansible]]`` stanza, in the
+``commands`` section.
 
-These are incorporated in the patches I have for the repositories.
+.. code-block:: bash
 
-Discussion points
-~~~~~~~~~~~~~~~~~
+    rm -rf {toxinidir}/tests/playbooks
+    git clone https://git.openstack.org/openstack/openstack-ansible-tests \
+              {toxinidir}/tests/playbooks
 
-Variable locations/precendence
-------------------------------
+To override variables you can create a role-overrides.yml file inside tests,
+which you can include in your tox.ini.
+You will have to set the rolename for the repository due to how the base
+repository is cloned when gates run, the below example shows keystone's
+settings:
 
-Currently using testing defaults as an include within the play files - this
-lives inside the generic repository (this one)
-Using a ``{rolename}-overrides.yml`` within each role's repository we can set
-various vars that are non-default (these are pretty minimal though for the
-roles I've done. ``nova/glance/keystone/swift``).
-Open to suggestions/discussion.
+.. code-block:: bash
 
-Rolename includes
------------------
+    -e @{toxinidir/tests/keystone-overrides.yml \
+    -e "keystone_rolename={toxinidir}" \
 
-To use a generic keystone playbook for testing (as an example), we need to set
-the rolename to be a default of ``os_keystone`` (this is how we specify it
-in ``ansible-role-requirements``).
-However for keystone testing we need it to be ``openstack-ansible-os_keystone``,
-so there are 2 options:
+In your repositories ``tests/test.yml`` file, you can call any of the
+included playbooks, for example:
 
-#. We set the the ``ansible-role-requirements`` to clone ALL repos to
-   ``openstack-ansible-x`` and code the rolenames as such.
+.. code-block:: yaml
 
-#. We have a var per repo to specify its own rolename
-   (e.g. ``openstack-ansible-os_keystone``) and use the shortname as a default.
+    - include: playbooks/test-prepare-keys.yml
 
-I've gone with option 2 for the purposes of this PoC
-Open to other suggestions/discussion.
+Network Settings
+~~~~~~~~~~~~~~~~
 
-Inventory management
---------------------
+The networking can be configured and setup using the ``bridges`` variable.
 
-For swift I have split out the ``group/host_vars`` so that very little is in the
-inventory, I think this is the way forward.
-This isn't generic to roles - so isn't really covered in this, but I'd like a uniform
-method of preparing hosts.
+The base option, when only 1 interface is required is to specify just a single
+base - this is only for backwards compatibility with existing test setup and
+will default to ``br-mgmt`` with an IP of ``10.1.0.1``.
 
-Method of running plays
------------------------
+.. code-block:: yaml
 
-There was an idea to simply run the ``test.yml`` from the generic repo
-which will call all the appropriate repos. This will fail if the requirements
-repositories don't exist though, regardless of whether they are used.
-For example, rabbitmq isn't used by swift, but you would need to download the
-role just to be able to ignore the rabbitmq role.
-I've gone with the alternative, for the purposes of this PoC, which is to specify
-in the role repositories, which generic playbooks to run.
+    bridges:
+      - "br-mgmt"
 
-I think the decisions made so far are solid but feel free to give ideas/discuss etc.
-Here are the 4 repositories I have working with this method, so you can see the
-patch required to get it working on each repository:
+To allow a more complicated network setup we can specify
+``ip_addr``: The IP address on the interface.
+``netmask``: Netmask of the interface (defaults to 255.255.255.0)
+``name``: Name of the interface
+``veth_peer``: Set up a veth peer for the interface
 
-| Swift_
-| Keystone_
-| Glance_
-| Nova_
+For example, a Nova setup may look like this:
 
-.. _Swift: http://github.com/andymcc/openstack-ansible-os_swift/
-.. _Keystone: http://github.com/andymcc/openstack-ansible-os_keystone/
-.. _Glance: http://github.com/andymcc/openstack-ansible-os_glance/
-.. _Nova: http://github.com/andymcc/openstack-ansible-os_nova/
+.. code-block:: yaml
 
+    bridges:
+      - name: "br-mgmt"
+        ip_addr: "10.1.0.1"
+      - name: "br-vxlan"
+        ip_addr: "10.1.1.1"
+      - name: "br-vlan"
+        ip_addr: "10.1.2.1"
+        veth_peer: "eth12"
 

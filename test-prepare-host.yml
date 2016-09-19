@@ -42,20 +42,31 @@
 
     - name: Copy network configuration (Debian)
       template:
-        src: "{{ network_conf_filename }}"
-        dest: /etc/network/interfaces.d/test_interfaces.cfg
+        src: "network_interfaces/debian_interface_{{ item.type | default('default') }}.cfg.j2"
+        dest: "/etc/network/interfaces.d/{{ item.name | default('br-mgmt') }}.cfg"
+      with_items: "{{ bridges }}"
       register: network_interfaces_deb
       when:
-        - network_conf_filename is defined
         - ansible_pkg_mgr == 'apt'
 
     - name: Copy network configuration (RedHat)
       template:
-        src: "{{ network_conf_filename }}"
-        dest: /etc/sysconfig/network-scripts/ifcfg-br-mgmt
+        src: "network_interfaces/redhat_interface_{{ item.type | default('default') }}.cfg.j2"
+        dest: "/etc/sysconfig/network-scripts/ifcfg-{{ item.name | default('br-mgmt') }}"
+      with_items: "{{ bridges }}"
       register: network_interfaces_rhel
       when:
-        - network_conf_filename is defined
+        - ansible_pkg_mgr == 'yum'
+
+    - name: Put down post-up script for veth-peer interfaces (RedHat)
+      template:
+        src: "network_interfaces/redhat_interface_{{ item[0] | default('default') }}.cfg.j2"
+        dest: "/etc/sysconfig/network-scripts/{{ item[0] }}-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}.sh"
+      with_nested:
+        - [ "postdown-veth", "postup-veth" ]
+        - "{{ bridges }}"
+      when:
+        - item[1].veth_peer is defined
         - ansible_pkg_mgr == 'yum'
 
     - name: Ensure our interfaces.d configuration files are loaded automatically
@@ -68,23 +79,22 @@
         - networking-interfaces-load
 
     - name: Shut down the network interfaces
-      command: "ifdown {{ item }}"
+      command: "ifdown {{ item.name | default('br-mgmt') }}"
       when:
         - (network_interfaces_rhel | changed) or (network_interfaces_deb | changed)
-        - network_conf_filename is defined
       with_items: "{{ bridges }}"
 
     - name: Start the network interfaces
-      command: "ifup {{ item }}"
+      command: "ifup {{ item.name | default('br-mgmt') }}"
       when:
         - (network_interfaces_rhel | changed) or (network_interfaces_deb | changed)
-        - network_conf_filename is defined
       with_items: "{{ bridges }}"
 
     - name: Add iptables rule to ensure ssh checksum is correct
       command: /sbin/iptables -A POSTROUTING -t mangle -p tcp --dport 22 -j CHECKSUM --checksum-fill
-    - name: Add iptables rules for lxc natting
-      command: /usr/local/bin/lxc-system-manage iptables-create
+
+    - name: Add iptables rule to provide internet connectivity to instances
+      command: /sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
     - name: Add iptables rules for lxc natting
       command: /usr/local/bin/lxc-system-manage iptables-create

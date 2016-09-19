@@ -69,7 +69,7 @@ keystone_service_password: "secrete"
 keystone_rabbitmq_password: "secrete"
 keystone_rabbitmq_port: "{{ rabbitmq_port }}"
 keystone_rabbitmq_servers: "{{ rabbitmq_servers }}"
-keystone_rabbitmq_use_ssl: False
+keystone_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
 keystone_rabbitmq_userid: keystone
 keystone_rabbitmq_vhost: /keystone
 keystone_galera_database: keystone
@@ -99,6 +99,7 @@ glance_rabbitmq_port:  "{{ rabbitmq_port }}"
 glance_rabbitmq_servers: "{{ rabbitmq_servers }}"
 glance_rabbitmq_userid: glance
 glance_rabbitmq_vhost: /glance
+glance_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
 glance_requirements_git_install_branch: master
 glance_service_password: "secrete"
 glance_venv_tag: "testing"
@@ -127,6 +128,7 @@ nova_rabbitmq_port:  "{{ rabbitmq_port }}"
 nova_rabbitmq_servers: "{{ rabbitmq_servers }}"
 nova_rabbitmq_userid: nova
 nova_rabbitmq_vhost: /nova
+nova_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
 nova_requirements_git_install_branch: master
 nova_program_name: nova-api-os-compute
 nova_service_adminuri: "http://{{ hostvars[groups['nova_api_os_compute'][0]]['ansible_ssh_host'] }}:8774"
@@ -146,6 +148,8 @@ nova_service_user_name: nova
 nova_venv_bin: "/openstack/venvs/nova-{{ nova_venv_tag }}/bin"
 nova_venv_tag: "testing"
 nova_virt_type: qemu
+# lxd specific vars
+lxd_trust_password: "SuperSecrete"
 
 # Neutron specific settings
 neutron_container_mysql_password: SuperSecrete
@@ -158,6 +162,7 @@ neutron_management_address: "{{ hostvars[groups['neutron_agent'][0]]['ansible_ss
 neutron_rabbitmq_password: secrete
 neutron_rabbitmq_port:  "{{ rabbitmq_port }}"
 neutron_rabbitmq_servers: "{{ rabbitmq_servers }}"
+neutron_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
 neutron_rabbitmq_userid: neutron
 neutron_rabbitmq_vhost: /neutron
 neutron_requirements_git_install_branch: master
@@ -196,6 +201,7 @@ swift:
   storage_network: eth1
   repl_network: eth3
   part_power: 8
+  region: "{{ test_swift_region | default(1) }}"
   drives:
     - name: swift1
     - name: swift2
@@ -234,6 +240,3 @@ tempest_service_available_swift: "{{ ((groups['swift_all'] is defined) and (grou
 openrc_os_password: "{{ keystone_auth_admin_password }}"
 openrc_os_domain_name: "Default"
 openrc_os_auth_url: "http://{{ hostvars[groups['keystone_all'][0]]['ansible_ssh_host'] }}:5000/v3"
-
-# Network configuration settings
-network_conf_filename: "{{ ansible_os_family | lower }}-network-interfaces.cfg.j2"

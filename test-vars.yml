@@ -111,6 +111,7 @@ nova_api_container_mysql_password: "SuperSecrete"
 nova_api_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_ssh_host'] }}"
 nova_api_galera_database: nova_api
 nova_api_galera_user: nova_api
+nova_glance_api_servers: "{{ hostvars[groups['glance_all'][0]]['ansible_ssh_host'] }}"
 nova_container_mysql_password: "SuperSecrete"
 nova_developer_mode: true
 nova_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_ssh_host'] }}"

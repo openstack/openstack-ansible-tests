@@ -242,3 +242,26 @@ tempest_service_available_swift: "{{ ((groups['swift_all'] is defined) and (grou
 openrc_os_password: "{{ keystone_auth_admin_password }}"
 openrc_os_domain_name: "Default"
 openrc_os_auth_url: "http://{{ hostvars[groups['keystone_all'][0]]['ansible_host'] }}:5000/v3"
+
+# Set workers for all services to optimise memory usage
+ceilometer_api_workers: 2
+ceilometer_collector_workers: 2
+ceilometer_notification_workers: 2
+cinder_osapi_volume_workers: 2
+glance_api_workers: 2
+glance_registry_workers: 2
+heat_api_workers: 2
+heat_engine_workers: 2
+horizon_wsgi_processes: 2
+horizon_wsgi_threads: 2
+keystone_wsgi_processes: 2
+neutron_api_workers: 2
+neutron_metadata_workers: 1
+neutron_rpc_workers: 1
+nova_conductor_workers: 2
+nova_metadata_workers: 2
+nova_osapi_compute_workers: 2
+swift_account_server_workers: 2
+swift_container_server_workers: 2
+swift_object_server_workers: 2
+swift_proxy_server_workers: 2

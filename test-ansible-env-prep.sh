@@ -61,10 +61,9 @@ fi
 # Download the Ansible role repositories if they are not present on the host.
 # This is ignored if there is no ansible-role-requirements file.
 if [ ! -d "${ANSIBLE_ROLE_DIR}" ] && [ -f "${ANSIBLE_ROLE_REQUIREMENTS_PATH}" ]; then
-  ansible-galaxy install \
-                 --role-file="${ANSIBLE_ROLE_REQUIREMENTS_PATH}" \
-                 --roles-path "${ANSIBLE_ROLE_DIR}" \
-                 --force
+   ansible-playbook -i "localhost ansible-connection=local," \
+         ${COMMON_TESTS_PATH}/get-ansible-role-requirements.yml \
+         -e "toxinidir=${WORKING_DIR} homedir=${TESTING_HOME}"
 fi
 
 

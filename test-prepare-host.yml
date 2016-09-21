@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Playbook for configuring the LXC host
+- name: Playbook for configuring hosts
   hosts: localhost
   pre_tasks:
-    - include: "common-tasks/test-force-package-cache-update.yml"
     - include: "common-tasks/test-set-nodepool-vars.yml"
     - name: Clear iptables rules
       shell: "{{ playbook_dir }}/iptables-clear.sh"
@@ -27,8 +26,12 @@
         user: root
         key: "{{ hostvars['localhost']['lxc_container_ssh_key'] }}"
         manage_dir: no
+
+- include: test-install-openstack-hosts.yml
+
+- name: Playbook for configuring the LXC host
+  hosts: localhost
   roles:
-    - role: "openstack_hosts"
     - role: "lxc_hosts"
       lxc_net_address: 10.100.100.1
       lxc_net_dhcp_range: 10.100.100.8,10.100.100.253

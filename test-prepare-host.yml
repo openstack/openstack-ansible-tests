@@ -28,6 +28,7 @@
         key: "{{ hostvars['localhost']['lxc_container_ssh_key'] }}"
         manage_dir: no
   roles:
+    - role: "openstack_hosts"
     - role: "lxc_hosts"
       lxc_net_address: 10.100.100.1
       lxc_net_dhcp_range: 10.100.100.8,10.100.100.253

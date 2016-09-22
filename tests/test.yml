@@ -14,22 +14,22 @@
 # limitations under the License.
 
 # Prepare the user ssh keys
-- include: playbooks/test-prepare-keys.yml
+- include: common/test-prepare-keys.yml
 
 # Prepare the host
-- include: playbooks/test-prepare-host.yml
+- include: common/test-prepare-host.yml
 
 # Prepare the containers
-- include: playbooks/test-prepare-containers.yml
+- include: common/test-prepare-containers.yml
 
 # Install RabbitMQ/MariaDB/Memcached
-- include: playbooks/test-install-infra.yml
+- include: common/test-install-infra.yml
 
 # Install Keystone
-- include: playbooks/test-install-keystone.yml
+- include: common/test-install-keystone.yml
 
 # Install Tempest
-- include: playbooks/test-install-tempest.yml
+- include: common/test-install-tempest.yml
 
 # Test test repository
 # TODO(andymccr): Add additional tests for now start with just keystone

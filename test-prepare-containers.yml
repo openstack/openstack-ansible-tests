@@ -36,3 +36,5 @@
         host: "{{ ansible_host | default(inventory_hostname) }}"
         search_regex: OpenSSH
         delay: 1
+  vars_files:
+    - test-vars.yml

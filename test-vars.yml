@@ -49,6 +49,13 @@ test_neutron_agent_host: "{{ hostvars[groups[test_neutron_agent_group][0]]['ansi
 test_swift_proxy_host: "{{ hostvars[groups[test_swift_proxy_group][0]]['ansible_host'] }}"
 test_ironic_api_host: "{{ hostvars[groups[test_ironic_api_group][0]]['ansible_host'] }}"
 
+## LXC container default bind mounts
+lxc_container_default_bind_mounts:
+  - host_directory: "/openstack/backup/{{ inventory_hostname }}"
+    container_directory: "/var/backup"
+  - host_directory: "/openstack/log/{{ inventory_hostname }}"
+    container_directory: "/var/log"
+
 # LXC Settings
 lxc_net_address: 10.100.100.1
 lxc_net_netmask: 255.255.255.0

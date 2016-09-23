@@ -13,8 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Setting nodepool variables
-  hosts: all
+- name: Playbook for installing Ironic
+  hosts: ironic_all
+  remote_user: root
   gather_facts: true
-  tasks:
-    - include: "common-tasks/test-set-nodepool-vars.yml"
+  pre_tasks:
+    - include: ensure-rabbitmq.yml
+      vhost_name: "{{ ironic_rabbitmq_vhost }}"
+      user_name: "{{ ironic_rabbitmq_userid }}"
+      user_password: "{{ ironic_rabbitmq_password }}"
+    - include: create-grant-db.yml
+      db_name: "{{ ironic_galera_database }}"
+      db_password: "{{ ironic_container_mysql_password }}"
+  roles:
+    - role: "{{ ironic_rolename | default('os_ironic') }}"
+  vars_files:
+    - test-vars.yml

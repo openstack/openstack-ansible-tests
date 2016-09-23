@@ -189,7 +189,6 @@ cinder_backends_rbd_inuse: false
 cinder_ceph_client: cinder
 
 # Swift specific settings
-swift_storage_address: "{{ ansible_host }}"
 swift_container_mysql_password: "SuperSecrete"
 swift_dispersion_password: "secrete"
 swift_hash_path_prefix: "secrete_prefx"
@@ -203,9 +202,10 @@ swift_service_publicuri: "http://{{ hostvars[groups['swift_proxy'][0]]['ansible_
 swift_service_adminuri: "http://{{ hostvars[groups['swift_proxy'][0]]['ansible_host'] }}:8080"
 swift_service_internaluri: "http://{{ hostvars[groups['swift_proxy'][0]]['ansible_host'] }}:8080"
 swift_replication_address: "{{ replication_address }}"
+swift_storage_address: "{{ storage_address }}"
 swift:
-  storage_network: eth1
-  repl_network: eth3
+  storage_network: "{{ test_swift_storage_network | default('eth2') }}"
+  replication_network: "{{ test_swift_repl_network | default('eth3') }}"
   part_power: 8
   region: "{{ test_swift_region | default(1) }}"
   drives:

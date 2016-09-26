@@ -18,6 +18,6 @@
   user: root
   gather_facts: true
   roles:
-    - role: "os_tempest"
+    - role: "{{ tempest_rolename | default('os_tempest') }}"
   vars_files:
     - test-vars.yml

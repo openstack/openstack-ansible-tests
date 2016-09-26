@@ -19,13 +19,6 @@
   hosts: "{{ swift_groups | default('swift_all:swift_remote_all') }}"
   user: root
   gather_facts: true
-  pre_tasks:
-    - name: Set swift replication address (container)
-      set_fact:
-        replication_address: "{{ hostvars[inventory_hostname]['container_networks']['replication_address']['address'] }}"
-      when:
-        - inventory_hostname in groups['swift_all']
-        - hostvars[inventory_hostname]['container_networks']['replication_address']['address'] is defined
   roles:
     - role: "{{ swift_rolename | default('os_swift') }}"
   vars_files:

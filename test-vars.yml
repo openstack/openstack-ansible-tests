@@ -201,8 +201,6 @@ swift_venv_bin: "/openstack/venvs/swift-{{ swift_venv_tag }}/bin"
 swift_service_publicuri: "http://{{ hostvars[groups['swift_proxy'][0]]['ansible_host'] }}:8080"
 swift_service_adminuri: "http://{{ hostvars[groups['swift_proxy'][0]]['ansible_host'] }}:8080"
 swift_service_internaluri: "http://{{ hostvars[groups['swift_proxy'][0]]['ansible_host'] }}:8080"
-swift_replication_address: "{{ replication_address }}"
-swift_storage_address: "{{ storage_address }}"
 swift:
   storage_network: "{{ test_swift_storage_network | default('eth2') }}"
   replication_network: "{{ test_swift_repl_network | default('eth3') }}"

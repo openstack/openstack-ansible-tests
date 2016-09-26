@@ -1,0 +1,14 @@
+# WARNING:
+# This file is use by all OpenStack-Ansible roles for testing purposes.
+# Any changes here will affect all OpenStack-Ansible role repositories
+# with immediate effect.
+
+# PURPOSE:
+# Python requirements listed here are imported by the roles via tox
+# target configuration in each role.
+
+# The Ansible version used for testing
+ansible==2.1.1
+
+# The Ansible lint version used for lint tests
+ansible-lint>=2.7.0,<3.0.0

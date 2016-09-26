@@ -45,11 +45,9 @@ fi
 
 # run through each tox env and execute the test
 for tox_env in $(awk -F= '/envlist/ {print $2}' tox.ini | sed 's/,/ /g'); do
-  if [ "${tox_env}" != "ansible-functional" ]; then
+  if [ "${tox_env}" != "functional" ]; then
     tox -e ${tox_env}
-  elif [ "${tox_env}" == "ansible-functional" ]; then
-    if ${FUNCTIONAL_TEST}; then
-      tox -e ${tox_env}
-    fi
+  elif [ "${tox_env}" == "functional" ] && [ "${FUNCTIONAL_TEST}" == "true" ]; then
+    tox -e ${tox_env}
   fi
 done

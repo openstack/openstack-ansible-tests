@@ -60,7 +60,7 @@ fi
 
 # Download the Ansible role repositories if they are not present on the host.
 # This is ignored if there is no ansible-role-requirements file.
-if [ ! -d "${ANSIBLE_ROLE_DIR}s" ] && [ -f "${ANSIBLE_ROLE_REQUIREMENTS_PATH}" ]; then
+if [ ! -d "${ANSIBLE_ROLE_DIR}" ] && [ -f "${ANSIBLE_ROLE_REQUIREMENTS_PATH}" ]; then
   ansible-galaxy install \
                  --role-file="${ANSIBLE_ROLE_REQUIREMENTS_PATH}" \
                  --roles-path "${ANSIBLE_ROLE_DIR}" \

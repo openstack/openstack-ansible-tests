@@ -23,6 +23,32 @@ debug: true
 force_containers_destroy: True
 force_containers_data_destroy: True
 
+# Setup host variables that can be reused later
+# These need to be defaulted if the group is not available
+# To get around ansible evaluating the hostvars variable, we set a string
+test_galera_group: "{{ ((groups['galera_all'] is defined) and (groups['galera_all'] | length > 0)) | ternary('galera_all', 'all_containers') }}"
+test_rabbitmq_group: "{{ ((groups['rabbitmq_all'] is defined) and (groups['rabbitmq_all'] | length > 0)) | ternary('rabbitmq_all', 'all_containers') }}"
+test_memcached_group: "{{ ((groups['memcached_all'] is defined) and (groups['memcached_all'] | length > 0)) | ternary('memcached_all', 'all_containers') }}"
+test_keystone_group: "{{ ((groups['keystone_all'] is defined) and (groups['keystone_all'] | length > 0)) | ternary('keystone_all', 'all_containers') }}"
+test_glance_group: "{{ ((groups['glance_all'] is defined) and (groups['glance_all'] | length > 0)) | ternary('glance_all', 'all_containers') }}"
+test_nova_api_metadata_group: "{{ ((groups['nova_api_metadata'] is defined) and (groups['nova_api_metadata'] | length > 0)) | ternary('nova_api_metadata', 'all_containers') }}"
+test_nova_api_compute_group: "{{ ((groups['nova_api_os_compute'] is defined) and (groups['nova_api_os_compute'] | length > 0)) | ternary('nova_api_os_compute', 'all_containers') }}"
+test_nova_console_group: "{{ ((groups['nova_console'] is defined) and (groups['nova_console'] | length > 0)) | ternary('nova_console', 'all_containers') }}"
+test_neutron_agent_group: "{{ ((groups['neutron_agent'] is defined) and (groups['neutron_agent'] | length > 0)) | ternary('neutron_agent', 'all_containers') }}"
+test_swift_proxy_group: "{{ ((groups['swift_proxy'] is defined) and (groups['swift_proxy'] | length > 0)) | ternary('swift_proxy', 'all_containers') }}"
+test_ironic_api_group: "{{ ((groups['ironic_api'] is defined) and (groups['ironic_api'] | length > 0)) | ternary('ironic_api', 'all_containers') }}"
+test_galera_host: "{{ hostvars[groups[test_galera_group][0]]['ansible_host'] }}"
+test_rabbitmq_host: "{{ hostvars[groups[test_rabbitmq_group][0]]['ansible_host'] }}"
+test_memcached_host: "{{ hostvars[groups[test_memcached_group][0]]['ansible_host'] }}"
+test_keystone_host: "{{ hostvars[groups[test_keystone_group][0]]['ansible_host'] }}"
+test_glance_host: "{{ hostvars[groups[test_glance_group][0]]['ansible_host'] }}"
+test_nova_api_metadata_host: "{{ hostvars[groups[test_nova_api_metadata_group][0]]['ansible_host'] }}"
+test_nova_api_compute_host: "{{ hostvars[groups[test_nova_api_compute_group][0]]['ansible_host'] }}"
+test_nova_console_host: "{{ hostvars[groups[test_nova_console_group][0]]['ansible_host'] }}"
+test_neutron_agent_host: "{{ hostvars[groups[test_neutron_agent_group][0]]['ansible_host'] }}"
+test_swift_proxy_host: "{{ hostvars[groups[test_swift_proxy_group][0]]['ansible_host'] }}"
+test_ironic_api_host: "{{ hostvars[groups[test_ironic_api_group][0]]['ansible_host'] }}"
+
 # LXC Settings
 lxc_net_address: 10.100.100.1
 lxc_net_netmask: 255.255.255.0
@@ -43,14 +69,14 @@ galera_server_id: "{{ inventory_hostname | string_2_int }}"
 
 # RabbitMQ Settings
 rabbitmq_cookie_token: secrete
-rabbitmq_servers: "{{ hostvars[groups['rabbitmq_all'][0]]['ansible_host'] }}"
+rabbitmq_servers: "{{ test_rabbitmq_host }}"
 rabbitmq_use_ssl: False
 rabbitmq_port: 5672
 rabbitmq_password: "secrete"
 
 # Memcache Settings
-memcached_listen: "{{ hostvars[groups['memcached_all'][0]]['ansible_host'] }}"
-memcached_servers: "{{ hostvars[groups['memcached_all'][0]]['ansible_host'] }}"
+memcached_listen: "{{ test_memcached_host }}"
+memcached_servers: "{{ test_memcached_host }}"
 memcached_encryption_key: "secrete"
 
 # Keystone Settings
@@ -60,11 +86,11 @@ keystone_admin_tenant_name: admin
 keystone_auth_admin_password: "SuperSecretePassword"
 keystone_service_adminuri_insecure: false
 keystone_service_internaluri_insecure: false
-keystone_service_publicuri: "http://{{ hostvars[groups['keystone_all'][0]]['ansible_host'] }}:5000"
+keystone_service_publicuri: "http://{{ test_keystone_host }}:5000"
 keystone_service_publicurl: "{{ keystone_service_publicuri }}/v3"
-keystone_service_internaluri: "http://{{ hostvars[groups['keystone_all'][0]]['ansible_host'] }}:5000"
+keystone_service_internaluri: "http://{{ test_keystone_host }}:5000"
 keystone_service_internalurl: "{{ keystone_service_internaluri }}/v3"
-keystone_service_adminuri: "http://{{ hostvars[groups['keystone_all'][0]]['ansible_host'] }}:35357"
+keystone_service_adminuri: "http://{{ test_keystone_host }}:35357"
 keystone_service_adminurl: "{{ keystone_service_adminuri }}/v3"
 keystone_service_password: "secrete"
 keystone_rabbitmq_password: "{{ rabbitmq_password }}"
@@ -74,7 +100,7 @@ keystone_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
 keystone_rabbitmq_userid: keystone
 keystone_rabbitmq_vhost: /keystone
 keystone_galera_database: keystone
-keystone_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_host'] }}"
+keystone_galera_address: "{{ test_galera_host }}"
 keystone_container_mysql_password: "SuperSecrete"
 keystone_venv_tag: "testing"
 keystone_developer_mode: true
@@ -83,17 +109,17 @@ keystone_requirements_git_install_branch: master
 keystone_service_region: RegionOne
 
 # Glance specific settings
-glance_service_publicuri: "http://{{ hostvars[groups['glance_all'][0]]['ansible_host'] }}:9292"
+glance_service_publicuri: "http://{{ test_glance_host }}:9292"
 glance_service_publicurl: "{{ glance_service_publicuri }}"
-glance_service_internaluri: "http://{{ hostvars[groups['glance_all'][0]]['ansible_host'] }}:9292"
+glance_service_internaluri: "http://{{ test_glance_host }}:9292"
 glance_service_internalurl: "{{ glance_service_internaluri }}"
-glance_service_adminuri: "http://{{ hostvars[groups['glance_all'][0]]['ansible_host'] }}:9292"
+glance_service_adminuri: "http://{{ test_glance_host }}:9292"
 glance_service_adminurl: "{{ glance_service_adminuri }}"
 glance_service_port: 9292
 glance_service_user_name: glance
 glance_container_mysql_password: "SuperSecrete"
 glance_developer_mode: true
-glance_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_host'] }}"
+glance_galera_address: "{{ test_galera_host }}"
 glance_galera_database: glance
 glance_git_install_branch: master
 glance_profiler_hmac_key: "secrete"
@@ -106,24 +132,24 @@ glance_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
 glance_requirements_git_install_branch: master
 glance_service_password: "secrete"
 glance_venv_tag: "testing"
-glance_host: "{{ hostvars[groups['glance_all'][0]]['ansible_host'] }}"
-glance_api_servers: "{{ hostvars[groups['glance_all'][0]]['ansible_host'] }}"
+glance_host: "{{ test_glance_host }}"
+glance_api_servers: "{{ test_glance_host }}"
 
 # Nova specific settings
 nova_api_container_mysql_password: "SuperSecrete"
-nova_api_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_host'] }}"
+nova_api_galera_address: "{{ test_galera_host }}"
 nova_api_galera_database: nova_api
 nova_api_galera_user: nova_api
-nova_glance_api_servers: "{{ hostvars[groups['glance_all'][0]]['ansible_host'] }}"
+nova_glance_api_servers: "{{ test_glance_host }}"
 nova_container_mysql_password: "SuperSecrete"
 nova_developer_mode: true
-nova_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_host'] }}"
+nova_galera_address: "{{ test_galera_host }}"
 nova_galera_database: nova
 nova_git_install_branch: master
 nova_keystone_auth_plugin: password
 nova_management_address: "{{ ansible_host }}"
 nova_metadata_port: 8775
-nova_metadata_host: "{{ hostvars[groups['nova_api_metadata'][0]]['ansible_host'] }}"
+nova_metadata_host: "{{ test_nova_api_metadata_host }}"
 nova_metadata_proxy_secret: "secrete"
 nova_novncproxy_vncserver_listen: localhost
 nova_novncproxy_vncserver_proxyclient_address: localhost
@@ -135,13 +161,13 @@ nova_rabbitmq_vhost: /nova
 nova_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
 nova_requirements_git_install_branch: master
 nova_program_name: nova-api-os-compute
-nova_service_adminuri: "http://{{ hostvars[groups['nova_api_os_compute'][0]]['ansible_host'] }}:8774"
+nova_service_adminuri: "http://{{ test_nova_api_compute_host }}:8774"
 nova_service_adminurl: "{{ nova_service_adminuri }}/v2.1/%(tenant_id)s"
-nova_service_publicuri: "http://{{ hostvars[groups['nova_api_os_compute'][0]]['ansible_host'] }}:8774"
+nova_service_publicuri: "http://{{ test_nova_api_compute_host }}:8774"
 nova_service_publicurl: "{{ nova_service_publicuri }}/v2.1/%(tenant_id)s"
-nova_service_internaluri: "http://{{ hostvars[groups['nova_api_os_compute'][0]]['ansible_host'] }}:8774"
+nova_service_internaluri: "http://{{ test_nova_api_compute_host }}:8774"
 nova_service_internalurl: "{{ nova_service_internaluri }}/v2.1/%(tenant_id)s"
-nova_spice_html5proxy_base_uri: "http://{{ hostvars[groups['nova_console'][0]]['ansible_host'] }}:6082"
+nova_spice_html5proxy_base_uri: "http://{{ test_nova_console_host }}:6082"
 nova_spice_html5proxy_base_url: "{{ nova_spice_html5proxy_base_uri }}/spice_auto.html"
 nova_service_password: "secrete"
 nova_service_project_domain_id: default
@@ -158,11 +184,11 @@ lxd_trust_password: "SuperSecrete"
 # Neutron specific settings
 neutron_container_mysql_password: SuperSecrete
 neutron_developer_mode: true
-neutron_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_host'] }}"
+neutron_galera_address: "{{ test_galera_host }}"
 neutron_galera_database: neutron
 neutron_git_install_branch: master
 neutron_ha_vrrp_auth_password: secrete
-neutron_management_address: "{{ hostvars[groups['neutron_agent'][0]]['ansible_host'] }}"
+neutron_management_address: "{{ test_neutron_agent_host }}"
 neutron_rabbitmq_password: "{{ rabbitmq_password }}"
 neutron_rabbitmq_port:  "{{ rabbitmq_port }}"
 neutron_rabbitmq_servers: "{{ rabbitmq_servers }}"
@@ -170,11 +196,11 @@ neutron_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
 neutron_rabbitmq_userid: neutron
 neutron_rabbitmq_vhost: /neutron
 neutron_requirements_git_install_branch: master
-neutron_service_publicuri: "http://{{ hostvars[groups['neutron_agent'][0]]['ansible_host'] }}:9696"
+neutron_service_publicuri: "http://{{ test_neutron_agent_host }}:9696"
 neutron_service_publicurl: "{{ neutron_service_publicuri }}"
-neutron_service_adminuri: "http://{{ hostvars[groups['neutron_agent'][0]]['ansible_host'] }}:9696"
+neutron_service_adminuri: "http://{{ test_neutron_agent_host }}:9696"
 neutron_service_adminurl: "{{ neutron_service_adminuri }}"
-neutron_service_internaluri: "http://{{ hostvars[groups['neutron_agent'][0]]['ansible_host'] }}:9696"
+neutron_service_internaluri: "http://{{ test_neutron_agent_host }}:9696"
 neutron_serivce_internalurl: "{{ neutron_service_internaluri }}"
 neutron_service_password: "secrete"
 neutron_service_project_name: service
@@ -200,9 +226,9 @@ swift_developer_mode: true
 swift_git_install_branch: master
 swift_venv_tag: untagged
 swift_venv_bin: "/openstack/venvs/swift-{{ swift_venv_tag }}/bin"
-swift_service_publicuri: "http://{{ hostvars[groups['swift_proxy'][0]]['ansible_host'] }}:8080"
-swift_service_adminuri: "http://{{ hostvars[groups['swift_proxy'][0]]['ansible_host'] }}:8080"
-swift_service_internaluri: "http://{{ hostvars[groups['swift_proxy'][0]]['ansible_host'] }}:8080"
+swift_service_publicuri: "http://{{ test_swift_proxy_host }}:8080"
+swift_service_adminuri: "http://{{ test_swift_proxy_host }}:8080"
+swift_service_internaluri: "http://{{ test_swift_proxy_host }}:8080"
 swift:
   storage_network: "{{ test_swift_storage_network | default('eth2') }}"
   replication_network: "{{ test_swift_repl_network | default('eth3') }}"
@@ -230,16 +256,16 @@ ironic_venv_tag: "testing"
 ironic_developer_mode: True
 ironic_git_install_branch: master
 ironic_requirements_git_install_branch: master
-ironic_service_publicuri: "http://{{ hostvars[groups['ironic_api'][0]]['ansible_host'] }}:6385"
+ironic_service_publicuri: "http://{{ test_ironic_api_host }}:6385"
 ironic_service_publicurl: "{{ ironic_service_publicuri }}"
-ironic_service_adminuri: "http://{{ hostvars[groups['ironic_api'][0]]['ansible_host'] }}:6385"
+ironic_service_adminuri: "http://{{ test_ironic_api_host }}:6385"
 ironic_service_adminurl: "{{ ironic_service_adminuri }}"
-ironic_service_internaluri: "http://{{ hostvars[groups['ironic_api'][0]]['ansible_host'] }}:6385"
+ironic_service_internaluri: "http://{{ test_ironic_api_host'] }}:6385"
 ironic_service_internalurl: "{{ ironic_service_internaluri }}"
 ironic_service_password: "secrete"
 ironic_service_name: ironic
 ironic_service_project_name: "service"
-ironic_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_host'] }}"
+ironic_galera_address: "{{ test_galera_host }}"
 ironic_galera_database: ironic
 ironic_galera_user: ironic
 ironic_container_mysql_password: "secrete"
@@ -275,7 +301,7 @@ tempest_service_available_swift: "{{ ((groups['swift_all'] is defined) and (grou
 # openrc settings
 openrc_os_password: "{{ keystone_auth_admin_password }}"
 openrc_os_domain_name: "Default"
-openrc_os_auth_url: "http://{{ hostvars[groups['keystone_all'][0]]['ansible_host'] }}:5000/v3"
+openrc_os_auth_url: "http://{{ test_keystone_host }}:5000/v3"
 
 # Set workers for all services to optimise memory usage
 ceilometer_api_workers: 2

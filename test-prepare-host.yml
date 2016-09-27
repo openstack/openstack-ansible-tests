@@ -37,12 +37,14 @@
       lxc_net_dhcp_range: 10.100.100.8,10.100.100.253
       lxc_net_bridge: lxcbr0
   post_tasks:
-    - name: Ensure that /etc/network/interfaces.d/ exists
+    - name: Ensure that /etc/network/interfaces.d/ exists (Debian)
       file:
         path: /etc/network/interfaces.d/
         state: directory
       tags:
         - networking-dir-create
+      when:
+        - ansible_pkg_mgr == 'apt'
 
     - name: Copy network configuration (Debian)
       template:

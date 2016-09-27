@@ -89,6 +89,8 @@ glance_service_internaluri: "http://{{ hostvars[groups['glance_all'][0]]['ansibl
 glance_service_internalurl: "{{ glance_service_internaluri }}"
 glance_service_adminuri: "http://{{ hostvars[groups['glance_all'][0]]['ansible_host'] }}:9292"
 glance_service_adminurl: "{{ glance_service_adminuri }}"
+glance_service_port: 9292
+glance_service_user_name: glance
 glance_container_mysql_password: "SuperSecrete"
 glance_developer_mode: true
 glance_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_host'] }}"
@@ -105,7 +107,7 @@ glance_requirements_git_install_branch: master
 glance_service_password: "secrete"
 glance_venv_tag: "testing"
 glance_host: "{{ hostvars[groups['glance_all'][0]]['ansible_host'] }}"
-glance_service_port: 9292
+glance_api_servers: "{{ hostvars[groups['glance_all'][0]]['ansible_host'] }}"
 
 # Nova specific settings
 nova_api_container_mysql_password: "SuperSecrete"
@@ -205,6 +207,7 @@ swift:
   storage_network: "{{ test_swift_storage_network | default('eth2') }}"
   replication_network: "{{ test_swift_repl_network | default('eth3') }}"
   part_power: 8
+  repl_number: "{{ test_swift_repl_number | default(3) }}"
   region: "{{ test_swift_region | default(1) }}"
   drives:
     - name: swift1
@@ -214,7 +217,6 @@ swift:
     - policy:
         name: gold
         index: 0
-        repl_number: 3
         default: True
 swift_proxy_server_conf_overrides:
   "filter:keystoneauth":
@@ -222,6 +224,34 @@ swift_proxy_server_conf_overrides:
     "SERVICE_service_roles": "test5"
 # For testing always use pretend_min_part_hours_passed
 swift_pretend_min_part_hours_passed: True
+
+# Ironic specific settings
+ironic_venv_tag: "testing"
+ironic_developer_mode: True
+ironic_git_install_branch: master
+ironic_requirements_git_install_branch: master
+ironic_service_publicuri: "http://{{ hostvars[groups['ironic_api'][0]]['ansible_host'] }}:6385"
+ironic_service_publicurl: "{{ ironic_service_publicuri }}"
+ironic_service_adminuri: "http://{{ hostvars[groups['ironic_api'][0]]['ansible_host'] }}:6385"
+ironic_service_adminurl: "{{ ironic_service_adminuri }}"
+ironic_service_internaluri: "http://{{ hostvars[groups['ironic_api'][0]]['ansible_host'] }}:6385"
+ironic_service_internalurl: "{{ ironic_service_internaluri }}"
+ironic_service_password: "secrete"
+ironic_service_name: ironic
+ironic_service_project_name: "service"
+ironic_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_host'] }}"
+ironic_galera_database: ironic
+ironic_galera_user: ironic
+ironic_container_mysql_password: "secrete"
+ironic_rabbitmq_password: "{{ rabbitmq_password }}"
+ironic_rabbitmq_userid: ironic
+ironic_rabbitmq_vhost: /ironic
+ironic_rabbitmq_servers: "{{ rabbitmq_servers }}"
+ironic_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
+ironic_rabbitmq_port: "{{ rabbitmq_port }}"
+ironic_standalone: False
+ironic_swift_temp_url_secret_key: secrete
+ironic_keystone_auth_plugin: password
 
 # Tempest specific settings
 tempest_developer_mode: True

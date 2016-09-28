@@ -267,7 +267,7 @@ ironic_service_publicuri: "http://{{ test_ironic_api_host }}:6385"
 ironic_service_publicurl: "{{ ironic_service_publicuri }}"
 ironic_service_adminuri: "http://{{ test_ironic_api_host }}:6385"
 ironic_service_adminurl: "{{ ironic_service_adminuri }}"
-ironic_service_internaluri: "http://{{ test_ironic_api_host'] }}:6385"
+ironic_service_internaluri: "http://{{ test_ironic_api_host }}:6385"
 ironic_service_internalurl: "{{ ironic_service_internaluri }}"
 ironic_service_password: "secrete"
 ironic_service_name: ironic

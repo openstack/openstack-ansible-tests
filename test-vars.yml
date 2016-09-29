@@ -147,7 +147,7 @@ nova_api_container_mysql_password: "SuperSecrete"
 nova_api_galera_address: "{{ test_galera_host }}"
 nova_api_galera_database: nova_api
 nova_api_galera_user: nova_api
-nova_glance_api_servers: "{{ test_glance_host }}"
+nova_glance_api_servers: "http://{{ test_glance_host }}:9292"
 nova_container_mysql_password: "SuperSecrete"
 nova_developer_mode: true
 nova_galera_address: "{{ test_galera_host }}"
@@ -293,6 +293,7 @@ tempest_venv_tag: "{{ tempest_git_install_branch }}"
 # tempest_venv_bin is the same as the default in os_tempest role, but we set
 # it again here so we can refer to it in test-nova-functional.yml
 tempest_venv_bin: "/opt/tempest_{{ tempest_venv_tag }}/bin"
+tempest_public_subnet_cidr: 10.1.3.0/24
 tempest_log_dir: "/var/log/"
 tempest_main_group: utility_all
 tempest_service_available_aodh: "{{ ((groups['aodh_all'] is defined) and (groups['aodh_all'] | length > 0)) }}"

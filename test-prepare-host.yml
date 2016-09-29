@@ -67,9 +67,10 @@
     - name: Put down post-up script for veth-peer interfaces (RedHat)
       template:
         src: "network_interfaces/redhat_interface_{{ item[0] | default('default') }}.cfg.j2"
-        dest: "/etc/sysconfig/network-scripts/{{ item[0] }}-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}.sh"
+        dest: "/etc/sysconfig/network-scripts/{{ item[0] }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}"
+        mode: "0755"
       with_nested:
-        - [ "postdown-veth", "postup-veth" ]
+        - [ "ifup-post", "ifdown-post" ]
         - "{{ bridges }}"
       when:
         - item[1].veth_peer is defined
@@ -83,6 +84,18 @@
         - ansible_pkg_mgr == 'apt'
       tags:
         - networking-interfaces-load
+
+    - name: Ensure the postup/postdown scripts are loaded (RedHat)
+      lineinfile:
+        dest: "/etc/sysconfig/network-scripts/{{ item[0] }}"
+        line: ". /etc/sysconfig/network-scripts/{{ item[0] }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}"
+        insertbefore: "^exit 0"
+      with_nested:
+        - [ "ifup-post", "ifdown-post" ]
+        - "{{ bridges }}"
+      when:
+        - item[1].veth_peer is defined
+        - ansible_pkg_mgr == 'yum'
 
     - name: Shut down the network interfaces
       command: "ifdown {{ item.name | default('br-mgmt') }}"

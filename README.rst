@@ -54,6 +54,7 @@ To allow a more complicated network setup we can specify
 ``netmask``: Netmask of the interface (defaults to 255.255.255.0)
 ``name``: Name of the interface
 ``veth_peer``: Set up a veth peer for the interface
+``alias``: Add an alias IP address
 
 For example, a Nova setup may look like this:
 
@@ -65,6 +66,7 @@ For example, a Nova setup may look like this:
       - name: "br-vxlan"
         ip_addr: "10.1.1.1"
       - name: "br-vlan"
-        ip_addr: "10.1.2.1"
+        ip_addr: "10.1.2.200"
         veth_peer: "eth12"
+        alias: "10.1.2.1"
 

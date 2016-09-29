@@ -19,3 +19,9 @@ iface {{ item.name | default('br-mgmt') }} inet static
 {% else %}
     bridge_ports none
 {% endif %}
+
+{% if item.alias is defined %}
+iface {{ item.name | default('br-mgmt') }} inet static
+    address {{ item.alias }}
+    netmask {{ item.netmask | default('255.255.255.0') }}
+{% endif %}

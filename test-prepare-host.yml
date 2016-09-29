@@ -64,6 +64,15 @@
       when:
         - ansible_pkg_mgr == 'yum'
 
+    - name: Create alias file when required
+      template:
+        src: "network_interfaces/redhat_interface_alias.cfg.j2"
+        dest: "/etc/sysconfig/network-scripts/ifcfg-{{ item.name | default('br-mgmt')}}:0"
+      with_items: "{{ bridges }}"
+      when:
+        - ansible_pkg_mgr == 'yum'
+        - item.alias is defined
+
     - name: Put down post-up script for veth-peer interfaces (RedHat)
       template:
         src: "network_interfaces/redhat_interface_{{ item[0] | default('default') }}.cfg.j2"
@@ -90,10 +99,26 @@
         - (network_interfaces_rhel | changed) or (network_interfaces_deb | changed)
       with_items: "{{ bridges }}"
 
+    - name: Shut down the alias interface (RedHat)
+      command: "ifdown {{ item.name | default('br-mgmt') }}:0"
+      when:
+        - ansible_pkg_mgr == 'yum'
+        - network_interfaces_rhel | changed
+        - item.alias is defined
+      with_items: "{{ bridges }}"
+
     - name: Start the network interfaces
       command: "ifup {{ item.name | default('br-mgmt') }}"
       when:
         - (network_interfaces_rhel | changed) or (network_interfaces_deb | changed)
+      with_items: "{{ bridges }}"
+
+    - name: Start the alias interface (RedHat)
+      command: "ifup {{ item.name | default('br-mgmt') }}:0"
+      when:
+        - ansible_pkg_mgr == 'yum'
+        - network_interfaces_rhel | changed
+        - item.alias is defined
       with_items: "{{ bridges }}"
 
     - name: Add iptables rule to ensure ssh checksum is correct

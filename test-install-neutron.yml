@@ -26,15 +26,27 @@
         container_config:
           - "lxc.aa_profile=unconfined"
       delegate_to: "{{ physical_host }}"
+
+    - name: Set mount path for kernel modules (Ubuntu)
+      set_fact:
+        kernel_module_path: "lib/modules"
+      when: ansible_pkg_mgr == 'apt'
+
+    - name: Set mount path for kernel modules (CentOS)
+      set_fact:
+        kernel_module_path: "usr/lib/modules"
+      when: ansible_pkg_mgr == 'yum'
+
     - name: Neutron extra lxc config
       lxc_container:
         name: "{{ container_name }}"
         container_command: |
-          [[ ! -d "/lib/modules" ]] && mkdir -p "/lib/modules"
+          [[ ! -d "/{{ kernel_module_path }}" ]] && mkdir -p "/{{ kernel_module_path }}"
         container_config:
           - "lxc.cgroup.devices.allow=a *:* rmw"
-          - "lxc.mount.entry=/lib/modules lib/modules none bind 0 0"
+          - "lxc.mount.entry=/{{ kernel_module_path }} {{ kernel_module_path }} none bind 0 0"
       delegate_to: "{{ physical_host }}"
+
     - name: Wait for ssh to be available
       local_action:
         module: wait_for
@@ -42,6 +54,7 @@
         host: "{{ ansible_host | default(inventory_hostname) }}"
         search_regex: OpenSSH
         delay: 1
+
     - name: Add iptables rule for communication w/ metadata agent
       command: /sbin/iptables -t mangle -A POSTROUTING -p tcp --sport 80 -j CHECKSUM --checksum-fill
 

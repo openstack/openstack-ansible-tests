@@ -15,14 +15,14 @@ repository tox.ini`_ with the exception of the value for ``ROLE_NAME``.
 A more advanced configuration which implements multiple functional test
 scenarios is available in the `neutron role tox.ini`_.
 
-To override variables you can create a ``test-vars.yml`` file inside the
+To override variables you can create a ``${rolename}-overrides.yml`` file inside the
 role's tests folder. This variable file can be includes in the functional tox
 target configuration in ``tox.ini`` as demonstrated in the following extract:
 
 .. code-block:: bash
 
     ansible-playbook -i {toxinidir}/tests/inventory \
-                     -e @{toxinidir}/tests/test-vars.yml \
+                     -e @{toxinidir}/tests/${rolename}-overrides.yml \
                      {toxinidir}/tests/test.yml -vvvv
 
 In your repositories ``tests/test.yml`` file, you can call any of the

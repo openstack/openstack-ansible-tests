@@ -134,8 +134,8 @@
         - item.alias is defined
       with_items: "{{ bridges }}"
 
-    - name: Add iptables rule to ensure ssh checksum is correct
-      command: /sbin/iptables -A POSTROUTING -t mangle -p tcp --dport 22 -j CHECKSUM --checksum-fill
+    - name: Add iptables rule to ensure traffic checksum is correct
+      command: /sbin/iptables -A POSTROUTING -t mangle -p tcp -j CHECKSUM --checksum-fill
 
     - name: Add iptables rule to provide internet connectivity to instances
       command: /sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE

@@ -333,3 +333,8 @@ swift_account_server_workers: 2
 swift_container_server_workers: 2
 swift_object_server_workers: 2
 swift_proxy_server_workers: 2
+
+# PIP install options
+# TODO(odyssey4me): Remove once https://github.com/eliben/pycparser/issues/147 is resolved
+pip_install_options: "--no-binary pycparser"
+

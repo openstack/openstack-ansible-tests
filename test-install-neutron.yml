@@ -65,12 +65,22 @@
   pre_tasks:
     # NOTE: These are typically installed in the repo server where we build the
     #       neutron wheel
-    - name: Install packages required to build neutron python package
+    - name: Install packages required to build neutron python package (Ubuntu)
       apt:
         name: "{{ item }}"
       with_items:
         - libffi-dev
-      when: inventory_hostname in groups['neutron_all']
+      when:
+        - inventory_hostname in groups['neutron_all']
+        - ansible_pkg_mgr == 'apt'
+    - name: Install packages required to build neutron python package (CentOS)
+      yum:
+        name: "{{ item }}"
+      with_items:
+        - libffi-devel
+      when:
+        - inventory_hostname in groups['neutron_all']
+        - ansible_pkg_mgr == 'yum'
     - include: ensure-rabbitmq.yml
       vhost_name: "{{ neutron_rabbitmq_vhost }}"
       user_name: "{{ neutron_rabbitmq_userid }}"

@@ -38,7 +38,7 @@ test_neutron_agent_group: "{{ ((groups['neutron_agent'] is defined) and (groups[
 test_swift_proxy_group: "{{ ((groups['swift_proxy'] is defined) and (groups['swift_proxy'] | length > 0)) | ternary('swift_proxy', 'all_containers') }}"
 test_ironic_api_group: "{{ ((groups['ironic_api'] is defined) and (groups['ironic_api'] | length > 0)) | ternary('ironic_api', 'all_containers') }}"
 test_sahara_group: "{{ ((groups['sahara_all'] is defined) and (groups['sahara_all'] | length > 0)) | ternary('sahara_all', 'all_containers') }}"
-test_cinder_api_group: "{{ ((groups['cinder_api'] is defined) and (groups['cinder_api'] | length > 0)) | ternary('sahara_all', 'all_containers') }}"
+test_cinder_api_group: "{{ ((groups['cinder_api'] is defined) and (groups['cinder_api'] | length > 0)) | ternary('cinder_api', 'all_containers') }}"
 test_galera_host: "{{ hostvars[groups[test_galera_group][0]]['ansible_host'] }}"
 test_rabbitmq_host: "{{ hostvars[groups[test_rabbitmq_group][0]]['ansible_host'] }}"
 test_memcached_host: "{{ hostvars[groups[test_memcached_group][0]]['ansible_host'] }}"

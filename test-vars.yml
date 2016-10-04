@@ -38,6 +38,7 @@ test_neutron_agent_group: "{{ ((groups['neutron_agent'] is defined) and (groups[
 test_swift_proxy_group: "{{ ((groups['swift_proxy'] is defined) and (groups['swift_proxy'] | length > 0)) | ternary('swift_proxy', 'all_containers') }}"
 test_ironic_api_group: "{{ ((groups['ironic_api'] is defined) and (groups['ironic_api'] | length > 0)) | ternary('ironic_api', 'all_containers') }}"
 test_sahara_group: "{{ ((groups['sahara_all'] is defined) and (groups['sahara_all'] | length > 0)) | ternary('sahara_all', 'all_containers') }}"
+test_cinder_api_group: "{{ ((groups['cinder_api'] is defined) and (groups['cinder_api'] | length > 0)) | ternary('cinder_api', 'all_containers') }}"
 test_galera_host: "{{ hostvars[groups[test_galera_group][0]]['ansible_host'] }}"
 test_rabbitmq_host: "{{ hostvars[groups[test_rabbitmq_group][0]]['ansible_host'] }}"
 test_memcached_host: "{{ hostvars[groups[test_memcached_group][0]]['ansible_host'] }}"
@@ -50,6 +51,7 @@ test_neutron_agent_host: "{{ hostvars[groups[test_neutron_agent_group][0]]['ansi
 test_swift_proxy_host: "{{ hostvars[groups[test_swift_proxy_group][0]]['ansible_host'] }}"
 test_ironic_api_host: "{{ hostvars[groups[test_ironic_api_group][0]]['ansible_host'] }}"
 test_sahara_host: "{{ hostvars[groups[test_sahara_group][0]]['ansible_host'] }}"
+test_cinder_api_host: "{{ hostvars[groups[test_cinder_api_group][0]]['ansible_host'] }}"
 
 ## LXC container default bind mounts
 lxc_container_default_bind_mounts:
@@ -224,6 +226,45 @@ neutron_plugin_type: ml2.lxb
 # Cinder specific settings
 cinder_backends_rbd_inuse: false
 cinder_ceph_client: cinder
+cinder_container_mysql_password: "SuperSecrete"
+cinder_developer_mode: true
+cinder_galera_address: "{{ test_galera_host }}"
+cinder_git_install_branch: stable/newton
+cinder_glance_api_servers: "http://{{ test_glance_host}}:{{ test_glance_host }}"
+cinder_profiler_hmac_key: "secrete"
+cinder_rabbitmq_port: "{{ rabbitmq_port }}"
+cinder_rabbitmq_servers: "{{ rabbitmq_servers }}"
+cinder_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
+cinder_rabbitmq_password: "{{ rabbitmq_password }}"
+cinder_rabbitmq_userid: cinder
+cinder_rabbitmq_vhost: /cinder
+cinder_galera_user: cinder
+cinder_galera_database: cinder
+cinder_requirements_git_install_branch: stable/newton
+cinder_service_password: "secrete"
+cinder_venv_tag: "testing"
+cinder_service_port: 8776
+cinder_service_proto: http
+cinder_service_publicuri: "{{ cinder_service_proto }}://{{ test_cinder_api_host }}:{{ cinder_service_port }}"
+cinder_service_publicurl: "{{ cinder_service_publicuri }}/v1/%(tenant_id)s"
+cinder_service_adminuri: "{{ cinder_service_proto }}://{{ test_cinder_api_host }}:{{ cinder_service_port }}"
+cinder_service_adminurl: "{{ cinder_service_adminuri }}/v1/%(tenant_id)s"
+cinder_service_internaluri: "{{ cinder_service_proto }}://{{ test_cinder_api_host }}:{{ cinder_service_port }}"
+cinder_service_internalurl: "{{ cinder_service_internaluri }}/v1/%(tenant_id)s"
+cinder_service_v2_port: 8776
+cinder_service_v2_proto: http
+cinder_service_v2_publicuri: "{{ cinder_service_v2_proto }}://{{ tst_cinder_api_host }}:{{ cinder_service_v2_port }}"
+cinder_service_v2_publicurl: "{{ cinder_service_publicuri }}/v2/%(tenant_id)s"
+cinder_service_v2_adminuri: "{{ cinder_service_v2_proto }}://{{ test_cinder_api_host }}:{{ cinder_service_v2_port }}"
+cinder_service_v2_adminurl: "{{ cinder_service_adminuri }}/v2/%(tenant_id)s"
+cinder_service_v2_internaluri: "{{ cinder_service_v2_proto }}://{{ test_cinder_api_host }}:{{ cinder_service_v2_port }}"
+cinder_service_v2_internalurl: "{{ cinder_service_internaluri }}/v2/%(tenant_id)s"
+cinder_backends:
+  lvm:
+    volume_group: cinder-volumes
+    volume_driver: cinder.volume.drivers.lvm.LVMVolumeDriver
+    volume_backend_name: LVM_iSCSI
+cinder_default_volume_type: lvm
 
 # Swift specific settings
 swift_container_mysql_password: "SuperSecrete"

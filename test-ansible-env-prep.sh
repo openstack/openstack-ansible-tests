@@ -23,10 +23,18 @@
 # This script prepares the host with all the required Ansible
 # roles and plugins to execute the test playbook.
 
+## Shell Opts ----------------------------------------------------------------
+
+set -e
+
+## Vars ----------------------------------------------------------------------
+
 export TESTING_HOME=${TESTING_HOME:-$HOME}
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 export ROLE_NAME=${ROLE_NAME:-''}
+export ANSIBLE_INVENTORY=${ANSIBLE_INVENTORY:-$WORKING_DIR/tests/inventory}
 
+export ANSIBLE_NOCOLOR=1
 export ANSIBLE_ROLE_DIR="${TESTING_HOME}/.ansible/roles"
 export ANSIBLE_PLUGIN_DIR="${TESTING_HOME}/.ansible/plugins"
 export ANSIBLE_CFG_PATH="${TESTING_HOME}/.ansible.cfg"
@@ -36,6 +44,7 @@ export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
 echo "TESTING_HOME: ${TESTING_HOME}"
 echo "WORKING_DIR: ${WORKING_DIR}"
 echo "ROLE_NAME: ${ROLE_NAME}"
+echo "ANSIBLE_INVENTORY: ${ANSIBLE_INVENTORY}"
 
 # Toggle the reset of all data cloned from other repositories.
 export TEST_RESET=${TEST_RESET:-false}
@@ -43,6 +52,8 @@ export TEST_RESET=${TEST_RESET:-false}
 # Make sure that python is not buffering output so that the
 # console output is immediate.
 export PYTHONUNBUFFERED=1
+
+## Main ----------------------------------------------------------------------
 
 # If the test reset toggle is set, destroy the existing cloned data.
 if [ "${TEST_RESET}" == "true" ]; then

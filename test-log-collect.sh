@@ -23,9 +23,13 @@
 # This script collects, renames and compresses the logs produced in
 # a role test if the host is in OpenStack-CI.
 
+## Vars ----------------------------------------------------------------------
+
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 
-if [[ -d "/etc/nodepool" ]];then
+## Main ----------------------------------------------------------------------
+
+if [[ -d "/etc/nodepool" ]]; then
   mkdir -p "${WORKING_DIR}/logs/host" "${WORKING_DIR}/logs/openstack"
   rsync --archive --verbose --safe-links --ignore-errors /var/log/ "${WORKING_DIR}/logs/host" || true
   rsync --archive --verbose --safe-links --ignore-errors /openstack/log/ "${WORKING_DIR}/logs/openstack" || true

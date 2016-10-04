@@ -364,9 +364,11 @@ swift_object_server_workers: 2
 swift_proxy_server_workers: 2
 
 # PIP install options
-# TODO(odyssey4me): Remove pycparser once https://github.com/eliben/pycparser/issues/147 is resolved
-# Note: libvirt-python is here to ensure that it always installs with the right binaries
-pip_install_options: "--no-binary pycparser --no-binary libvirt-python"
+
+# This ensures that libvirt-python is built from source. A pre-built
+# wheel can be missing libvirt capabilities from the installed version
+# of libvirt-bin, leading to nova-compute failing to start.
+pip_install_options: "--no-binary libvirt-python"
 
 # Test install options
 install_test_packages: True

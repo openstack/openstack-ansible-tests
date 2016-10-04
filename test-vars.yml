@@ -368,3 +368,5 @@ swift_proxy_server_workers: 2
 # Note: libvirt-python is here to ensure that it always installs with the right binaries
 pip_install_options: "--no-binary pycparser --no-binary libvirt-python"
 
+# Test install options
+install_test_packages: True

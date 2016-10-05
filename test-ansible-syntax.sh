@@ -20,9 +20,7 @@
 # with immediate effect.
 
 # PURPOSE:
-# This script executes flake8 against all the files it find that match
-# the search pattern. The search pattern is meant to find any python
-# scripts present in the role.
+# This script executes ansible-syntax against the role test playbook.
 
 ## Shell Opts ----------------------------------------------------------------
 
@@ -31,14 +29,15 @@ set -e
 ## Vars ----------------------------------------------------------------------
 
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
+export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
+export ANSIBLE_INVENTORY=${ANSIBLE_INVENTORY:-$WORKING_DIR/tests/inventory}
 
 ## Main ----------------------------------------------------------------------
 
-grep --recursive --binary-files=without-match \
-        --files-with-match '^.!.*python$' \
-        --exclude-dir .eggs \
-        --exclude-dir .git \
-        --exclude-dir .tox \
-        --exclude-dir *.egg-info \
-        --exclude-dir doc \
-        "${WORKING_DIR}" | xargs flake8 --verbose
+# Ensure that the Ansible environment is properly prepared
+source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
+
+# Execute the Ansible syntax check
+ansible-playbook --syntax-check \
+                 --list-tasks \
+                 ${WORKING_DIR}/tests/test.yml

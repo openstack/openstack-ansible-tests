@@ -35,7 +35,15 @@
 #       use jinja templating, this will often fail and the syntax
 #       error will be discovered in execution anyway)
 
+## Shell Opts ----------------------------------------------------------------
+
+set -e
+
+## Vars ----------------------------------------------------------------------
+
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
+
+## Main ----------------------------------------------------------------------
 
 grep --recursive --binary-files=without-match \
      --files-with-match '^.!.*\(ba\)\?sh$' \

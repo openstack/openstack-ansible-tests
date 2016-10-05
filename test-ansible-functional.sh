@@ -98,7 +98,7 @@ if [ "${TEST_IDEMPOTENCE}" == "true" ]; then
                    ${TEST_PLAYBOOK}
 
   # Check the output log for changed/failed tasks
-  if grep -q "changed=0.*failed=0" /tmp/idempotence_test_output.txt; then
+  if grep -q "changed=0.*failed=0" /tmp/ansible.log; then
     echo "Idempotence test: pass"
   else
     echo "Idempotence test: fail"

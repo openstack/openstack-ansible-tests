@@ -34,10 +34,11 @@ export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 export ROLE_NAME=${ROLE_NAME:-''}
 export ANSIBLE_INVENTORY=${ANSIBLE_INVENTORY:-$WORKING_DIR/tests/inventory}
 
-export ANSIBLE_NOCOLOR=1
-export ANSIBLE_ROLE_DIR="${TESTING_HOME}/.ansible/roles"
-export ANSIBLE_PLUGIN_DIR="${TESTING_HOME}/.ansible/plugins"
 export ANSIBLE_CFG_PATH="${TESTING_HOME}/.ansible.cfg"
+export ANSIBLE_LOG_DIR="${TESTING_HOME}/.ansible/logs"
+export ANSIBLE_NOCOLOR=1
+export ANSIBLE_PLUGIN_DIR="${TESTING_HOME}/.ansible/plugins"
+export ANSIBLE_ROLE_DIR="${TESTING_HOME}/.ansible/roles"
 export ANSIBLE_ROLE_REQUIREMENTS_PATH="${WORKING_DIR}/tests/ansible-role-requirements.yml"
 export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
 
@@ -58,10 +59,14 @@ export PYTHONUNBUFFERED=1
 # If the test reset toggle is set, destroy the existing cloned data.
 if [ "${TEST_RESET}" == "true" ]; then
   echo "Resetting all cloned data."
+  rm -f  "${ANSIBLE_CFG_PATH}"
+  rm -rf "${ANSIBLE_LOG_DIR}"
   rm -rf "${ANSIBLE_PLUGIN_DIR}"
   rm -rf "${ANSIBLE_ROLE_DIR}"
-  rm -f  "${ANSIBLE_CFG_PATH}"
 fi
+
+# Create the directory which will hold all Ansible logs
+mkdir -p "${ANSIBLE_LOG_DIR}"
 
 # Download the Ansible plugins repository if it is not present on the host.
 if [ ! -d "${ANSIBLE_PLUGIN_DIR}" ]; then

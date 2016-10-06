@@ -26,13 +26,20 @@
 ## Vars ----------------------------------------------------------------------
 
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
+export RSYNC_CMD="rsync --archive --verbose --safe-links --ignore-errors"
 
 ## Main ----------------------------------------------------------------------
 
 if [[ -d "/etc/nodepool" ]]; then
   mkdir -p "${WORKING_DIR}/logs/host" "${WORKING_DIR}/logs/openstack"
-  rsync --archive --verbose --safe-links --ignore-errors /var/log/ "${WORKING_DIR}/logs/host" || true
-  rsync --archive --verbose --safe-links --ignore-errors /openstack/log/ "${WORKING_DIR}/logs/openstack" || true
+  ${RSYNC_CMD} /var/log/ "${WORKING_DIR}/logs/host" || true
+  ${RSYNC_CMD} /openstack/log/ "${WORKING_DIR}/logs/openstack" || true
+
+  if [ ! -z "${ANSIBLE_LOG_DIR}" ]; then
+    mkdir -p "${WORKING_DIR}/logs/ansible"
+    ${RSYNC_CMD} "${ANSIBLE_LOG_DIR}/" "${WORKING_DIR}/logs/ansible" || true
+  fi
+
   # Rename all files gathered to have a .txt suffix so that the compressed
   # files are viewable via a web browser in OpenStack-CI.
   find "${WORKING_DIR}/logs/" -type f -exec mv {} {}.txt \;

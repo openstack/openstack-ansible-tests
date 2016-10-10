@@ -50,12 +50,21 @@ echo "TEST_IDEMPOTENCE: ${TEST_IDEMPOTENCE}"
 ## Functions -----------------------------------------------------------------
 
 function set_ansible_parameters {
+
   if [ -f "${ANSIBLE_OVERRIDES}" ]; then
     ANSIBLE_CLI_PARAMETERS="${ANSIBLE_PARAMETERS} -e @${ANSIBLE_OVERRIDES}"
   else
     ANSIBLE_CLI_PARAMETERS="${ANSIBLE_PARAMETERS}"
   fi
-  echo "ANSIBLE_CLI_PARAMETERS: ${ANSIBLE_CLI_PARAMETERS}"
+
+}
+
+function execute_ansible_playbook {
+
+  CMD_TO_EXECUTE="ansible-playbook ${ANSIBLE_CLI_PARAMETERS} ${TEST_PLAYBOOK} $@"
+  echo "Executing: ${CMD_TO_EXECUTE}"
+  ${CMD_TO_EXECUTE}
+
 }
 
 function gate_job_exit_tasks {
@@ -75,14 +84,20 @@ set_ansible_parameters
 
 # If the test for check mode is enabled, then execute it
 if [ "${TEST_CHECK_MODE}" == "true" ]; then
-  ansible-playbook --check \
-                   ${ANSIBLE_CLI_PARAMETERS} \
-                   ${TEST_PLAYBOOK}
+
+  # Set the path for the output log
+  export ANSIBLE_LOG_PATH="${ANSIBLE_LOG_DIR}/ansible-check.log"
+
+  # Execute the test playbook in check mode
+  execute_ansible_playbook --check
+
 fi
 
+# Set the path for the output log
+export ANSIBLE_LOG_PATH="${ANSIBLE_LOG_DIR}/ansible-execute.log"
+
 # Execute the test playbook
-ansible-playbook ${ANSIBLE_CLI_PARAMETERS} \
-                 ${TEST_PLAYBOOK}
+execute_ansible_playbook
 
 # If the idempotence test is enabled, then execute the
 # playbook again and verify that nothing changed/failed
@@ -91,14 +106,13 @@ ansible-playbook ${ANSIBLE_CLI_PARAMETERS} \
 if [ "${TEST_IDEMPOTENCE}" == "true" ]; then
 
   # Set the path for the output log
-  ANSIBLE_LOG_PATH="/tmp/ansible.log"
+  export ANSIBLE_LOG_PATH="${ANSIBLE_LOG_DIR}/ansible-idempotence.log"
 
   # Execute the test playbook
-  ansible-playbook ${ANSIBLE_CLI_PARAMETERS} \
-                   ${TEST_PLAYBOOK}
+  execute_ansible_playbook
 
   # Check the output log for changed/failed tasks
-  if grep -q "changed=0.*failed=0" /tmp/ansible.log; then
+  if grep -q "changed=0.*failed=0" ${ANSIBLE_LOG_PATH}; then
     echo "Idempotence test: pass"
   else
     echo "Idempotence test: fail"

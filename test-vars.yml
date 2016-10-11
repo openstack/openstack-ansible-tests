@@ -144,14 +144,14 @@ glance_requirements_git_install_branch: master
 glance_service_password: "secrete"
 glance_venv_tag: "testing"
 glance_host: "{{ test_glance_host }}"
-glance_api_servers: "{{ test_glance_host }}"
+glance_api_servers: "http://{{ test_glance_host }}:9292"
 
 # Nova specific settings
 nova_api_container_mysql_password: "SuperSecrete"
 nova_api_galera_address: "{{ test_galera_host }}"
 nova_api_galera_database: nova_api
 nova_api_galera_user: nova_api
-nova_glance_api_servers: "http://{{ test_glance_host }}:9292"
+nova_glance_api_servers: "{{ glance_api_servers }}"
 nova_container_mysql_password: "SuperSecrete"
 nova_developer_mode: true
 nova_galera_address: "{{ test_galera_host }}"
@@ -230,7 +230,7 @@ cinder_container_mysql_password: "SuperSecrete"
 cinder_developer_mode: true
 cinder_galera_address: "{{ test_galera_host }}"
 cinder_git_install_branch: master
-cinder_glance_api_servers: "http://{{ test_glance_host}}:{{ test_glance_host }}"
+cinder_glance_api_servers: "{{ glance_api_servers }}"
 cinder_profiler_hmac_key: "secrete"
 cinder_rabbitmq_port: "{{ rabbitmq_port }}"
 cinder_rabbitmq_servers: "{{ rabbitmq_servers }}"

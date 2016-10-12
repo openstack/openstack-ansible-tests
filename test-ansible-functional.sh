@@ -61,7 +61,7 @@ function set_ansible_parameters {
 
 function execute_ansible_playbook {
 
-  CMD_TO_EXECUTE="ansible-playbook ${ANSIBLE_CLI_PARAMETERS} ${TEST_PLAYBOOK} $@"
+  CMD_TO_EXECUTE="ansible-playbook ${TEST_PLAYBOOK} $@ ${ANSIBLE_CLI_PARAMETERS}"
   echo "Executing: ${CMD_TO_EXECUTE}"
   ${CMD_TO_EXECUTE}
 

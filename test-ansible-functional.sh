@@ -63,6 +63,10 @@ function execute_ansible_playbook {
 
   CMD_TO_EXECUTE="ansible-playbook ${TEST_PLAYBOOK} $@ ${ANSIBLE_CLI_PARAMETERS}"
   echo "Executing: ${CMD_TO_EXECUTE}"
+  echo "With:"
+  echo "    ANSIBLE_INVENTORY: ${ANSIBLE_INVENTORY}"
+  echo "    ANSIBLE_LOG_PATH: ${ANSIBLE_LOG_PATH}"
+
   ${CMD_TO_EXECUTE}
 
 }

@@ -20,4 +20,6 @@ if [ "${DEVICE}" == "{{ item[1].name | default('br-mgmt') }}" ]; then
     # Set both ends UP
     /usr/sbin/ip link set {{ item[1].name | default('br-mgmt') }}-veth up || true
     /usr/sbin/ip link set {{ item[1].veth_peer | default('eth0') }} up || true
+    # add eth12 to the bridge
+    /usr/sbin/ip link set {{ item[1].name | default('br-mgmt') }}-veth master {{ item[1].name | default('br-mgmt') }} || true
 fi

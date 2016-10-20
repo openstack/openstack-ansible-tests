@@ -14,5 +14,6 @@
 # limitations under the License.
 
 if [ "${DEVICE}" == "{{ item[1].name | default('br-mgmt') }}" ]; then
-    post-down ip link del {{ item[1].name | default('br-mgmt') }}-veth || true
+    /usr/sbin/ip link set {{ item[1].name | default('br-mgmt') }}-veth nomaster || true
+    /usr/sbin/ip link del {{ item[1].name | default('br-mgmt') }}-veth || true
 fi

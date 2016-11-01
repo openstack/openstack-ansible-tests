@@ -19,6 +19,7 @@
   command: "sed -i '/deb.*-backports/s|^#\\s||g' /etc/apt/sources.list"
   when:
     - ansible_pkg_mgr == 'apt'
+    - ansible_distribution_release | lower == 'trusty'
 
 - name: First ensure apt cache is always refreshed
   apt:

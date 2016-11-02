@@ -17,7 +17,7 @@
 
 BRANCH="${BRANCH:-master}"
 CURRENT_DIR="$(pwd)"
-WORKSPACE=${WORKSPACE:-$(mktmp --directory)}
+WORKSPACE=${WORKSPACE:-$(mktemp --directory)}
 
 function role_entry {
     cat >> "${CURRENT_DIR}/ansible-role-requirements.yaml" <<EOF
@@ -30,7 +30,7 @@ EOF
 
 # Create a workspace and clone project-config
 mkdir -p "${WORKSPACE}"
-git clone https://github.com/openstack-infra/project-config "${WORKSPACE}/project-config"
+git clone https://git.openstack.org/openstack-infra/project-config "${WORKSPACE}/project-config"
 
 # Move into the project-config workspace
 pushd "${WORKSPACE}/project-config"

@@ -32,8 +32,8 @@ included playbooks, for example:
 
     - include: common/test-prepare-keys.yml
 
-.. _galera_client repository tox.ini: https://github.com/openstack/openstack-ansible-galera_client/blob/master/tox.ini
-.. _neutron role tox.ini: https://github.com/openstack/openstack-ansible-os_neutron/blob/master/tox.ini
+.. _galera_client repository tox.ini: https://git.openstack.org/cgit/openstack/openstack-ansible-galera_client/tree/tox.ini
+.. _neutron role tox.ini: https://git.openstack.org/cgit/openstack/openstack-ansible-os_neutron/tree/tox.ini
 
 Network Settings
 ~~~~~~~~~~~~~~~~

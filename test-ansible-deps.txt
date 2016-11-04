@@ -11,4 +11,4 @@
 ansible==2.1.1
 
 # The Ansible lint version used for lint tests
-ansible-lint>=2.7.0,<3.0.0
+ansible-lint==3.4.1

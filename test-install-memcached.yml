@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Deploy galera
+- name: Deploy memcached
   hosts: memcached_all
   user: root
   gather_facts: true

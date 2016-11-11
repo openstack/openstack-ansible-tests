@@ -27,6 +27,8 @@
 
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 export RSYNC_CMD="rsync --archive --verbose --safe-links --ignore-errors"
+export ARA_CMD="${WORKING_DIR}/.tox/functional/bin/ara generate"
+export TESTING_HOME=${TESTING_HOME:-$HOME}
 
 ## Main ----------------------------------------------------------------------
 
@@ -43,7 +45,11 @@ if [[ -d "/etc/nodepool" ]]; then
   # Rename all files gathered to have a .txt suffix so that the compressed
   # files are viewable via a web browser in OpenStack-CI.
   find "${WORKING_DIR}/logs/" -type f ! -name '*.html' -exec mv {} {}.txt \;
+  # Get the ara sqlite database
+  ${RSYNC_CMD} "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/" || true
   # Compress the files gathered so that they do not take up too much space.
   # We use 'command' to ensure that we're not executing with some sort of alias.
   command gzip --best --recursive "${WORKING_DIR}/logs/"
+  # Generate the ARA report
+  ${ARA_CMD} "${WORKING_DIR}/logs/ara" || true
 fi

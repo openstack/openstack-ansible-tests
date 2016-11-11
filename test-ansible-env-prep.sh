@@ -95,6 +95,15 @@ else
   echo "Skipping the role link because no role name was provided."
 fi
 
+# Link the ARA Callback directory to the the ansible callback directory
+if [ -d "${WORKING_DIR}/.tox/functional/lib/python2.7/site-packages/ara/callback/" ]; then
+  if [ ! -L "${ANSIBLE_PLUGIN_DIR}/callback/ara" ]; then
+    echo "Linking ${ANSIBLE_PLUGIN_DIR}/callback/ara to ${WORKING_DIR}/.tox/functional/lib/python2.7/site-packages/ara/callback/"
+    mkdir -p "${ANSIBLE_PLUGIN_DIR}/callback/ara"
+    ln -s "${WORKING_DIR}/.tox/functional/lib/python2.7/site-packages/ara/callback/" "${ANSIBLE_PLUGIN_DIR}/callback/ara/"
+  fi
+fi
+
 # Ensure that the Ansible configuration file is in the right place
 if [ ! -f "${ANSIBLE_CFG_PATH}" ]; then
   if [ -f "${COMMON_TESTS_PATH}/test-ansible.cfg" ]; then

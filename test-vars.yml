@@ -301,6 +301,25 @@ swift_proxy_server_conf_overrides:
 # For testing always use pretend_min_part_hours_passed
 swift_pretend_min_part_hours_passed: True
 
+# Heat specific settings
+heat_venv_tag: "testing"
+heat_developer_mode: True
+heat_git_install_branch: master
+heat_requirements_git_install_branch: master
+heat_service_password: secrete
+heat_stack_domain_admin_password: secrete
+heat_auth_encryption_key: 32characterslongboguskeyvaluefoo
+heat_container_mysql_password: "SuperSecrete"
+heat_galera_address: "{{ test_galera_host }}"
+heat_galera_user: heat
+heat_galera_database: heat
+heat_rabbitmq_servers: "{{ rabbitmq_servers }}"
+heat_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
+heat_rabbitmq_port: "{{ rabbitmq_port }}"
+heat_rabbitmq_password: "{{ rabbitmq_password }}"
+heat_rabbitmq_userid: heat
+heat_rabbitmq_vhost: /heat
+
 # Ironic specific settings
 ironic_venv_tag: "testing"
 ironic_developer_mode: True

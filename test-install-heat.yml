@@ -1,0 +1,33 @@
+---
+# Copyright 2015, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Playbook for deploying heat
+  hosts: heat_all
+  user: root
+  gather_facts: true
+  pre_tasks:
+    - include: ensure-rabbitmq.yml
+      vhost_name: "{{ heat_rabbitmq_vhost }}"
+      user_name: "{{ heat_rabbitmq_userid }}"
+      user_password: "{{ heat_rabbitmq_password }}"
+      when: "{{ groups['rabbitmq_all'] is defined }}"
+    - include: create-grant-db.yml
+      db_name: "{{ heat_galera_database }}"
+      db_password: "{{ heat_container_mysql_password }}"
+  roles:
+    - role: "{{ heat_rolename | default('os_heat') }}"
+  vars_files:
+    - test-vars.yml
+

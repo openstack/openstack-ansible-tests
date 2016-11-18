@@ -320,6 +320,16 @@ heat_rabbitmq_password: "{{ rabbitmq_password }}"
 heat_rabbitmq_userid: heat
 heat_rabbitmq_vhost: /heat
 
+# Gnocchi specific settings
+gnocchi_venv_tag: "testing"
+gnocchi_developer_mode: true
+gnocchi_database_name: "gnocchi"
+gnocchi_container_mysql_password: "secrete"
+gnocchi_keystone_auth: yes
+gnocchi_service_password: "secrete"
+gnocchi_galera_address: "{{ test_galera_host }}"
+gnocchi_ssl_external: false
+
 # Ironic specific settings
 ironic_venv_tag: "testing"
 ironic_developer_mode: True

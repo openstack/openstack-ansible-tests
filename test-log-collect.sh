@@ -42,7 +42,7 @@ if [[ -d "/etc/nodepool" ]]; then
 
   # Rename all files gathered to have a .txt suffix so that the compressed
   # files are viewable via a web browser in OpenStack-CI.
-  find "${WORKING_DIR}/logs/" -type f -exec mv {} {}.txt \;
+  find "${WORKING_DIR}/logs/" -type f ! -name '*.html' -exec mv {} {}.txt \;
   # Compress the files gathered so that they do not take up too much space.
   # We use 'command' to ensure that we're not executing with some sort of alias.
   command gzip --best --recursive "${WORKING_DIR}/logs/"

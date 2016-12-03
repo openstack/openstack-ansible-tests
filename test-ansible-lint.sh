@@ -37,4 +37,4 @@ export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
 source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
 
 # Execute ansible-lint
-ansible-lint ${WORKING_DIR}
+ansible-lint ${WORKING_DIR} -R -r ${WORKING_DIR}/ansible-lint/

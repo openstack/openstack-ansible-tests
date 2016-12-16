@@ -433,5 +433,9 @@ pip_install_options: "--no-binary libvirt-python"
 # The URL/path of a constraints file to use when installing the additional pip packages.
 pip_install_upper_constraints: "http://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=stable/newton"
 
+# As role tests are executed in temporary environments, we don't need
+# to always fetch the latest get-pip.py script
+pip_get_pip_force: no
+
 # Test install options
 install_test_packages: True

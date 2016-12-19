@@ -13,14 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# The "command" module is used here instead of "lineinfile" because all we
-#  want to do is uncomment the backports repo if its found.
-- name: Ensure trusty-backports are available
-  command: "sed -i '/deb.*-backports/s|^#\\s||g' /etc/apt/sources.list"
-  when:
-    - ansible_pkg_mgr == 'apt'
-    - ansible_distribution_release | lower == 'trusty'
-
 - name: First ensure apt cache is always refreshed
   apt:
     update_cache: true

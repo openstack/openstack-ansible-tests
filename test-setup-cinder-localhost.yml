@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Prepare cinder-volumes volume group
-  hosts: cinder_volume
+  hosts: localhost
   tasks:
     - name: Install lvm2 apt package
       apt:

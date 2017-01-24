@@ -33,6 +33,7 @@ test_keystone_group: "{{ ((groups['keystone_all'] is defined) and (groups['keyst
 test_glance_group: "{{ ((groups['glance_all'] is defined) and (groups['glance_all'] | length > 0)) | ternary('glance_all', 'all_containers') }}"
 test_nova_api_metadata_group: "{{ ((groups['nova_api_metadata'] is defined) and (groups['nova_api_metadata'] | length > 0)) | ternary('nova_api_metadata', 'all_containers') }}"
 test_nova_api_compute_group: "{{ ((groups['nova_api_os_compute'] is defined) and (groups['nova_api_os_compute'] | length > 0)) | ternary('nova_api_os_compute', 'all_containers') }}"
+test_nova_api_placement_group: "{{ ((groups['nova_api_placement'] is defined) and (groups['nova_api_placement'] | length > 0)) | ternary('nova_api_placement', 'all_containers') }}"
 test_nova_console_group: "{{ ((groups['nova_console'] is defined) and (groups['nova_console'] | length > 0)) | ternary('nova_console', 'all_containers') }}"
 test_neutron_server_group: "{{ ((groups['neutron_server'] is defined) and (groups['neutron_server'] | length > 0)) | ternary('neutron_server', 'all_containers') }}"
 test_swift_proxy_group: "{{ ((groups['swift_proxy'] is defined) and (groups['swift_proxy'] | length > 0)) | ternary('swift_proxy', 'all_containers') }}"
@@ -46,6 +47,7 @@ test_keystone_host: "{{ hostvars[groups[test_keystone_group][0]]['ansible_host']
 test_glance_host: "{{ hostvars[groups[test_glance_group][0]]['ansible_host'] }}"
 test_nova_api_metadata_host: "{{ hostvars[groups[test_nova_api_metadata_group][0]]['ansible_host'] }}"
 test_nova_api_compute_host: "{{ hostvars[groups[test_nova_api_compute_group][0]]['ansible_host'] }}"
+test_nova_api_placement_host: "{{ hostvars[groups[test_nova_api_placement_group][0]]['ansible_host'] }}"
 test_nova_console_host: "{{ hostvars[groups[test_nova_console_group][0]]['ansible_host'] }}"
 test_neutron_server_host: "{{ hostvars[groups[test_neutron_server_group][0]]['ansible_host'] }}"
 test_swift_proxy_host: "{{ hostvars[groups[test_swift_proxy_group][0]]['ansible_host'] }}"
@@ -191,6 +193,18 @@ nova_venv_tag: "testing"
 nova_virt_type: qemu
 # lxd specific vars
 lxd_trust_password: "SuperSecrete"
+# nova placement vars
+nova_placement_service_password: "secrete"
+nova_placement_container_mysql_password: "SuperSecrete"
+nova_placement_galera_database: nova_placement
+nova_placement_galera_address: "{{ test_galera_host }}"
+nova_placement_service_publicuri: "http://{{ test_nova_api_placement_host }}:8780"
+nova_placement_service_publicurl: "{{ nova_placement_service_publicuri }}/placement"
+nova_placement_service_adminuri: "http://{{ test_nova_api_placement_host }}:8780"
+nova_placement_service_adminurl: "{{ nova_placement_service_adminuri }}/placement"
+nova_placement_service_internaluri: "http://{{ test_nova_api_placement_host }}:8780"
+nova_placement_service_internalurl: "{{ nova_placement_service_internaluri }}/placement"
+
 
 # Neutron specific settings
 neutron_container_mysql_password: SuperSecrete

@@ -56,6 +56,9 @@
     - include: create-grant-db.yml
       db_name: "{{ nova_api_galera_database }}"
       db_password: "{{ nova_container_mysql_password }}"
+    - include: create-grant-db.yml
+      db_name: "{{ nova_placement_galera_database }}"
+      db_password: "{{ nova_placement_container_mysql_password }}"
   roles:
     - role: "{{ nova_rolename | default('os_nova') }}"
   vars_files:

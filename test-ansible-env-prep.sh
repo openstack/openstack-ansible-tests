@@ -100,7 +100,7 @@ if [ -d "${WORKING_DIR}/.tox/functional/lib/python2.7/site-packages/ara/callback
   if [ ! -L "${ANSIBLE_PLUGIN_DIR}/callback/ara" ]; then
     echo "Linking ${ANSIBLE_PLUGIN_DIR}/callback/ara to ${WORKING_DIR}/.tox/functional/lib/python2.7/site-packages/ara/callback/"
     mkdir -p "${ANSIBLE_PLUGIN_DIR}/callback/ara"
-    ln -s "${WORKING_DIR}/.tox/functional/lib/python2.7/site-packages/ara/callback/" "${ANSIBLE_PLUGIN_DIR}/callback/ara/"
+    ln -sf "${WORKING_DIR}/.tox/functional/lib/python2.7/site-packages/ara/callback/" "${ANSIBLE_PLUGIN_DIR}/callback/ara/"
   fi
 fi
 

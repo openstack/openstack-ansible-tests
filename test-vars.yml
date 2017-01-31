@@ -155,6 +155,7 @@ nova_api_galera_database: nova_api
 nova_api_galera_user: nova_api
 nova_glance_api_servers: "{{ glance_api_servers }}"
 nova_container_mysql_password: "SuperSecrete"
+nova_api_container_mysql_password: "SuperSecrete"
 nova_developer_mode: true
 nova_galera_address: "{{ test_galera_host }}"
 nova_galera_database: nova
@@ -204,7 +205,7 @@ nova_placement_service_adminuri: "http://{{ test_nova_api_placement_host }}:8780
 nova_placement_service_adminurl: "{{ nova_placement_service_adminuri }}/placement"
 nova_placement_service_internaluri: "http://{{ test_nova_api_placement_host }}:8780"
 nova_placement_service_internalurl: "{{ nova_placement_service_internaluri }}/placement"
-
+nova_cell0_database: "nova_cell0"
 
 # Neutron specific settings
 neutron_container_mysql_password: SuperSecrete
@@ -463,3 +464,8 @@ pip_get_pip_force: no
 
 # Test install options
 install_test_packages: True
+
+# TODO: (andymccr)
+# This is to work around a bug: https://bugs.launchpad.net/nova/+bug/1661243
+# Current fix needs to merge: https://review.openstack.org/#/c/428120/
+nova_reserved_host_disk_mb: 0

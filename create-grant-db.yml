@@ -31,6 +31,7 @@
     host: "{{ item }}"
     state: "present"
     priv: "{{ db_name }}.*:ALL"
+    append_privs: "{{ db_append_privs | default(omit) }}"
   with_items:
     - "localhost"
     - "%"

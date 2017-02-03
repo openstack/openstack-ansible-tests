@@ -464,8 +464,3 @@ pip_get_pip_force: no
 
 # Test install options
 install_test_packages: True
-
-# TODO: (andymccr)
-# This is to work around a bug: https://bugs.launchpad.net/nova/+bug/1661243
-# Current fix needs to merge: https://review.openstack.org/#/c/428120/
-nova_reserved_host_disk_mb: 0

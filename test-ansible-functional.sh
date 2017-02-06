@@ -33,6 +33,7 @@ set -e
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 export ROLE_NAME=${ROLE_NAME:-''}
 
+export ANSIBLE_CALLBACK_WHITELIST="profile_tasks"
 export ANSIBLE_OVERRIDES=${ANSIBLE_OVERRIDES:-$WORKING_DIR/tests/$ROLE_NAME-overrides.yml}
 export ANSIBLE_PARAMETERS=${ANSIBLE_PARAMETERS:-"-vvv"}
 export TEST_PLAYBOOK=${TEST_PLAYBOOK:-$WORKING_DIR/tests/test.yml}

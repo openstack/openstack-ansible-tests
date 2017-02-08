@@ -70,7 +70,7 @@ mkdir -p "${ANSIBLE_LOG_DIR}"
 
 # Download the Ansible plugins repository if it is not present on the host.
 if [ ! -d "${ANSIBLE_PLUGIN_DIR}" ]; then
-  git clone https://git.openstack.org/openstack/openstack-ansible-plugins \
+  git clone -b stable/ocata https://git.openstack.org/openstack/openstack-ansible-plugins \
               "${ANSIBLE_PLUGIN_DIR}"
 fi
 

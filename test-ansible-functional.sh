@@ -83,7 +83,7 @@ function gate_job_exit_tasks {
 source /etc/os-release 2>/dev/null
 export DISTRO_ID="${ID}"
 export DISTRO_VERSION_ID="${VERSION_ID}"
-if [[ "${DISTRO_ID}" == 'ubuntu' ]] && [[ "${DISTRO_VERSION_ID}" == '14.04' ]]; then
+if [[ "${ROLE_NAME}" != "openstack-ansible-security" ]] && [[ "${DISTRO_ID}" == 'ubuntu' ]] && [[ "${DISTRO_VERSION_ID}" == '14.04' ]]; then
   echo "Ubuntu Trusty detected. Exiting without running the job."
   exit 0
 fi

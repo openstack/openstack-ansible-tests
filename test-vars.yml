@@ -118,7 +118,6 @@ keystone_container_mysql_password: "SuperSecrete"
 keystone_venv_tag: "testing"
 keystone_developer_mode: true
 keystone_git_install_branch: master
-keystone_requirements_git_install_branch: master
 keystone_service_region: RegionOne
 
 # Glance specific settings
@@ -142,7 +141,6 @@ glance_rabbitmq_servers: "{{ rabbitmq_servers }}"
 glance_rabbitmq_userid: glance
 glance_rabbitmq_vhost: /glance
 glance_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
-glance_requirements_git_install_branch: master
 glance_service_password: "secrete"
 glance_venv_tag: "testing"
 glance_host: "{{ test_glance_host }}"
@@ -172,7 +170,6 @@ nova_rabbitmq_servers: "{{ rabbitmq_servers }}"
 nova_rabbitmq_userid: nova
 nova_rabbitmq_vhost: /nova
 nova_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
-nova_requirements_git_install_branch: master
 nova_program_name: nova-api-os-compute
 nova_service_adminuri: "http://{{ test_nova_api_compute_host }}:8774"
 nova_service_adminurl: "{{ nova_service_adminuri }}/v2.1/%(tenant_id)s"
@@ -220,7 +217,6 @@ neutron_rabbitmq_servers: "{{ rabbitmq_servers }}"
 neutron_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
 neutron_rabbitmq_userid: neutron
 neutron_rabbitmq_vhost: /neutron
-neutron_requirements_git_install_branch: master
 neutron_service_publicuri: "http://{{ test_neutron_server_host }}:9696"
 neutron_service_publicurl: "{{ neutron_service_publicuri }}"
 neutron_service_adminuri: "http://{{ test_neutron_server_host }}:9696"
@@ -254,7 +250,6 @@ cinder_rabbitmq_userid: cinder
 cinder_rabbitmq_vhost: /cinder
 cinder_galera_user: cinder
 cinder_galera_database: cinder
-cinder_requirements_git_install_branch: master
 cinder_service_password: "secrete"
 cinder_venv_tag: "testing"
 cinder_service_port: 8776
@@ -319,7 +314,6 @@ swift_pretend_min_part_hours_passed: True
 heat_venv_tag: "testing"
 heat_developer_mode: True
 heat_git_install_branch: master
-heat_requirements_git_install_branch: master
 heat_service_password: secrete
 heat_stack_domain_admin_password: secrete
 heat_auth_encryption_key: 32characterslongboguskeyvaluefoo
@@ -348,7 +342,6 @@ gnocchi_ssl_external: false
 ironic_venv_tag: "testing"
 ironic_developer_mode: True
 ironic_git_install_branch: master
-ironic_requirements_git_install_branch: master
 ironic_service_publicuri: "http://{{ test_ironic_api_host }}:6385"
 ironic_service_publicurl: "{{ ironic_service_publicuri }}"
 ironic_service_adminuri: "http://{{ test_ironic_api_host }}:6385"
@@ -376,7 +369,6 @@ ironic_keystone_auth_plugin: password
 sahara_venv_tag: "testing"
 sahara_developer_mode: true
 sahara_git_install_branch: master
-sahara_requirements_git_install_branch: master
 sahara_service_password: "secrete"
 sahara_galera_address: "{{ test_galera_host }}"
 sahara_galera_database: sahara

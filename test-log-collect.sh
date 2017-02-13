@@ -27,7 +27,7 @@
 
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 export RSYNC_CMD="rsync --archive --verbose --safe-links --ignore-errors"
-export ARA_CMD="${WORKING_DIR}/.tox/functional/bin/ara generate"
+export ARA_CMD="${WORKING_DIR}/.tox/functional/bin/ara generate html"
 export TESTING_HOME=${TESTING_HOME:-$HOME}
 
 ## Main ----------------------------------------------------------------------

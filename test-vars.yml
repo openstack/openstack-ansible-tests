@@ -435,6 +435,7 @@ neutron_rpc_workers: 1
 nova_conductor_workers: 2
 nova_metadata_workers: 2
 nova_osapi_compute_workers: 2
+nova_wsgi_processes: 2
 swift_account_server_workers: 2
 swift_container_server_workers: 2
 swift_object_server_workers: 2

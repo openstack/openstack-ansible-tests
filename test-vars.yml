@@ -287,7 +287,7 @@ swift_hash_path_prefix: "secrete_prefx"
 swift_hash_path_suffix: "secrete_suffix"
 swift_service_password: "secrete"
 swift_developer_mode: true
-swift_git_install_branch: master
+swift_git_install_branch: stable/ocata
 swift_venv_tag: untagged
 swift_venv_bin: "/openstack/venvs/swift-{{ swift_venv_tag }}/bin"
 swift_service_publicuri: "http://{{ test_swift_proxy_host }}:8080"

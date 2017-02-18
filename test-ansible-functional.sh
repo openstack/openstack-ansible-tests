@@ -78,16 +78,6 @@ function gate_job_exit_tasks {
 
 ## Main ----------------------------------------------------------------------
 
-# Workaround for bad CI jobs which are executing Trusty when they should not
-# When Trusty is detected, just exit with a successful result immediately
-source /etc/os-release 2>/dev/null
-export DISTRO_ID="${ID}"
-export DISTRO_VERSION_ID="${VERSION_ID}"
-if [[ "${ROLE_NAME}" != "openstack-ansible-security" ]] && [[ "${DISTRO_ID}" == 'ubuntu' ]] && [[ "${DISTRO_VERSION_ID}" == '14.04' ]]; then
-  echo "Ubuntu Trusty detected. Exiting without running the job."
-  exit 0
-fi
-
 # Ensure that the Ansible environment is properly prepared
 source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
 

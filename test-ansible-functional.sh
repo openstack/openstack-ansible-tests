@@ -60,6 +60,29 @@ function set_ansible_parameters {
 
 }
 
+function setup_ara {
+
+  # Don't do anything if ARA has already been set up
+  [[ -L "${ANSIBLE_PLUGIN_DIR}/callback/ara" ]] && return 0
+
+  # Install ARA from source if running in ARA gate, otherwise install from PyPi
+  if [[ -e /usr/zuul-env/bin/zuul-cloner && "${ZUUL_PROJECT}" == "openstack/ara" ]]; then
+    /usr/zuul-env/bin/zuul-cloner --workspace /tmp --cache-dir /opt/git \
+      git://git.openstack.org openstack/ara
+    ${WORKING_DIR}/.tox/functional/bin/pip install /tmp/openstack/ara
+  else
+    ${WORKING_DIR}/.tox/functional/bin/pip install ara
+  fi
+
+  # Dynamically figure out the location of ARA (ex: py2 vs py3)
+  ara_location=$(${WORKING_DIR}/.tox/functional/bin/python -c "import os,ara; print(os.path.dirname(ara.__file__))")
+
+  echo "Linking ${ANSIBLE_PLUGIN_DIR}/callback/ara to ${ara_location}/plugins/callbacks/"
+  mkdir -p "${ANSIBLE_PLUGIN_DIR}/callback/ara"
+  ln -sf "${ara_location}/plugins/callbacks" "${ANSIBLE_PLUGIN_DIR}/callback/ara/"
+
+}
+
 function execute_ansible_playbook {
 
   CMD_TO_EXECUTE="ansible-playbook ${TEST_PLAYBOOK} $@ ${ANSIBLE_CLI_PARAMETERS}"
@@ -80,6 +103,7 @@ function gate_job_exit_tasks {
 
 # Ensure that the Ansible environment is properly prepared
 source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
+setup_ara
 
 # Set gate job exit traps, this is run regardless of exit state when the job finishes.
 trap gate_job_exit_tasks EXIT

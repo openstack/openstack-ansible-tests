@@ -49,6 +49,8 @@ if [[ -d "/etc/nodepool" ]]; then
   ${RSYNC_CMD} "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/" || true
   # Generate the ARA report
   ${ARA_CMD} "${WORKING_DIR}/logs/ara" || true
+  # output ram usage
+  free -m > "${WORKING_DIR}/logs/memory-available.txt" || true
   # Compress the files gathered so that they do not take up too much space.
   # We use 'command' to ensure that we're not executing with some sort of alias.
   command gzip --best --recursive "${WORKING_DIR}/logs/"

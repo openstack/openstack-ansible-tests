@@ -69,13 +69,13 @@ function setup_ara {
   if [[ -e /usr/zuul-env/bin/zuul-cloner && "${ZUUL_PROJECT}" == "openstack/ara" ]]; then
     /usr/zuul-env/bin/zuul-cloner --workspace /tmp --cache-dir /opt/git \
       git://git.openstack.org openstack/ara
-    ${WORKING_DIR}/.tox/functional/bin/pip install /tmp/openstack/ara
+    pip install /tmp/openstack/ara
   else
-    ${WORKING_DIR}/.tox/functional/bin/pip install ara
+    pip install ara
   fi
 
   # Dynamically figure out the location of ARA (ex: py2 vs py3)
-  ara_location=$(${WORKING_DIR}/.tox/functional/bin/python -c "import os,ara; print(os.path.dirname(ara.__file__))")
+  ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
 
   echo "Linking ${ANSIBLE_PLUGIN_DIR}/callback/ara to ${ara_location}/plugins/callbacks/"
   mkdir -p "${ANSIBLE_PLUGIN_DIR}/callback/ara"

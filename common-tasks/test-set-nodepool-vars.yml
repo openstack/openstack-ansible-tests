@@ -34,11 +34,19 @@
   when:
     - ansible_os_family == 'Debian'
 
-- name: install the epel repo rpm from a remote repo
+- name: Install the RDO release package
   yum:
-    name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+    name: "https://repos.fedorapeople.org/repos/openstack/openstack-ocata/rdo-release-ocata.rpm"
     state: "present"
-  when: ansible_pkg_mgr == 'yum'
+  when:
+    - ansible_pkg_mgr == 'yum'
+
+- name: Ensure EPEL repository is removed
+  yum:
+    name: epel-release
+    state: absent
+  when:
+    - ansible_pkg_mgr == 'yum'
 
 - name: Set the files to copy into the container cache for OpenStack-CI instances
   set_fact:

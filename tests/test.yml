@@ -30,7 +30,3 @@
 
 # Install Tempest
 - include: common/test-install-tempest.yml
-
-# Test test repository
-# TODO(andymccr): Add additional tests for now start with just keystone
-- include: test-tests-functional.yml

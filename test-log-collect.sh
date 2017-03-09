@@ -51,6 +51,11 @@ if [[ -d "/etc/nodepool" ]]; then
   ${ARA_CMD} "${WORKING_DIR}/logs/ara" || true
   # output ram usage
   free -m > "${WORKING_DIR}/logs/memory-available.txt" || true
+  # Redhat package debugging
+  if [ "$(which rpm)" ]; then
+      sudo yum repolist -v > "${WORKING_DIR}/logs/redhat-yum-repolist.txt" || true
+      sudo yum list installed > "${WORKING_DIR}/logs/redhat-yum-list-installed.txt" || true
+  fi
   # Compress the files gathered so that they do not take up too much space.
   # We use 'command' to ensure that we're not executing with some sort of alias.
   command gzip --best --recursive "${WORKING_DIR}/logs/"

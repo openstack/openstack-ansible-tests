@@ -308,8 +308,6 @@ swift_proxy_server_conf_overrides:
   "filter:keystoneauth":
     reseller_prefix: "AUTH, SERVICE"
     "SERVICE_service_roles": "test5"
-# For testing always use pretend_min_part_hours_passed
-swift_pretend_min_part_hours_passed: True
 
 # Heat specific settings
 heat_venv_tag: "testing"

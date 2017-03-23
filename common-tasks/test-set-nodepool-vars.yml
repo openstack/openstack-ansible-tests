@@ -41,13 +41,6 @@
   when:
     - ansible_pkg_mgr == 'yum'
 
-- name: Ensure EPEL repository is removed
-  yum:
-    name: epel-release
-    state: absent
-  when:
-    - ansible_pkg_mgr == 'yum'
-
 - name: Set the files to copy into the container cache for OpenStack-CI instances
   set_fact:
     lxc_container_cache_files:

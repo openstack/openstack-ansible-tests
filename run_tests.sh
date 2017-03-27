@@ -13,23 +13,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -o pipefail
 set -euov
 
-FUNCTIONAL_TEST=${FUNCTIONAL_TEST:-true}
+BINDEP_FILE=${BINDEP_FILE:-bindep.txt}
 
-# Install python2 for Ubuntu 16.04 and CentOS 7
-if which apt-get; then
-    sudo apt-get update && sudo apt-get install -y python
-fi
+# Start fresh
+rm -rf .tox
 
-if which yum; then
-    sudo yum install -y python
-fi
+source /etc/os-release || source /usr/lib/os-release
+
+case "${ID,,}" in
+    *suse*)
+        # Need to pull libffi and python-pyOpenSSL early
+        # because we install ndg-httpsclient from pip
+        sudo zypper -n in python-devel lsb-release libffi-devel python-pyOpenSSL
+        ;;
+    centos)
+        sudo yum install -y python-devel redhat-lsb-core
+        ;;
+    ubuntu|debian)
+        sudo apt-get update && sudo apt-get install -y python-dev lsb-release
+        ;;
+    *)
+        echo "Unsupported distribution: ${ID,,}"
+        exit 1
+esac
 
 # Install pip
-if [ ! "$(which pip)" ]; then
-  curl --silent --show-error --retry 5 \
-    https://bootstrap.pypa.io/get-pip.py | sudo python2.7
+if ! which pip &>/dev/null; then
+    curl --silent --show-error --retry 5 \
+        https://bootstrap.pypa.io/get-pip.py | sudo python2.7
 fi
 
 # Install bindep and tox
@@ -38,25 +52,40 @@ sudo pip install bindep tox
 # CentOS 7 requires two additional packages:
 #   redhat-lsb-core - for bindep profile support
 #   epel-release    - required to install python-ndg_httpsclient/python2-pyasn1
-if [ "$(which yum)" ]; then
+if [[ ${ID,,} == "centos" ]]; then
     sudo yum -y install redhat-lsb-core epel-release
+# openSUSE 42.1 does not have python-ndg-httpsclient
+elif [[ ${ID,,} == *suse* ]]; then
+    pip install ndg-httpsclient
 fi
+
+# Get a list of packages to install with bindep. If packages need to be
+# installed, bindep exits with an exit code of 1.
+BINDEP_PKGS=$(bindep -b -f ${BINDEP_FILE} test || true)
+echo "Packages to install: ${BINDEP_PKGS}"
 
 # Install OS packages using bindep
-if apt-get -v >/dev/null 2>&1 ; then
-    sudo apt-get update
-    DEBIAN_FRONTEND=noninteractive \
-      sudo apt-get -q --option "Dpkg::Options::=--force-confold" \
-      --assume-yes install `bindep -b -f bindep.txt test`
-else
-    sudo yum install -y `bindep -b -f bindep.txt test`
+if [[ ${#BINDEP_PKGS} > 0 ]]; then
+    case "${ID,,}" in
+        *suse*)
+            sudo zypper -n in $BINDEP_PKGS
+            ;;
+        centos)
+            sudo yum install -y $BINDEP_PKGS
+            ;;
+        ubuntu|debian)
+            sudo apt-get update
+            DEBIAN_FRONTEND=noninteractive \
+                sudo apt-get -q --option "Dpkg::Options::=--force-confold" \
+                --assume-yes install $BINDEP_PKGS
+            ;;
+    esac
 fi
 
-# run through each tox env and execute the test
-for tox_env in $(awk -F= '/envlist/ {print $2}' tox.ini | sed 's/,/ /g'); do
-  if [ "${tox_env}" != "functional" ]; then
-    tox -e ${tox_env}
-  elif [ "${tox_env}" == "functional" ] && [ "${FUNCTIONAL_TEST}" == "true" ]; then
-    tox -e ${tox_env}
-  fi
-done
+# Get envlist in a $env1,$env2,...,$envn format
+toxenvs="$(tox -l | tr '\n' ',' | sed 's/,$//')"
+
+# Execute all $toxenvs or only a specific one
+tox -e "${1:-$toxenvs}"
+
+# vim: set ts=4 sw=4 expandtab:

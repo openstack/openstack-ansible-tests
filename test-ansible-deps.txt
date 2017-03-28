@@ -8,8 +8,7 @@
 # target configuration in each role.
 
 # The Ansible version used for testing
-git+git://github.com/ansible/ansible.git@e85f3f44610fa454c80da6b0f5ae84e3887a6955#egg=ansible
-#ansible==2.2.1
+ansible==2.2.2.0
 
 # The Ansible lint version used for lint tests
 ansible-lint==3.4.1

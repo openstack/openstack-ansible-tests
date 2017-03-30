@@ -18,9 +18,6 @@ set -euov
 
 BINDEP_FILE=${BINDEP_FILE:-bindep.txt}
 
-# Start fresh
-rm -rf .tox
-
 source /etc/os-release || source /usr/lib/os-release
 
 case "${ID,,}" in

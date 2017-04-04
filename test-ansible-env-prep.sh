@@ -47,6 +47,13 @@ echo "WORKING_DIR: ${WORKING_DIR}"
 echo "ROLE_NAME: ${ROLE_NAME}"
 echo "ANSIBLE_INVENTORY: ${ANSIBLE_INVENTORY}"
 
+# Output all the zuul parameters if they're set
+if [ -z "${ZUUL_CHANGE_IDS}" ]; then
+  echo -e "\n### ZUUL PARAMETERS BEGIN ###\n"
+  printenv | grep ^ZUUL
+  echo -e "\n### ZUUL PARAMETERS END ###\n"
+fi
+
 # Toggle the reset of all data cloned from other repositories.
 export TEST_RESET=${TEST_RESET:-false}
 
@@ -77,9 +84,10 @@ fi
 # Download the Ansible role repositories if they are not present on the host.
 # This is ignored if there is no ansible-role-requirements file.
 if [ ! -d "${ANSIBLE_ROLE_DIR}" ] && [ -f "${ANSIBLE_ROLE_REQUIREMENTS_PATH}" ]; then
-   ansible-playbook -i "localhost ansible-connection=local," \
+   ansible-playbook -i ${ANSIBLE_INVENTORY} \
          ${COMMON_TESTS_PATH}/get-ansible-role-requirements.yml \
-         -e "toxinidir=${WORKING_DIR} homedir=${TESTING_HOME}"
+         -e "toxinidir=${WORKING_DIR} homedir=${TESTING_HOME}" \
+         -v
 fi
 
 

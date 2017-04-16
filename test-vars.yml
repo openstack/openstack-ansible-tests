@@ -161,6 +161,8 @@ nova_keystone_auth_plugin: password
 nova_management_address: "{{ ansible_host }}"
 nova_metadata_port: 8775
 nova_metadata_host: "{{ test_nova_api_metadata_host }}"
+nova_metadata_protocol: http
+nova_metadata_insecure: False
 nova_metadata_proxy_secret: "secrete"
 nova_novncproxy_vncserver_listen: localhost
 nova_novncproxy_vncserver_proxyclient_address: localhost

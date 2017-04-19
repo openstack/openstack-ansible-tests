@@ -18,6 +18,7 @@
 - name: Make /lib/modules accessible on neutron_agent containers
   hosts: neutron_agent
   user: root
+  become: true
   gather_facts: true
   tasks:
     - name: Use the unconfined aa profile

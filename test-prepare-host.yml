@@ -15,6 +15,7 @@
 
 - name: Playbook for configuring hosts
   hosts: localhost
+  become: true
   pre_tasks:
     - include: "common-tasks/test-set-nodepool-vars.yml"
     - name: Clear iptables rules
@@ -31,6 +32,7 @@
 
 - name: Playbook for configuring the LXC host
   hosts: localhost
+  become: true
   roles:
     - role: "lxc_hosts"
       lxc_net_address: 10.100.100.1

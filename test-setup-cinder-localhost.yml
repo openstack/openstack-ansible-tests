@@ -15,6 +15,7 @@
 
 - name: Prepare cinder-volumes volume group
   hosts: localhost
+  become: true
   tasks:
     - name: Install lvm2 apt package
       apt:

@@ -16,6 +16,7 @@
 - name: Execute the openstack-host role
   hosts: localhost
   connection: local
+  become: true
   gather_facts: true
   pre_tasks:
     - include: "common-tasks/test-force-package-cache-update.yml"

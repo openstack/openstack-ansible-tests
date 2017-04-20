@@ -43,8 +43,9 @@ if ! which pip &>/dev/null; then
         https://bootstrap.pypa.io/get-pip.py | sudo python2.7
 fi
 
-# Install bindep and tox
-sudo pip install bindep tox
+# Install bindep and tox. We need bindep>=2.4.0 because it contains the new
+# redhat and suse profiles.
+sudo pip install 'bindep>=2.4.0' tox
 
 # CentOS 7 requires two additional packages:
 #   redhat-lsb-core - for bindep profile support

@@ -16,6 +16,7 @@
 - name: Swift setup
   hosts: swift_hosts
   user: root
+  become: true
   gather_facts: true
   pre_tasks:
   - name: Ensure xfsprogs is installed on localhost (Ubuntu)

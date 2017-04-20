@@ -16,6 +16,7 @@
 - name: Deploy gnocchi
   hosts: gnocchi_all
   user: root
+  become: true
   gather_facts: true
   pre_tasks:
     - include: create-grant-db.yml

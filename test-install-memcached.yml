@@ -16,6 +16,7 @@
 - name: Deploy memcached
   hosts: memcached_all
   user: root
+  become: true
   gather_facts: true
   roles:
     - role: "memcached_server"

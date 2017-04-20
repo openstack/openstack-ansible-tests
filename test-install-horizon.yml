@@ -16,6 +16,7 @@
 - name: Playbook for deploying horizon
   hosts: horizon_all
   user: root
+  become: true
   gather_facts: true
   pre_tasks:
     - include: create-grant-db.yml

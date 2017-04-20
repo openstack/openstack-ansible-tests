@@ -16,6 +16,7 @@
 - name: Playbook for installing Ironic
   hosts: sahara_all
   remote_user: root
+  become: true
   gather_facts: true
   pre_tasks:
     - include: ensure-rabbitmq.yml

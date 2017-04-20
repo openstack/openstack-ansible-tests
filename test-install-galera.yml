@@ -16,6 +16,7 @@
 - name: Deploy galera
   hosts: galera_all
   user: root
+  become: true
   gather_facts: true
   roles:
     - role: "galera_server"

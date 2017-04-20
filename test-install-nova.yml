@@ -18,6 +18,7 @@
 - name: Playbook for deploying nova
   hosts: nova_all
   user: root
+  become: true
   gather_facts: true
   pre_tasks:
     # NOTE: These are typically installed in the repo server where we build the

@@ -16,6 +16,7 @@
 - name: Playbook for deploying keystone
   hosts: keystone_all
   user: root
+  become: true
   gather_facts: true
   pre_tasks:
     - name: Set keystone_messaging fact

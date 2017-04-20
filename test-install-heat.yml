@@ -16,6 +16,7 @@
 - name: Playbook for deploying heat
   hosts: heat_all
   user: root
+  become: true
   gather_facts: true
   pre_tasks:
     - include: ensure-rabbitmq.yml

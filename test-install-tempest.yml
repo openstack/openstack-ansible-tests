@@ -16,6 +16,7 @@
 - name: Playbook for deploying tempest
   hosts: utility_all
   user: root
+  become: true
   gather_facts: true
   roles:
     - role: "{{ tempest_rolename | default('os_tempest') }}"

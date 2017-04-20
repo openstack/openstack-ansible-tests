@@ -53,7 +53,7 @@ if [[ ${ID,,} == "centos" ]]; then
     sudo yum -y install redhat-lsb-core epel-release
 # openSUSE 42.1 does not have python-ndg-httpsclient
 elif [[ ${ID,,} == *suse* ]]; then
-    pip install ndg-httpsclient
+    sudo pip install ndg-httpsclient
 fi
 
 # Get a list of packages to install with bindep. If packages need to be

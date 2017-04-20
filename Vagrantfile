@@ -5,8 +5,8 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.provision "shell",
+      privileged: false,
       inline: <<-SHELL
-          sudo su -
           cd /vagrant
          ./run_tests.sh
       SHELL

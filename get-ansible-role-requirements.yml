@@ -39,6 +39,19 @@
         - item.scm == "git" or item.scm is undefined
       with_items: "{{ roles }}"
 
+    - name: Prepare non-openstack git clone list
+      set_fact:
+        filtered_roles: >
+          {%- set filtered_role_list = [] %}
+          {%- for role in roles %}
+          {%-   if not role.src | match(".*git.openstack.org.*") %}
+          {%-     set _ = filtered_role_list.append(role) %}
+          {%-   endif %}
+          {%- endfor %}
+          {{- filtered_role_list -}}
+      when:
+        - _zuul_cloner_check.rc == 0
+
     - name: Clone git repos (with git)
       git:
         repo: "{{ item.src }}"
@@ -47,9 +60,8 @@
         update: true
         force: true
       when:
-        - (_zuul_cloner_check.rc != 0) or (not item.src | match(".*git.openstack.org.*"))
         - item.scm == "git" or item.scm is undefined
-      with_items: "{{ roles }}"
+      with_items: "{{ filtered_roles | default(roles) }}"
 
     - name: Create clone map
       copy:

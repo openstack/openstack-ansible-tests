@@ -16,7 +16,6 @@
 - name: Clone the role ansible-role-requirements
   hosts: localhost
   connection: local
-  user: root
   tasks:
 
     - name: Check whether zuul-cloner is installed and provide the path to it
@@ -30,8 +29,8 @@
 
     - name: Remove target directory if required
       shell: |
-        if [[ ! -d "{{ item.path | default('/etc/ansible/roles') }}/{{ item.name | default(item.src | basename) }}/.git" ]]; then
-          rm -rf "{{ item.path | default('/etc/ansible/roles') }}/{{ item.name | default(item.src | basename) }}"
+        if [[ ! -d "{{ item.path | default(homedir + '/.ansible/roles') }}/{{ item.name | default(item.src | basename) }}/.git" ]]; then
+          rm -rf "{{ item.path | default(homedir + '/.ansible/roles') }}/{{ item.name | default(item.src | basename) }}"
         fi
       args:
         executable: /bin/bash

@@ -50,7 +50,7 @@ echo "ANSIBLE_INVENTORY: ${ANSIBLE_INVENTORY}"
 # Output all the zuul parameters if they're set
 if [ -z "${ZUUL_CHANGE_IDS}" ]; then
   echo -e "\n### ZUUL PARAMETERS BEGIN ###\n"
-  printenv | grep ^ZUUL
+  printenv | grep ^ZUUL || true
   echo -e "\n### ZUUL PARAMETERS END ###\n"
 fi
 

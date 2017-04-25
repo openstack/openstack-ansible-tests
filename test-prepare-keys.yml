@@ -76,7 +76,7 @@
         path: "{{ calling_user_home }}/.ssh"
         state: directory
         owner: "{{ ansible_user_id }}"
-        group: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_gid }}"
         mode: 0700
       when: ansible_user_id != 'root'
 
@@ -85,7 +85,7 @@
         content: "{{ root_private_key }}"
         dest: "{{ calling_user_home }}/.ssh/id_rsa"
         owner: "{{ ansible_user_id }}"
-        group: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_gid }}"
         mode: "0600"
       when: ansible_user_id != 'root'
 
@@ -94,7 +94,7 @@
         content: "{{ root_public_key }}"
         dest: "{{ calling_user_home }}/.ssh/id_rsa.pub"
         owner: "{{ ansible_user_id }}"
-        group: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_gid }}"
         mode: "0600"
       when: ansible_user_id != 'root'
 

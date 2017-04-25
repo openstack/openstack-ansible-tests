@@ -39,12 +39,20 @@
         - item.scm == "git" or item.scm is undefined
       with_items: "{{ roles }}"
 
-    - name: Prepare non-openstack git clone list
+    - name: Prepare git clone list
       set_fact:
-        filtered_roles: >
+        git_roles: >
           {%- set filtered_role_list = [] %}
           {%- for role in roles %}
-          {%-   if not role.src | match(".*git.openstack.org.*") %}
+          {%-   if (not role.src | match(".*git.openstack.org.*")) or (role.name | match("os_previous_.*")) %}
+          {%-     set _ = filtered_role_list.append(role) %}
+          {%-   endif %}
+          {%- endfor %}
+          {{- filtered_role_list -}}
+        zuul_roles: >
+          {%- set filtered_role_list = [] %}
+          {%- for role in roles %}
+          {%-   if (role.src | match(".*git.openstack.org.*")) and (not role.name | match("os_previous_.*")) %}
           {%-     set _ = filtered_role_list.append(role) %}
           {%-   endif %}
           {%- endfor %}
@@ -61,7 +69,7 @@
         force: true
       when:
         - item.scm == "git" or item.scm is undefined
-      with_items: "{{ filtered_roles | default(roles) }}"
+      with_items: "{{ git_roles | default(roles) }}"
 
     - name: Create clone map
       copy:
@@ -79,10 +87,8 @@
                 -m {{ homedir }}/.ansible/clonemap.yml \
                 --cache-dir /opt/git \
                 git://git.openstack.org \
-        {% for src in roles | map(attribute='src') %}
-        {%   if src | match(".*git.openstack.org.*") %}
-                {{ src | regex_replace('https://git.openstack.org/', '') }} \
-        {%   endif %}
+        {% for role in zuul_roles %}
+                {{ role.src | regex_replace('https://git.openstack.org/', '') }} \
         {% endfor %}
       when:
         - _zuul_cloner_check.rc == 0

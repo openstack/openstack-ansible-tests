@@ -15,6 +15,7 @@
 
 - name: Playbook for configuring hosts
   hosts: localhost
+  connection: local
   become: true
   pre_tasks:
     - include: "common-tasks/test-set-nodepool-vars.yml"
@@ -32,6 +33,7 @@
 
 - name: Playbook for configuring the LXC host
   hosts: localhost
+  connection: local
   become: true
   roles:
     - role: "lxc_hosts"

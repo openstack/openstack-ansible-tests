@@ -15,6 +15,7 @@
 
 - name: Playbook for creating containers
   hosts: localhost
+  connection: local
   become: true
   gather_facts: true
 

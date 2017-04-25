@@ -16,6 +16,7 @@
 - name: Clone the role ansible-role-requirements
   hosts: localhost
   connection: local
+  gather_facts: false
   tasks:
 
     - name: Check whether zuul-cloner is installed and provide the path to it

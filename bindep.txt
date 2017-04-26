@@ -49,7 +49,8 @@ python-ndg-httpsclient      [platform:ubuntu]
 python2-pyasn1              [platform:redhat]
 python2-pyOpenSSL           [platform:redhat]
 python-pyOpenSSL            [platform:suse]
-python-ndg_httpsclient      [platform:rpm]
+python-ndg_httpsclient      [platform:redhat]
+python-ndg-httpsclient      [platform:suse]
 
 # Required for compressing collected log files in CI
 gzip

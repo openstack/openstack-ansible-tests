@@ -138,11 +138,15 @@
         - item.alias is defined
       with_items: "{{ bridges }}"
 
+    - name: Determine iptables path
+      shell: which iptables
+      register: _iptables_path
+
     - name: Add iptables rule to ensure traffic checksum is correct
-      command: /sbin/iptables -A POSTROUTING -t mangle -p tcp -j CHECKSUM --checksum-fill
+      command: "{{ _iptables_path.stdout }} -A POSTROUTING -t mangle -p tcp -j CHECKSUM --checksum-fill"
 
     - name: Add iptables rule to provide internet connectivity to instances
-      command: /sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+      command: "{{ _iptables_path.stdout }} -t nat -A POSTROUTING -o eth0 -j MASQUERADE"
 
     - name: Add iptables rules for lxc natting
       command: /usr/local/bin/lxc-system-manage iptables-create

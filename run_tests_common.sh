@@ -23,8 +23,9 @@ source /etc/os-release || source /usr/lib/os-release
 case "${ID,,}" in
     *suse*)
         # Need to pull libffi and python-pyOpenSSL early
-        # because we install ndg-httpsclient from pip
-        sudo zypper -n in python-devel lsb-release libffi-devel python-pyOpenSSL
+        # because we install ndg-httpsclient from pip on Leap 42.1
+        [[ "${VERSION}" == "42.1" ]] && extra_suse_deps="libffi-devel python-pyOpenSSL"
+        sudo zypper -n in python-devel lsb-release ${extra_suse_deps:-}
         ;;
     centos)
         sudo yum install -y python-devel redhat-lsb-core
@@ -52,7 +53,7 @@ sudo pip install 'bindep>=2.4.0' tox
 if [[ ${ID,,} == "centos" ]]; then
     sudo yum -y install redhat-lsb-core epel-release
 # openSUSE 42.1 does not have python-ndg-httpsclient
-elif [[ ${ID,,} == *suse* ]]; then
+elif [[ ${ID,,} == *suse* ]] && [[ ${VERSION} == "42.1" ]]; then
     sudo pip install ndg-httpsclient
 fi
 

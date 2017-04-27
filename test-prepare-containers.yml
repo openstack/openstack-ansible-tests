@@ -30,11 +30,11 @@
     - role: "lxc_container_create"
   post_tasks:
     - name: Wait for ssh to be available
-      local_action:
-        module: wait_for
+      wait_for:
         port: "{{ ansible_port | default('22') }}"
         host: "{{ ansible_host | default(inventory_hostname) }}"
         search_regex: OpenSSH
         delay: 1
+      delegate_to: "{{ physical_host }}"
   vars_files:
     - test-vars.yml

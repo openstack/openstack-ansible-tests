@@ -49,12 +49,12 @@
       delegate_to: "{{ physical_host }}"
 
     - name: Wait for ssh to be available
-      local_action:
-        module: wait_for
+      wait_for:
         port: "{{ ansible_port | default('22') }}"
         host: "{{ ansible_host | default(inventory_hostname) }}"
         search_regex: OpenSSH
         delay: 1
+      delegate_to: "{{ physical_host }}"
 
     - name: Add iptables rule for communication w/ metadata agent
       command: /sbin/iptables -t mangle -A POSTROUTING -p tcp --sport 80 -j CHECKSUM --checksum-fill

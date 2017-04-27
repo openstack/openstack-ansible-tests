@@ -97,9 +97,9 @@
         - "lxc.mount.entry=/srv/{{ container_name }}_swift2 openstack/swift2 none bind 0 0"
     delegate_to: "{{ physical_host }}"
   - name: Wait for ssh to be available
-    local_action:
-      module: wait_for
+    wait_for:
       port: "{{ ansible_port | default('22') }}"
       host: "{{ ansible_host | default(inventory_hostname) }}"
       search_regex: OpenSSH
       delay: 1
+    delegate_to: "{{ physical_host }}"

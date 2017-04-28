@@ -96,10 +96,9 @@
         - "lxc.mount.entry=/srv/{{ container_name }}_swift1 openstack/swift1 none bind 0 0"
         - "lxc.mount.entry=/srv/{{ container_name }}_swift2 openstack/swift2 none bind 0 0"
     delegate_to: "{{ physical_host }}"
-  - name: Wait for ssh to be available
-    wait_for:
-      port: "{{ ansible_port | default('22') }}"
-      host: "{{ ansible_host | default(inventory_hostname) }}"
-      search_regex: OpenSSH
-      delay: 1
-    delegate_to: "{{ physical_host }}"
+  - name: Wait for container connectivity
+    wait_for_connection:
+      connect_timeout: "{{ lxc_container_wait_params.connect_timeout | default(omit) }}"
+      delay: "{{ lxc_container_wait_params.delay | default(omit) }}"
+      sleep: "{{ lxc_container_wait_params.sleep | default(omit) }}"
+      timeout: "{{ lxc_container_wait_params.timeout | default(omit) }}"

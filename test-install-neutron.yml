@@ -48,13 +48,12 @@
           - "lxc.mount.entry=/{{ kernel_module_path }} {{ kernel_module_path }} none bind 0 0"
       delegate_to: "{{ physical_host }}"
 
-    - name: Wait for ssh to be available
-      wait_for:
-        port: "{{ ansible_port | default('22') }}"
-        host: "{{ ansible_host | default(inventory_hostname) }}"
-        search_regex: OpenSSH
-        delay: 1
-      delegate_to: "{{ physical_host }}"
+    - name: Wait for container connectivity
+      wait_for_connection:
+        connect_timeout: "{{ lxc_container_wait_params.connect_timeout | default(omit) }}"
+        delay: "{{ lxc_container_wait_params.delay | default(omit) }}"
+        sleep: "{{ lxc_container_wait_params.sleep | default(omit) }}"
+        timeout: "{{ lxc_container_wait_params.timeout | default(omit) }}"
 
     - name: Add iptables rule for communication w/ metadata agent
       command: /sbin/iptables -t mangle -A POSTROUTING -p tcp --sport 80 -j CHECKSUM --checksum-fill

@@ -469,3 +469,11 @@ pip_get_pip_force: no
 
 # Test install options
 install_test_packages: True
+
+## Parameters provided to the wait_for_connection module after a container
+## reboot is triggered by the role
+lxc_container_wait_params:
+  # Wait 3 seconds before attempting the first connection
+  delay: 3
+  # Wait 60 seconds for the container to respond
+  timeout: 60

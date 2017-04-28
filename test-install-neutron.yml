@@ -20,6 +20,8 @@
   user: root
   become: true
   gather_facts: true
+  vars_files:
+    - test-vars.yml
   tasks:
     - name: Use the unconfined aa profile
       lxc_container:

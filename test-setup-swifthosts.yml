@@ -18,7 +18,9 @@
   user: root
   become: true
   gather_facts: true
-  pre_tasks:
+  vars_files:
+    - test-vars.yml
+  tasks:
   - name: Ensure xfsprogs is installed on localhost (Ubuntu)
     apt:
       name: xfsprogs

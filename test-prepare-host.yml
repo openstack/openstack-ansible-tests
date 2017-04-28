@@ -79,7 +79,7 @@
 
     - name: Put down post-up script for veth-peer interfaces (RedHat)
       template:
-        src: "network_interfaces/redhat_interface_{{ item[0] | default('default') }}.cfg.j2"
+        src: "network_interfaces/rpm_interface_{{ item[0] | default('default') }}.cfg.j2"
         dest: "/etc/sysconfig/network-scripts/{{ item[0] }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}"
         mode: "0755"
       with_nested:

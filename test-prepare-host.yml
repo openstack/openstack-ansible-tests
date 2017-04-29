@@ -68,6 +68,15 @@
       when:
         - ansible_pkg_mgr == 'yum'
 
+    - name: Copy network configuration (SUSE)
+      template:
+        src: "network_interfaces/suse_interface_{{ item.type | default('default') }}.cfg.j2"
+        dest: "/etc/sysconfig/network/ifcfg-{{ item.name | default('br-mgmt') }}"
+      with_items: "{{ bridges }}"
+      register: network_interfaces_suse
+      when:
+        - ansible_pkg_mgr == 'zypper'
+
     - name: Create alias file when required
       template:
         src: "network_interfaces/redhat_interface_alias.cfg.j2"
@@ -88,6 +97,18 @@
       when:
         - item[1].veth_peer is defined
         - ansible_pkg_mgr == 'yum'
+
+    - name: Put down post-up script for veth-peer interfaces (SUSE)
+      template:
+        src: "network_interfaces/rpm_interface_{{ item[0] | default('default') }}.cfg.j2"
+        dest: "/etc/sysconfig/network/script/{{ item[0] }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}"
+        mode: "0755"
+      with_nested:
+        - [ "ifup-post", "ifdown-post" ]
+        - "{{ bridges }}"
+      when:
+        - item[1].veth_peer is defined
+        - ansible_pkg_mgr == 'zypper'
 
     - name: Ensure our interfaces.d configuration files are loaded automatically
       lineinfile:
@@ -113,7 +134,8 @@
     - name: Shut down the network interfaces
       command: "ifdown {{ item.name | default('br-mgmt') }}"
       when:
-        - (network_interfaces_rhel | changed) or (network_interfaces_deb | changed)
+        - (network_interfaces_rhel | changed) or (network_interfaces_deb | changed) or
+          (network_interfaces_suse | changed)
       with_items: "{{ bridges }}"
 
     - name: Shut down the alias interface (RedHat)
@@ -127,7 +149,8 @@
     - name: Start the network interfaces
       command: "ifup {{ item.name | default('br-mgmt') }}"
       when:
-        - (network_interfaces_rhel | changed) or (network_interfaces_deb | changed)
+        - (network_interfaces_rhel | changed) or (network_interfaces_deb | changed) or
+          (network_interfaces_suse | changed)
       with_items: "{{ bridges }}"
 
     - name: Start the alias interface (RedHat)

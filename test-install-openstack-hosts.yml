@@ -15,7 +15,6 @@
 
 - name: Execute the openstack-host role
   hosts: localhost
-  connection: local
   become: true
   gather_facts: true
   pre_tasks:

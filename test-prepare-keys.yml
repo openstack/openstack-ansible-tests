@@ -15,7 +15,6 @@
 
 - name: Playbook for establishing ssh keys
   hosts: localhost
-  connection: local
   gather_facts: false
   become: true
   tasks:
@@ -58,7 +57,6 @@
 
 - name: Playbook for establishing user ssh keys
   hosts: localhost
-  connection: local
   become: false
   tasks:
     # Shell used because facts may not be ready yet

@@ -17,7 +17,6 @@
   serial: 1
   become: true
   gather_facts: false
-  connection: local
   tasks:
     - name: Destroy a container
       lxc_container:

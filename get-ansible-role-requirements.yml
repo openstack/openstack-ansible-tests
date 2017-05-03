@@ -13,6 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Note(odyssey4me):
+# This uses a local connection for the lint test which
+# never sets up host keys and therefore cannot connect
+# to localhost as a remote host.
+#
 - name: Clone the role ansible-role-requirements
   hosts: localhost
   connection: local

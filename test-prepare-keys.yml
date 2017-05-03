@@ -13,9 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Note(andymccr):
+# This uses local connection for the initial key setup
+# as no key is setup to allow a connection to localhost
+# as a remote host.
 - name: Playbook for establishing ssh keys
   hosts: localhost
   gather_facts: false
+  connection: local
   become: true
   tasks:
     - name: Ensure root has a .ssh directory

@@ -60,8 +60,13 @@
         key: "{{ root_public_key }}"
 
 
+# Note(hwoarang):
+# This uses local connection for the initial key setup
+# as no key is setup to allow a connection to localhost
+# as a remote host.
 - name: Playbook for establishing user ssh keys
   hosts: localhost
+  connection: local
   become: false
   tasks:
     # Shell used because facts may not be ready yet

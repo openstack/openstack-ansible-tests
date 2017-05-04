@@ -30,6 +30,7 @@ set -e
 
 ## Vars ----------------------------------------------------------------------
 
+export TESTING_HOME=${TESTING_HOME:-$HOME}
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 export ROLE_NAME=${ROLE_NAME:-''}
 
@@ -66,10 +67,10 @@ function setup_ara {
   [[ -L "${ANSIBLE_PLUGIN_DIR}/callback/ara" ]] && return 0
 
   # Install ARA from source if running in ARA gate, otherwise install from PyPi
-  if [[ -e /usr/zuul-env/bin/zuul-cloner && "${ZUUL_PROJECT}" == "openstack/ara" ]]; then
-    /usr/zuul-env/bin/zuul-cloner --workspace /tmp --cache-dir /opt/git \
-      git://git.openstack.org openstack/ara
-    pip install /tmp/openstack/ara
+  if [[ -d "${TESTING_HOME}/git/openstack/ara" ]]; then
+    pip install "${TESTING_HOME}/git/openstack/ara"
+  elif [[ "${ZUUL_PROJECT}" == "openstack/ara" ]]; then
+    pip install "${WORKING_DIR}"
   else
     pip install ara
   fi

@@ -80,7 +80,9 @@
       copy:
         content: |
           clonemap:
-            - name: 'openstack/openstack-ansible-(.*)'
+            - name: 'openstack/openstack-ansible-tests'
+              dest: '{{ lookup("env", "WORKING_DIR") }}/tests/common'
+            - name: 'openstack/openstack-ansible-(?!tests)(.*)'
               dest: '{{ homedir }}/.ansible/roles/\1'
         dest: "{{ homedir }}/.ansible/clonemap.yml"
       when:

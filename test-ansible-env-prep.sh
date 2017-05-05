@@ -75,11 +75,45 @@ fi
 # Create the directory which will hold all Ansible logs
 mkdir -p "${ANSIBLE_LOG_DIR}"
 
-# Download the Ansible plugins repository if it is not present on the host.
-if [ ! -d "${ANSIBLE_PLUGIN_DIR}" ]; then
-  git clone https://git.openstack.org/openstack/openstack-ansible-plugins \
-              "${ANSIBLE_PLUGIN_DIR}"
+# Prepare the clonemap for zuul-cloner to use
+# This is placed here instead of inside the conditional
+# to prevent indentation problems.
+cat > ${TESTING_HOME}/plugins-clonemap.yaml << EOF
+clonemap:
+  - name: openstack/openstack-ansible-plugins
+    dest: ${ANSIBLE_PLUGIN_DIR}
+EOF
+
+# If zuul-cloner is present, use it so that we
+# also include any dependent patches from the
+# plugins repo noted in the commit message.
+if [[ -x /usr/zuul-env/bin/zuul-cloner ]]; then
+
+    /usr/zuul-env/bin/zuul-cloner \
+        --cache-dir /opt/git \
+        --map ${TESTING_HOME}/plugins-clonemap.yaml \
+        git://git.openstack.org \
+        openstack/openstack-ansible-plugins
+
+# Alternatively, use a simple git-clone. We do
+# not re-clone if the directory exists already
+# to prevent overwriting any local changes which
+# may have been made.
+elif [[ ! -d "${ANSIBLE_PLUGIN_DIR}" ]]; then
+
+    # The plugins repo doesn't need a clone, we can just
+    # symlink it.
+    if [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-plugins" ]]; then
+        ln -s ${WORKING_DIR} "${ANSIBLE_PLUGIN_DIR}"
+    else
+        git clone \
+            https://git.openstack.org/openstack/openstack-ansible-plugins \
+            "${ANSIBLE_PLUGIN_DIR}"
+    fi
 fi
+
+# Clean up the clonemap.
+rm -f ${TESTING_HOME}/plugins-clonemap.yaml
 
 # Download the Ansible role repositories if they are not present on the host.
 # This is ignored if there is no ansible-role-requirements file.

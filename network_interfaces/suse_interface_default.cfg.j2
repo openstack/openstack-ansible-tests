@@ -6,5 +6,3 @@ IPADDR={{ item.ip_addr | default('10.1.0.1') }}
 NETMASK={{ item.netmask | default('255.255.255.0') }}
 STARTMODE='auto'
 BOOTPROTO='static'
-POST_UP_SCRIPT="compat:suse:{{ item[0] }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}"
-POST_DOWN_SCRIPTS="compat:suse:{{ item[0] }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}"

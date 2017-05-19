@@ -96,14 +96,32 @@
         - item[1].veth_peer is defined
         - ansible_pkg_mgr == 'yum'
 
-    - name: Put down post-up script for veth-peer interfaces (SUSE)
-      template:
-        src: "network_interfaces/rpm_interface_{{ item[0] | default('default') }}.cfg.j2"
-        dest: "/etc/sysconfig/network/script/{{ item[0] }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}"
-        mode: "0755"
-      with_nested:
-        - [ "ifup-post", "ifdown-post" ]
-        - "{{ bridges }}"
+    # NOTE(hworang): Nested loops do not work on blocks. See
+    # https://github.com/ansible/ansible/issues/13262
+    # As such we need to do that on a per-task basis.
+    - block:
+      - name: Put down post-up script for veth-peer interfaces (SUSE)
+        template:
+          src: "network_interfaces/rpm_interface_{{ item[0] }}.cfg.j2"
+          dest: "/etc/sysconfig/network/script/{{ item[0] }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}"
+          mode: "0755"
+        with_nested:
+          - [ "ifup-post", "ifdown-post" ]
+          - "{{ bridges }}"
+      - name: Configure ifcfg files to use the post-up script (SUSE)
+        lineinfile:
+          dest: "/etc/sysconfig/network/script/{{ item[0] }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}"
+          line: POST_UP_SCRIPT=\"compat:suse:{{ item[0] | default('dummy') }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}\"
+        with_nested:
+          - [ "ifup-post", "ifdown-post" ]
+          - "{{ bridges }}"
+      - name: Configure ifcfg files to use the post-down script (SUSE)
+        lineinfile:
+          dest: "/etc/sysconfig/network/script/{{ item[0] }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}"
+          line: POST_DOWN_SCRIPTS=\"compat:suse:{{ item[0] | default('dummy') }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}\"
+        with_nested:
+          - [ "ifup-post", "ifdown-post" ]
+          - "{{ bridges }}"
       when:
         - item[1].veth_peer is defined
         - ansible_pkg_mgr == 'zypper'

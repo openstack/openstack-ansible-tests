@@ -41,6 +41,7 @@ export ANSIBLE_PLUGIN_DIR="${TESTING_HOME}/.ansible/plugins"
 export ANSIBLE_ROLE_DIR="${TESTING_HOME}/.ansible/roles"
 export ANSIBLE_ROLE_REQUIREMENTS_PATH="${WORKING_DIR}/tests/ansible-role-requirements.yml"
 export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
+export OSA_OPS_DIR="${WORKING_DIR}/openstack-ansible-ops"
 
 echo "TESTING_HOME: ${TESTING_HOME}"
 echo "WORKING_DIR: ${WORKING_DIR}"
@@ -61,6 +62,21 @@ export TEST_RESET=${TEST_RESET:-false}
 # console output is immediate.
 export PYTHONUNBUFFERED=1
 
+## Functions -----------------------------------------------------------------
+
+function create_plugins_clonemap {
+
+# Prepare the clonemap for zuul-cloner to use
+cat > ${TESTING_HOME}/plugins-clonemap.yaml << EOF
+clonemap:
+  - name: openstack/openstack-ansible-plugins
+    dest: ${ANSIBLE_PLUGIN_DIR}
+  - name: openstack/openstack-ansible-ops
+    dest: ${OSA_OPS_DIR}
+EOF
+
+}
+
 ## Main ----------------------------------------------------------------------
 
 # If the test reset toggle is set, destroy the existing cloned data.
@@ -75,45 +91,54 @@ fi
 # Create the directory which will hold all Ansible logs
 mkdir -p "${ANSIBLE_LOG_DIR}"
 
-# Prepare the clonemap for zuul-cloner to use
-# This is placed here instead of inside the conditional
-# to prevent indentation problems.
-cat > ${TESTING_HOME}/plugins-clonemap.yaml << EOF
-clonemap:
-  - name: openstack/openstack-ansible-plugins
-    dest: ${ANSIBLE_PLUGIN_DIR}
-EOF
-
 # If zuul-cloner is present, use it so that we
 # also include any dependent patches from the
 # plugins repo noted in the commit message.
 if [[ -x /usr/zuul-env/bin/zuul-cloner ]]; then
 
+    # Prepare the clonemap for zuul-cloner to use
+    create_plugins_clonemap
+
+    # Execute the clone
     /usr/zuul-env/bin/zuul-cloner \
         --cache-dir /opt/git \
         --map ${TESTING_HOME}/plugins-clonemap.yaml \
         git://git.openstack.org \
-        openstack/openstack-ansible-plugins
+        openstack/openstack-ansible-plugins \
+        openstack/openstack-ansible-ops
+
+    # Clean up the clonemap.
+    rm -f ${TESTING_HOME}/plugins-clonemap.yaml
 
 # Alternatively, use a simple git-clone. We do
 # not re-clone if the directory exists already
 # to prevent overwriting any local changes which
 # may have been made.
-elif [[ ! -d "${ANSIBLE_PLUGIN_DIR}" ]]; then
+else
+    if [[ ! -d "${ANSIBLE_PLUGIN_DIR}" ]]; then
+        # The plugins repo doesn't need a clone, we can just
+        # symlink it.
+        if [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-plugins" ]]; then
+            ln -s ${WORKING_DIR} "${ANSIBLE_PLUGIN_DIR}"
+        else
+            git clone \
+                https://git.openstack.org/openstack/openstack-ansible-plugins \
+                "${ANSIBLE_PLUGIN_DIR}"
+        fi
+    fi
 
-    # The plugins repo doesn't need a clone, we can just
-    # symlink it.
-    if [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-plugins" ]]; then
-        ln -s ${WORKING_DIR} "${ANSIBLE_PLUGIN_DIR}"
-    else
-        git clone \
-            https://git.openstack.org/openstack/openstack-ansible-plugins \
-            "${ANSIBLE_PLUGIN_DIR}"
+    if [[ ! -d "${OSA_OPS_DIR}" ]]; then
+        # The ops repo doesn't need a clone, we can just
+        # symlink it.
+        if [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-ops" ]]; then
+            ln -s ${WORKING_DIR} "${OSA_OPS_DIR}"
+        else
+            git clone \
+                https://git.openstack.org/openstack/openstack-ansible-ops \
+                "${OSA_OPS_DIR}"
+        fi
     fi
 fi
-
-# Clean up the clonemap.
-rm -f ${TESTING_HOME}/plugins-clonemap.yaml
 
 # Download the Ansible role repositories if they are not present on the host.
 # This is ignored if there is no ansible-role-requirements file.
@@ -148,4 +173,3 @@ if [ ! -f "${ANSIBLE_CFG_PATH}" ]; then
 else
   echo "Found ${ANSIBLE_CFG_PATH} so there's nothing more to do."
 fi
-

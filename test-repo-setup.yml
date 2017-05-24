@@ -1,0 +1,41 @@
+---
+# Copyright 2017, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Playbook for setting facts for git repository
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Ensure repo directory exists
+      file:
+        state: directory
+        path: "{{ development_repo_directory }}"
+    - name: Check for repositories that are cloned in the repos directory
+      find:
+        paths: "{{ development_repo_directory }}/"
+        file_type: directory
+      register: projects_directory_find
+    - name: Set var for git install branch
+      copy:
+        dest: "{{ development_repo_directory }}/local-package-constraints.txt"
+        content: |
+          ## Ansible Managed
+          {% if projects_directory_find.files is defined %}
+          {% for project in projects_directory_find.files %}
+          file://{{ project.path }}#egg={{ project.path.split("/")[-1] }}
+          {% endfor %}
+          {% endif %}
+  vars_files:
+    - test-vars.yml

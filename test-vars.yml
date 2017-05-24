@@ -463,6 +463,10 @@ pip_install_options: "--no-binary libvirt-python"
 # The URL/path of a constraints file to use when installing the additional pip packages.
 pip_install_upper_constraints: "http://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt"
 
+# Overriding the developer_constraints allows us to install from local disk as a precedence
+# if the repo is present.
+pip_install_developer_constraints: "--constraint {{ development_repo_directory }}/local-package-constraints.txt --constraint /opt/developer-pip-constraints.txt"
+
 # As role tests are executed in temporary environments, we don't need
 # to always fetch the latest get-pip.py script
 pip_get_pip_force: no
@@ -477,3 +481,11 @@ lxc_container_wait_params:
   delay: 3
   # Wait 60 seconds for the container to respond
   timeout: 60
+
+## Developer mode variables
+# Location of development repositories directory
+development_repo_directory: "{{ lookup('env', 'OPENSTACK_REPO_DIRECTORY') | default(lookup('env', 'TESTING_HOME') ~ '/git/openstack', true) }}"
+## Bind mount the repositories into each container to allow development work
+lxc_container_bind_mounts:
+  - host_directory: "{{ development_repo_directory }}"
+    container_directory: "{{ development_repo_directory }}"

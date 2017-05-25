@@ -40,6 +40,7 @@ usage() {
 
 EOF
 }
+
 exclude_project() {
     excluded_projects+="${1} "
 }
@@ -80,6 +81,16 @@ check_and_ignore() {
     return 1
 }
 
+copy_files() {
+    local osa_project=${1}
+
+    # Copy files
+    for f in ${files_to_sync[@]}; do
+        [[ ! -e ${osa_project}/$f ]] && continue
+        cp $f ${osa_project}/$f
+    done
+}
+
 # Do not change these files unless you know what you are doing
 declare -ra files_to_sync=(run_tests.sh bindep.txt Vagrantfile tests/tests-repo-clone.sh .gitignore)
 declare -r  openstack_git_url="git://git.openstack.org"
@@ -96,11 +107,39 @@ while true; do
         -i|--interactive) interactive=true; shift ;;
         -n|--dry-run) dry_run=true; shift ;;
         --) shift; break ;;
-        -h|--help|*) usage; exit 1 ;;
+        -h|--help) usage; exit 1 ;;
     esac
 done
 
-declare -ra osa_projects=($(./gen-projects-list.sh))
+# Always exclude openstack-ansible-tests repository. This is not
+# necessary because osa_projects should never include "openstack-ansible-tests"
+# but it can serve as an example for users who may add more
+# projects in the future.
+exclude_project "openstack-ansible-tests"
+
+############################# ZUUL SYNCING ###################################
+# If we running in the OpenStack CI then the first argument is going to be the
+# project directory and all we need to do is to simply copy files. The
+# environment is already prepared.
+if env | grep -q ^ZUUL; then
+    # Some debug information.
+    echo "Running in a Zuul environment"
+    echo "Current directory: $(pwd)"
+    echo "OSA project: '${1}'"
+
+    # Do we need to skip that repo?
+    check_and_ignore ${1} && exit 0
+
+    # This should never happen if Zuul is working properly
+    [[ ! -d ${1} ]] && { echo "${1} does not exit! Refusing to proceed"; exit 1; }
+
+    copy_files ${1}
+
+    # Return back to zuul. No furher processing is required.
+    exit 0
+else
+    declare -ra osa_projects=($(./gen-projects-list.sh))
+fi
 
 # Make sure interactive and dry run can't be used together
 ${dry_run} && ${interactive} && \
@@ -119,12 +158,6 @@ echo "=> Temporary directory for OSA repositories: ${tempdir}"
 mkdir ${tempdir}
 
 pushd ${tempdir} &> /dev/null
-
-# Always exclude openstack-ansible-tests repository. This is not
-# necessary because osa_projects should never include "openstack-ansible-tests"
-# but it can serve as an example for users who may add more
-# projects in the future.
-exclude_project "openstack-ansible-tests"
 
 echo "=> Cloning openstack-ansible-tests repository"
 eval git clone ${openstack_git_url}/openstack/openstack-ansible-tests
@@ -154,9 +187,10 @@ for proj in ${osa_projects[@]}; do
     popd &> /dev/null
 
     # Copy files
-    for f in ${files_to_sync[@]}; do
-        cp openstack-ansible-tests/$f ${proj_dir}/$f
-    done
+    pushd openstack-ansible-tests &> /dev/null
+    copy_files ${proj_dir}
+    popd &> /dev/null
+
     process_changes ${proj_dir} ${open_review:="__no_review__"}
     # Clean up the directory
     rm -rf ${proj_dir}

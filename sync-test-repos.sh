@@ -68,7 +68,7 @@ process_changes() {
 
         # Commit changes
         git add .
-        git commit $([[ ${review} == "__no_review__" ]] || printf %s '--amend') -m '[auto] Syncing common OSA files'
+        git commit $([[ ${review} == "__no_review__" ]] || printf %s '--amend') -m 'Updated from OpenStack Ansible Tests'
         git review $(${dry_run} && printf %s '-n')
     )
 }
@@ -141,11 +141,11 @@ for proj in ${osa_projects[@]}; do
 
     pushd $proj_dir &> /dev/null
 
-    git checkout -b osa-auto-sync-test-files
+    git checkout -b openstack/openstack-ansible-tests/sync-tests
     # if there an open review, re-use it
     open_review=$(git review --no-color -l | \
         grep -v "^Found" | \
-        grep "\[auto\] Syncing common OSA files" | \
+        grep "Updated from OpenStack Ansible Tests" | \
         tail -n1 | awk '{print $1}')
     [[ -n ${open_review} ]] && \
         echo "Using existing review #${open_review} for ${proj_dir}" && \

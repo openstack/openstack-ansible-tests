@@ -156,7 +156,8 @@ nova_container_mysql_password: "SuperSecrete"
 nova_developer_mode: true
 nova_galera_address: "{{ test_galera_host }}"
 nova_galera_database: nova
-nova_git_install_branch: master
+# Pin nova SHA until scheduling race condition can be resolved.
+nova_git_install_branch: fc162910bac0d0127f157b3c17457a1c98d665f6
 nova_keystone_auth_plugin: password
 nova_management_address: "{{ ansible_host }}"
 nova_metadata_port: 8775

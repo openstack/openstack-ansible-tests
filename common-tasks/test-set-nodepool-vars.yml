@@ -35,7 +35,7 @@
     - ansible_os_family == 'Debian'
 
 # NOTE(mhayden): GPG checking for local package installs is normally disabled
-# by default in CentOS, but the openstack-ansible-security role enables GPG
+# by default in CentOS, but the ansible-hardening role enables GPG
 # checking for local packages. The RDO repository package isn't signed, but the
 # repos it installs have GPG checking enabled.
 - name: Install the RDO release package

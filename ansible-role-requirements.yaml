@@ -167,7 +167,7 @@
   src: "https://git.openstack.org/openstack/openstack-ansible-rsyslog_server"
   scm: git
   version: "master"
-- name: "security"
-  src: "https://git.openstack.org/openstack/openstack-ansible-security"
+- name: "ansible-hardening"
+  src: "https://git.openstack.org/openstack/ansible-hardening"
   scm: git
   version: "master"

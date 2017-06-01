@@ -462,7 +462,7 @@ swift_proxy_server_workers: 2
 pip_install_options: "--no-binary libvirt-python"
 
 # The URL/path of a constraints file to use when installing the additional pip packages.
-pip_install_upper_constraints: "http://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt"
+pip_install_upper_constraints: "http://git.openstack.org/cgit/openstack/openstack-ansible/plain/global-requirement-pins.txt --constraint http://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt"
 
 # Overriding the developer_constraints allows us to install from local disk as a precedence
 # if the repo is present.

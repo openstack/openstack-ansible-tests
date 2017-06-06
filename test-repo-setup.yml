@@ -29,7 +29,7 @@
       register: projects_directory_find
     - name: Set var for git install branch
       copy:
-        dest: "{{ development_repo_directory }}/local-package-constraints.txt"
+        dest: "{{ development_repo_directory }}/local-package-constraints-{{ test_branch | replace('/','_') }}.txt"
         content: |
           ## Ansible Managed
           {% if projects_directory_find.files is defined %}

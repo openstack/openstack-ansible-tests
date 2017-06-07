@@ -13,11 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Playbook for deploying keystone
-  hosts: keystone_all
-  user: root
+- name: Prepare MQ/DB services
+  hosts: keystone_all[0]
   gather_facts: true
-  pre_tasks:
+  user: root
+  become: true
+  tasks:
     - name: Set keystone_messaging fact
       set_fact:
         keystone_messaging_enabled: "{{ groups['rabbitmq_all'] is defined }}"
@@ -29,7 +30,48 @@
     - include: create-grant-db.yml
       db_name: "{{ keystone_galera_database }}"
       db_password: "{{ keystone_container_mysql_password }}"
+  vars_files:
+    - test-vars.yml
+
+- name: Playbook for deploying keystone
+  hosts: keystone_all
+  serial: 1
+  user: root
+  become: true
+  gather_facts: true
+  pre_tasks:
+    # In order to ensure that any container, software or
+    # config file changes which causes a container/service
+    # restart do not cause an unexpected outage, we drain
+    # the load balancer back end for this container.
+    - include: common-tasks/haproxy-endpoint-manage.yml
+      vars:
+        haproxy_state: disabled
+      when:
+        - "groups['keystone_all'] | length > 1"
   roles:
-    - role: "{{ keystone_rolename | default('os_keystone') }}"
+    - role: "os_keystone"
+  post_tasks:
+    # Now that container changes are done, we can set
+    # the load balancer back end for this container
+    # to available again.
+    - include: common-tasks/haproxy-endpoint-manage.yml
+      vars:
+        haproxy_state: enabled
+      when:
+        - "groups['keystone_all'] | length > 1"
+  vars_files:
+    - test-vars.yml
+
+- name: Playbook for finalising the keystone db migrations
+  hosts: keystone_all[0]
+  user: root
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Perform a Keystone DB sync contract
+      command: "/openstack/venvs/keystone-{{ keystone_venv_tag }}/bin/keystone-manage db_sync --contract"
+      become: yes
+      become_user: keystone
   vars_files:
     - test-vars.yml

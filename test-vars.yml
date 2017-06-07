@@ -493,3 +493,7 @@ development_repo_directory: "{{ lookup('env', 'OPENSTACK_REPO_DIRECTORY') | defa
 lxc_container_bind_mounts:
   - host_directory: "{{ development_repo_directory }}"
     container_directory: "{{ development_repo_directory }}"
+
+## haproxy variables
+haproxy_ssl: no
+

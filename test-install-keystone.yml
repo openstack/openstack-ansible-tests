@@ -62,3 +62,16 @@
         - "groups['keystone_all'] | length > 1"
   vars_files:
     - test-vars.yml
+
+- name: Playbook for finalising the keystone db migrations
+  hosts: keystone_all[0]
+  user: root
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Perform a Keystone DB sync contract
+      command: "/openstack/venvs/keystone-{{ keystone_venv_tag }}/bin/keystone-manage db_sync --contract"
+      become: yes
+      become_user: keystone
+  vars_files:
+    - test-vars.yml

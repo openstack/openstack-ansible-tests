@@ -42,6 +42,8 @@ exclude_project openstack-ansible-pip_lock_down
 exclude_project openstack-ansible-py_from_git
 # ansible-tests is where we are so we know it's maintained
 exclude_project openstack-ansible-tests
+# openstack-ansible-security is retired
+exclude_project openstack-ansible-security
 #
 ############## END OF EXCLUDED PROJECTS ###############
 

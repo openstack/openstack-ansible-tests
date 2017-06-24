@@ -431,3 +431,6 @@ pip_get_pip_force: no
 
 # Test install options
 install_test_packages: True
+
+## haproxy variables
+haproxy_ssl: no

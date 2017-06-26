@@ -29,6 +29,10 @@ exclude_project() {
     excluded_projects+="openstack/$1 "
 }
 
+extra_include_project() {
+    extra_included_projects+="openstack/$1 "
+}
+
 ############## EXCLUDED PROJECTS ######################
 #
 # List of the projects that need to be excluded for various
@@ -47,6 +51,16 @@ exclude_project openstack-ansible-security
 #
 ############## END OF EXCLUDED PROJECTS ###############
 
+############## INCLUDED PROJECTS ######################
+#
+# List of additional projects that need to be included for various
+# reasons
+#
+# ansible-hardening. Used by AIO in favor of the retired
+# openstack-ansible-security
+extra_include_project ansible-hardening
+############## END OF INCLUDED PROJECTS ###############
+
 # Replace spaces with newlines as expected by grep -F
 excluded_projects="$(echo ${excluded_projects} | tr ' ' '\n')"
 
@@ -56,3 +70,7 @@ excluded_projects="$(echo ${excluded_projects} | tr ' ' '\n')"
 curl --retry 10 -s --fail http://git.openstack.org/cgit | grep -o \
     "openstack/openstack-ansible-[[:alnum:]_-]*" | \
     grep -v -F "${excluded_projects}" | uniq | sort -n
+
+for x in ${extra_included_projects[@]}; do
+    echo $x
+done

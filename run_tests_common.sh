@@ -27,7 +27,7 @@ case "${ID,,}" in
         [[ "${VERSION}" == "42.1" ]] && extra_suse_deps="libffi-devel python-pyOpenSSL"
         sudo zypper -n in python-devel lsb-release ${extra_suse_deps:-}
         ;;
-    centos)
+    amzn|centos|rhel)
         sudo yum install -y python-devel redhat-lsb-core
         ;;
     ubuntu|debian)

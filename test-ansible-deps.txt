@@ -12,3 +12,6 @@ ansible==2.3.1.0
 
 # The Ansible lint version used for lint tests
 ansible-lint==3.4.12
+
+# Used for the ip filter within ansible
+netaddr

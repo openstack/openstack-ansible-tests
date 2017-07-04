@@ -20,34 +20,23 @@
   user: root
   become: true
   gather_facts: true
+  vars:
+    kernel_module_path:
+      apt: "lib/modules"
+      yum: "usr/lib/modules"
   vars_files:
     - test-vars.yml
   tasks:
-    - name: Use the unconfined aa profile
-      lxc_container:
-        name: "{{ container_name }}"
-        container_config:
-          - "lxc.aa_profile=unconfined"
-      delegate_to: "{{ physical_host }}"
-
-    - name: Set mount path for kernel modules (Ubuntu)
-      set_fact:
-        kernel_module_path: "lib/modules"
-      when: ansible_pkg_mgr == 'apt'
-
-    - name: Set mount path for kernel modules (CentOS)
-      set_fact:
-        kernel_module_path: "usr/lib/modules"
-      when: ansible_pkg_mgr == 'yum'
 
     - name: Neutron extra lxc config
       lxc_container:
         name: "{{ container_name }}"
         container_command: |
-          [[ ! -d "/{{ kernel_module_path }}" ]] && mkdir -p "/{{ kernel_module_path }}"
+          [[ ! -d "/{{ kernel_module_path[ansible_pkg_mgr] }}" ]] && mkdir -p "/{{ kernel_module_path[ansible_pkg_mgr] }}"
         container_config:
+          - "lxc.aa_profile=unconfined"
           - "lxc.cgroup.devices.allow=a *:* rmw"
-          - "lxc.mount.entry=/{{ kernel_module_path }} {{ kernel_module_path }} none bind 0 0"
+          - "lxc.mount.entry=/{{ kernel_module_path[ansible_pkg_mgr] }} {{ kernel_module_path[ansible_pkg_mgr] }} none bind 0 0"
       delegate_to: "{{ physical_host }}"
 
     - name: Wait for container connectivity
@@ -57,41 +46,61 @@
         sleep: "{{ lxc_container_wait_params.sleep | default(omit) }}"
         timeout: "{{ lxc_container_wait_params.timeout | default(omit) }}"
 
-    - name: Add iptables rule for communication w/ metadata agent
-      command: /sbin/iptables -t mangle -A POSTROUTING -p tcp --sport 80 -j CHECKSUM --checksum-fill
 
-- name: Deploy neutron
+
+- name: Prepare for neutron services
   hosts: neutron_all
   user: root
   become: true
   gather_facts: true
-  pre_tasks:
+  vars:
+    required_packages:
+      apt:
+        - "libffi-dev"
+      yum:
+        - "libffi-devel"
+  vars_files:
+    - test-vars.yml
+  tasks:
+
     # NOTE: These are typically installed in the repo server where we build the
     #       neutron wheel
-    - name: Install packages required to build neutron python package (Ubuntu)
-      apt:
-        name: "{{ item }}"
-      with_items:
-        - libffi-dev
-      when:
-        - inventory_hostname in groups['neutron_all']
-        - ansible_pkg_mgr == 'apt'
-    - name: Install packages required to build neutron python package (CentOS)
-      yum:
-        name: "{{ item }}"
-      with_items:
-        - libffi-devel
-      when:
-        - inventory_hostname in groups['neutron_all']
-        - ansible_pkg_mgr == 'yum'
+    - name: Install packages required to build neutron python package
+      package:
+        name: "{{ required_packages[ansible_pkg_mgr] }}"
+        state: present
+
     - include: ensure-rabbitmq.yml
       vhost_name: "{{ neutron_rabbitmq_vhost }}"
       user_name: "{{ neutron_rabbitmq_userid }}"
       user_password: "{{ neutron_rabbitmq_password }}"
+      run_once: yes
+
     - include: create-grant-db.yml
       db_name: "{{ neutron_galera_database }}"
       db_password: "{{ neutron_container_mysql_password }}"
+      run_once: yes
+
+
+
+- name: Deploy neutron server
+  hosts: neutron_server
+  user: root
+  become: true
+  gather_facts: true
   roles:
-    - role: "{{ neutron_rolename | default('os_neutron') }}"
+    - role: "os_neutron"
+  vars_files:
+    - test-vars.yml
+
+
+
+- name: Deploy the rest of neutron
+  hosts: "neutron_all:!neutron_server"
+  user: root
+  become: true
+  gather_facts: true
+  roles:
+    - role: "os_neutron"
   vars_files:
     - test-vars.yml

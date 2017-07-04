@@ -13,19 +13,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Deploy cinder
-  hosts: cinder_all
+- name: Deploy cinder API services
+  hosts: cinder_api
   user: root
   become: true
   gather_facts: true
   pre_tasks:
+
     - include: ensure-rabbitmq.yml
       vhost_name: "{{ cinder_rabbitmq_vhost }}"
       user_name: "{{ cinder_rabbitmq_userid }}"
       user_password: "{{ cinder_rabbitmq_password }}"
+      run_once: yes
+
     - include: create-grant-db.yml
       db_name: "{{ cinder_galera_database }}"
       db_password: "{{ cinder_container_mysql_password }}"
+      run_once: yes
+
+  roles:
+    - role: "os_cinder"
+  vars_files:
+    - test-vars.yml
+
+
+
+- name: Deploy the rest of cinder
+  hosts: "cinder_all:!cinder_api"
+  user: root
+  become: true
+  gather_facts: true
   roles:
     - role: "os_cinder"
   vars_files:

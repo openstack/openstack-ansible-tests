@@ -24,6 +24,7 @@
     kernel_module_path:
       apt: "lib/modules"
       yum: "usr/lib/modules"
+      zypper: "lib/modules"
   vars_files:
     - test-vars.yml
   tasks:
@@ -58,6 +59,8 @@
       apt:
         - "libffi-dev"
       yum:
+        - "libffi-devel"
+      zypper:
         - "libffi-devel"
   vars_files:
     - test-vars.yml

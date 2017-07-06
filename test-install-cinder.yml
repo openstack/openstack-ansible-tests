@@ -24,12 +24,10 @@
       vhost_name: "{{ cinder_rabbitmq_vhost }}"
       user_name: "{{ cinder_rabbitmq_userid }}"
       user_password: "{{ cinder_rabbitmq_password }}"
-      run_once: yes
 
     - include: create-grant-db.yml
       db_name: "{{ cinder_galera_database }}"
       db_password: "{{ cinder_container_mysql_password }}"
-      run_once: yes
 
   roles:
     - role: "os_cinder"

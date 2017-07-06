@@ -54,29 +54,24 @@
       vhost_name: "{{ nova_rabbitmq_vhost }}"
       user_name: "{{ nova_rabbitmq_userid }}"
       user_password: "{{ nova_rabbitmq_password }}"
-      run_once: yes
 
     - include: create-grant-db.yml
       db_name: "{{ nova_galera_database }}"
       db_password: "{{ nova_container_mysql_password }}"
-      run_once: yes
 
     - include: create-grant-db.yml
       db_name: "{{ nova_api_galera_database }}"
       db_password: "{{ nova_api_container_mysql_password }}"
-      run_once: yes
 
     - include: create-grant-db.yml
       db_name: "{{ nova_placement_galera_database }}"
       db_password: "{{ nova_placement_container_mysql_password }}"
-      run_once: yes
 
     - include: create-grant-db.yml
       db_name: "{{ nova_cell0_database }}"
       db_password: "{{ nova_api_container_mysql_password }}"
       db_user: "{{ nova_api_galera_user }}"
       db_append_privs: "yes"
-      run_once: yes
 
 - name: Deploy nova control plane
   hosts: "nova_all:!nova_compute"

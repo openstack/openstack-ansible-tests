@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Playbook for creating containers
+- name: Gather facts for the LXC hosts
   hosts: localhost
   become: true
   gather_facts: true
@@ -26,6 +26,7 @@
   serial: 1
   become: True
   gather_facts: False
+  any_errors_fatal: true
   roles:
     - role: "lxc_container_create"
   post_tasks:

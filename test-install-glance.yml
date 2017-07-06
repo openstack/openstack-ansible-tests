@@ -18,6 +18,7 @@
   user: root
   become: true
   gather_facts: true
+  any_errors_fatal: true
   pre_tasks:
     - include: ensure-rabbitmq.yml
       vhost_name: "{{ glance_rabbitmq_vhost }}"

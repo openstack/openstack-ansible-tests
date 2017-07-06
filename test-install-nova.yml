@@ -20,6 +20,7 @@
   user: root
   become: true
   gather_facts: true
+  any_errors_fatal: true
   vars:
     required_packages:
       apt:
@@ -83,6 +84,7 @@
   user: root
   become: true
   gather_facts: true
+  any_errors_fatal: true
   roles:
     - role: "os_nova"
   vars_files:
@@ -93,6 +95,7 @@
   user: root
   become: true
   gather_facts: true
+  any_errors_fatal: true
   roles:
     - role: "os_nova"
   vars_files:

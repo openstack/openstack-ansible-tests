@@ -51,7 +51,10 @@ sudo pip install 'bindep>=2.4.0' tox
 #   redhat-lsb-core - for bindep profile support
 #   epel-release    - required to install python-ndg_httpsclient/python2-pyasn1
 if [[ ${ID,,} == "centos" ]]; then
-    sudo yum -y install redhat-lsb-core epel-release
+    sudo yum -y install redhat-lsb-core epel-release yum-utils
+    # epel-release could be installed but not enabled (which is very common
+    # in openstack-ci) so enable it here if needed
+    sudo yum-config-manager --enable epel || true
 # openSUSE 42.1 does not have python-ndg-httpsclient
 elif [[ ${ID,,} == *suse* ]] && [[ ${VERSION} == "42.1" ]]; then
     sudo pip install ndg-httpsclient

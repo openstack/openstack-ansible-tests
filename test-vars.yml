@@ -79,7 +79,7 @@ galera_wsrep_node_name: "{{ inventory_hostname }}"
 galera_wsrep_provider_options:
   - { option: "gcache.size", value: "32M" }
 galera_server_id: "{{ inventory_hostname | string_2_int }}"
-galera_disable_privatedevices: "{{ ((properties.is_metal | default(false)) | bool) | ternary('false', 'true') }}"
+galera_disable_privatedevices: true
 
 # RabbitMQ Settings
 rabbitmq_cookie_token: secrete
@@ -92,7 +92,7 @@ rabbitmq_password: "secrete"
 memcached_listen: "{{ test_memcached_host }}"
 memcached_servers: "{{ test_memcached_host }}"
 memcached_encryption_key: "secrete"
-memcached_disable_privatedevices: "{{ ((properties.is_metal | default(false)) | bool) | ternary('false', 'true') }}"
+memcached_disable_privatedevices: true
 
 # Keystone Settings
 keystone_ssl: True

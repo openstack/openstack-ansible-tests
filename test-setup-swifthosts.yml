@@ -21,34 +21,16 @@
   vars_files:
     - test-vars.yml
   tasks:
-  - name: Ensure xfsprogs is installed on localhost (Ubuntu)
-    apt:
+  - name: Ensure xfsprogs is installed on localhost
+    package:
       name: xfsprogs
       state: present
     delegate_to: "{{ physical_host }}"
     run_once: true
-    when:
-      - ansible_pkg_mgr == 'apt'
-  - name: Ensure xfsprogs is installed on localhost (CentOS)
-    yum:
+  - name: Ensure xfsprogs is installed on containers
+    package:
       name: xfsprogs
       state: present
-    delegate_to: "{{ physical_host }}"
-    run_once: true
-    when:
-      - ansible_pkg_mgr == 'yum'
-  - name: Ensure xfsprogs is installed on containers (Ubuntu)
-    apt:
-      name: xfsprogs
-      state: present
-    when:
-      - ansible_pkg_mgr == 'apt'
-  - name: Ensure xfsprogs is installed on containers (CentOS)
-    yum:
-      name: xfsprogs
-      state: present
-    when:
-      - ansible_pkg_mgr == 'yum'
   - name: Openstack directory Create
     file:
       state: directory

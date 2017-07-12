@@ -50,6 +50,7 @@
   - name: Format the Swift files
     filesystem:
       fstype: xfs
+      opts: '-K'
       dev: "/opt/{{ container_name}}_{{ item }}.img"
     when: swift_create | changed
     with_items:

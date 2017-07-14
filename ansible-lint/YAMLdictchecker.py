@@ -24,8 +24,8 @@ class YAMLdictchecker(AnsibleLintRule):
     description = 'Pleae follow YAML dicitionary format while creating'
     'task and other roles in Ansible'
     'Follow this url for examples of how to use YAML dictionary '
-    'format. "http://docs.openstack.org/developer/openstack-ansible/'
-    'developer-docs/contribute.html#ansible-style-guide"'
+    'format. "https://docs.openstack.org/openstack-ansible/latest/'
+    'contribute/contribute.html#ansible-style-guide"'
     tags = ['task']
 
     def match(self, file, line):

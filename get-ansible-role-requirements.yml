@@ -49,7 +49,9 @@
         git_roles: >
           {%- set filtered_role_list = [] %}
           {%- for role in roles %}
-          {%-   if (not role.src | match(".*git.openstack.org.*")) or (role.name | match("os_previous_.*")) %}
+          {%-   if (not role.src | match(".*git.openstack.org.*")) or
+                   (role.name | match("os_previous_.*")) or
+                   (role.name | match("previous_.*")) %}
           {%-     set _ = filtered_role_list.append(role) %}
           {%-   endif %}
           {%- endfor %}

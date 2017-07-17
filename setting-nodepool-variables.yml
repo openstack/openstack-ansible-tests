@@ -16,5 +16,6 @@
 - name: Setting nodepool variables
   hosts: all
   gather_facts: true
+  any_errors_fatal: true
   tasks:
     - include: "common-tasks/test-set-nodepool-vars.yml"

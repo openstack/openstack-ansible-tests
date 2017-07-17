@@ -18,6 +18,7 @@
   user: root
   become: true
   gather_facts: true
+  any_errors_fatal: true
   pre_tasks:
     - include: create-grant-db.yml
       db_name: "{{ horizon_galera_database }}"

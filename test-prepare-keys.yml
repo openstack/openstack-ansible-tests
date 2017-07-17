@@ -20,6 +20,7 @@
 - name: Playbook for establishing ssh keys
   hosts: localhost
   gather_facts: false
+  any_errors_fatal: true
   connection: local
   become: true
   tasks:
@@ -68,6 +69,7 @@
   hosts: localhost
   connection: local
   become: false
+  any_errors_fatal: true
   tasks:
     # Shell used because facts may not be ready yet
     - name: Get user home directory

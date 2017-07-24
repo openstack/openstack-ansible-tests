@@ -462,7 +462,15 @@ swift_proxy_server_workers: 2
 # This ensures that libvirt-python is built from source. A pre-built
 # wheel can be missing libvirt capabilities from the installed version
 # of libvirt-bin, leading to nova-compute failing to start.
-pip_install_options: "--no-binary libvirt-python"
+#
+# NOTE(hwoarang) cryptography may bundle openssl in the wheel and that
+# causes symbol conflicts if a different openssl is provided by the
+# distribution. As such, it's probably safer to re-build cryptography
+# ourselves just to be sure that the correct distro libraries are used
+# see https://github.com/pyca/cryptography/issues/3804
+# This keeps poping up every now and then so it might worth keeping this
+# around even if the upstream issue is resolved
+pip_install_options: "--no-binary libvirt-python,cryptography"
 
 # The URL/path of a constraints file to use when installing the additional pip packages.
 pip_install_upper_constraints: "http://git.openstack.org/cgit/openstack/openstack-ansible/plain/global-requirement-pins.txt?h={{ test_branch }} --constraint http://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h={{ test_branch }}"

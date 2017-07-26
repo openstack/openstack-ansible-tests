@@ -52,9 +52,13 @@ if [[ -d "/etc/nodepool" ]]; then
   # output ram usage
   free -m > "${WORKING_DIR}/logs/memory-available.txt" || true
   # Redhat package debugging
-  if [ "$(which rpm)" ]; then
+  if which yum &>/dev/null; then
       sudo yum repolist -v > "${WORKING_DIR}/logs/redhat-yum-repolist.txt" || true
       sudo yum list installed > "${WORKING_DIR}/logs/redhat-yum-list-installed.txt" || true
+  # SUSE package debugging
+  elif which zypper &>/dev/null; then
+      sudo zypper lr -d > "${WORKING_DIR}/logs/suse-zypper-repolist.txt" || true
+      sudo zypper pa -i > "${WORKING_DIR}/logs/suse-zypper-list-installed.txt" || true
   fi
   # Compress the files gathered so that they do not take up too much space.
   # We use 'command' to ensure that we're not executing with some sort of alias.

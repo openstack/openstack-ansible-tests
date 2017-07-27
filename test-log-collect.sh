@@ -32,8 +32,16 @@ export RSYNC_CMD="rsync --archive --verbose --safe-links --ignore-errors"
 
 if [[ -d "/etc/nodepool" ]]; then
   mkdir -p "${WORKING_DIR}/logs/host" "${WORKING_DIR}/logs/openstack"
-  ${RSYNC_CMD} /var/log/ "${WORKING_DIR}/logs/host" || true
-  ${RSYNC_CMD} /openstack/log/ "${WORKING_DIR}/logs/openstack" || true
+
+  # NOTE(mhayden): We use sudo here to ensure that all logs are copied.
+  sudo ${RSYNC_CMD} /var/log/ "${WORKING_DIR}/logs/host" || true
+  sudo ${RSYNC_CMD} /openstack/log/ "${WORKING_DIR}/logs/openstack" || true
+
+  # NOTE(mhayden): All of the logs must be world-readable so that the log
+  # pickup jobs will work properly. Without this, you get a "File not found"
+  # when trying to read the logs in the job results.
+  sudo chown -R $(whoami) "${WORKING_DIR}/logs/"
+  sudo chmod -R u+r,g+r,o+r "${WORKING_DIR}/logs/"
 
   if [ ! -z "${ANSIBLE_LOG_DIR}" ]; then
     mkdir -p "${WORKING_DIR}/logs/ansible"

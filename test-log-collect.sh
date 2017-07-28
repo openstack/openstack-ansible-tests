@@ -57,6 +57,8 @@ if [[ -d "/etc/nodepool" ]]; then
   ${RSYNC_CMD} "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/" || true
   # Generate the ARA report
   ${ARA_CMD} "${WORKING_DIR}/logs/ara" || true
+  # Get a dmesg output so we can look for kernel failures
+  dmesg > "${$WORKING_DIR}/logs/dmesg.log" || true
   # output ram usage
   free -m > "${WORKING_DIR}/logs/memory-available.txt" || true
   # Redhat package debugging

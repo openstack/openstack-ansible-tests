@@ -39,12 +39,12 @@
 # checking for local packages. The RDO repository package isn't signed, but the
 # repos it installs have GPG checking enabled.
 - name: Install the RDO release package
-  yum:
+  package:
     name: "https://repos.fedorapeople.org/repos/openstack/openstack-ocata/rdo-release-ocata.rpm"
     state: "present"
     disable_gpg_check: yes
   when:
-    - ansible_pkg_mgr == 'yum'
+    - ansible_pkg_mgr in ['yum', 'dnf']
 
 - name: Set the files to copy into the container cache for OpenStack-CI instances
   set_fact:

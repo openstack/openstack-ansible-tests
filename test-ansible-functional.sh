@@ -105,7 +105,7 @@ function gate_job_exit_tasks {
 # NOTE(mhayden): CentOS images in the gate have several slow mirrors enabled
 # by default. This step ensures that only the base, epel, and updates
 # repositories are enabled.
-if which yum &>/dev/null; then
+if which yum &>/dev/null || which dnf &>/dev/null; then
   sudo yum-config-manager --disable \*
   sudo yum-config-manager --enable base
   sudo yum-config-manager --enable epel

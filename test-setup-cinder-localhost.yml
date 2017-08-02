@@ -22,11 +22,11 @@
         name: lvm2
       when:
         - ansible_pkg_mgr == 'apt'
-    - name: Install lvm2 yum package
-      yum:
+    - name: Install lvm2 package
+      package:
         name: lvm2
       when:
-        - ansible_pkg_mgr == 'yum'
+        - ansible_pkg_mgr in ['yum', 'dnf']
     - name: Create sparse Cinder file
       shell: "truncate -s 10G /openstack/cinder.img"
       args:

@@ -29,6 +29,12 @@
         - libffi-dev
         - pkg-config
         - libvirt-dev
+      dnf:
+        - libxml2-devel
+        - libxslt-devel
+        - libffi-devel
+        - pkgconfig
+        - libvirt-devel
       yum:
         - libxml2-devel
         - libxslt-devel

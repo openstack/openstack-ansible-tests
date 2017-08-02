@@ -24,6 +24,7 @@
   vars:
     kernel_module_path:
       apt: "lib/modules"
+      dnf: "usr/lib/modules"
       yum: "usr/lib/modules"
       zypper: "lib/modules"
   vars_files:
@@ -60,6 +61,8 @@
     required_packages:
       apt:
         - "libffi-dev"
+      dnf:
+        - "libffi-devel"
       yum:
         - "libffi-devel"
       zypper:

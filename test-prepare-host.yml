@@ -76,7 +76,7 @@
       with_items: "{{ bridges }}"
       register: network_interfaces_rhel
       when:
-        - ansible_pkg_mgr == 'yum'
+        - ansible_pkg_mgr in ['yum', 'dnf']
 
     - name: Copy network configuration (SUSE)
       template:
@@ -93,7 +93,7 @@
         dest: "/etc/sysconfig/network-scripts/ifcfg-{{ item.name | default('br-mgmt')}}:0"
       with_items: "{{ bridges }}"
       when:
-        - ansible_pkg_mgr == 'yum'
+        - ansible_pkg_mgr in ['yum', 'dnf']
         - item.alias is defined
 
     - name: Put down post-up script for veth-peer interfaces (RedHat)
@@ -106,7 +106,7 @@
         - "{{ bridges }}"
       when:
         - item[1].veth_peer is defined
-        - ansible_pkg_mgr == 'yum'
+        - ansible_pkg_mgr in ['yum', 'dnf']
 
     # NOTE(hworang): Nested loops do not work on blocks. See
     # https://github.com/ansible/ansible/issues/13262
@@ -157,7 +157,7 @@
         - "{{ bridges }}"
       when:
         - item[1].veth_peer is defined
-        - ansible_pkg_mgr == 'yum'
+        - ansible_pkg_mgr in ['yum', 'dnf']
 
     - name: Shut down the network interfaces
       command: "ifdown {{ item.name | default('br-mgmt') }}"
@@ -169,7 +169,7 @@
     - name: Shut down the alias interface (RedHat)
       command: "ifdown {{ item.name | default('br-mgmt') }}:0"
       when:
-        - ansible_pkg_mgr == 'yum'
+        - ansible_pkg_mgr in ['yum', 'dnf']
         - network_interfaces_rhel | changed
         - item.alias is defined
       with_items: "{{ bridges }}"
@@ -184,7 +184,7 @@
     - name: Start the alias interface (RedHat)
       command: "ifup {{ item.name | default('br-mgmt') }}:0"
       when:
-        - ansible_pkg_mgr == 'yum'
+        - ansible_pkg_mgr in ['yum', 'dnf']
         - network_interfaces_rhel | changed
         - item.alias is defined
       with_items: "{{ bridges }}"

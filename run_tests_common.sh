@@ -20,6 +20,9 @@ BINDEP_FILE=${BINDEP_FILE:-bindep.txt}
 
 source /etc/os-release || source /usr/lib/os-release
 
+# Prefer dnf over yum for CentOS.
+which dnf &>/dev/null && RHT_PKG_MGR='dnf' || RHT_PKG_MGR='yum'
+
 case "${ID,,}" in
     *suse*)
         # Need to pull libffi and python-pyOpenSSL early
@@ -28,7 +31,7 @@ case "${ID,,}" in
         sudo zypper -n in python-devel lsb-release ${extra_suse_deps:-}
         ;;
     amzn|centos|rhel)
-        sudo yum install -y python-devel redhat-lsb-core
+        sudo $RHT_PKG_MGR install -y python-devel redhat-lsb-core
         ;;
     ubuntu|debian)
         sudo apt-get update && sudo apt-get install -y python-dev lsb-release
@@ -51,7 +54,7 @@ sudo pip install 'bindep>=2.4.0' tox
 #   redhat-lsb-core - for bindep profile support
 #   epel-release    - required to install python-ndg_httpsclient/python2-pyasn1
 if [[ ${ID,,} == "centos" ]]; then
-    sudo yum -y install redhat-lsb-core epel-release yum-utils
+    sudo $RHT_PKG_MGR -y install redhat-lsb-core epel-release yum-utils
     # epel-release could be installed but not enabled (which is very common
     # in openstack-ci) so enable it here if needed
     sudo yum-config-manager --enable epel || true
@@ -72,7 +75,7 @@ if [[ ${#BINDEP_PKGS} > 0 ]]; then
             sudo zypper -n in $BINDEP_PKGS
             ;;
         centos)
-            sudo yum install -y $BINDEP_PKGS
+            sudo $RHT_PKG_MGR install -y $BINDEP_PKGS
             ;;
         ubuntu|debian)
             sudo apt-get update

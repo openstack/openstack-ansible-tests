@@ -62,9 +62,11 @@ if [[ -d "/etc/nodepool" ]]; then
   # output ram usage
   free -m > "${WORKING_DIR}/logs/memory-available.txt" || true
   # Redhat package debugging
-  if which yum &>/dev/null; then
-      sudo yum repolist -v > "${WORKING_DIR}/logs/redhat-yum-repolist.txt" || true
-      sudo yum list installed > "${WORKING_DIR}/logs/redhat-yum-list-installed.txt" || true
+  if which yum &>/dev/null || which dnf &>/dev/null; then
+      # Prefer dnf over yum for CentOS.
+      which dnf &>/dev/null && RHT_PKG_MGR='dnf' || RHT_PKG_MGR='yum'
+      sudo $RHT_PKG_MGR repolist -v > "${WORKING_DIR}/logs/redhat-rpm-repolist.txt" || true
+      sudo $RHT_PKG_MGR list installed > "${WORKING_DIR}/logs/redhat-rpm-list-installed.txt" || true
   # SUSE package debugging
   elif which zypper &>/dev/null; then
       sudo zypper lr -d > "${WORKING_DIR}/logs/suse-zypper-repolist.txt" || true

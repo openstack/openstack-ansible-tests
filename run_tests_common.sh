@@ -58,6 +58,8 @@ if [[ ${ID,,} == "centos" ]]; then
     # epel-release could be installed but not enabled (which is very common
     # in openstack-ci) so enable it here if needed
     sudo yum-config-manager --enable epel || true
+elif [[ ${ID,,} == "fedora" ]]; then
+    sudo dnf -y install redhat-lsb-core yum-utils
 # openSUSE 42.1 does not have python-ndg-httpsclient
 elif [[ ${ID,,} == *suse* ]] && [[ ${VERSION} == "42.1" ]]; then
     sudo pip install ndg-httpsclient

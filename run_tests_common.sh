@@ -31,7 +31,7 @@ case "${ID,,}" in
         sudo zypper -n in python-devel lsb-release ${extra_suse_deps:-}
         ;;
     amzn|centos|rhel)
-        sudo $RHT_PKG_MGR install -y python-devel redhat-lsb-core
+        sudo $RHT_PKG_MGR install -y python-devel redhat-lsb-core epel-release yum-utils
         ;;
     ubuntu|debian)
         sudo apt-get update && sudo apt-get install -y python-dev lsb-release
@@ -50,11 +50,7 @@ fi
 # Install bindep and tox
 sudo pip install 'bindep>=2.4.0' tox
 
-# CentOS 7 requires two additional packages:
-#   redhat-lsb-core - for bindep profile support
-#   epel-release    - required to install python-ndg_httpsclient/python2-pyasn1
 if [[ ${ID,,} == "centos" ]]; then
-    sudo $RHT_PKG_MGR -y install redhat-lsb-core epel-release yum-utils
     # epel-release could be installed but not enabled (which is very common
     # in openstack-ci) so enable it here if needed
     sudo yum-config-manager --enable epel || true

@@ -21,7 +21,7 @@ from ansiblelint import AnsibleLintRule
 class YAMLdictchecker(AnsibleLintRule):
     id = 'OSA0001'
     shortdesc = 'Please use ":" YAML dictionary format instead of "="'
-    description = 'Pleae follow YAML dicitionary format while creating'
+    description = 'Please follow YAML dictionary format while creating'
     'task and other roles in Ansible'
     'Follow this url for examples of how to use YAML dictionary '
     'format. "https://docs.openstack.org/openstack-ansible/latest/'

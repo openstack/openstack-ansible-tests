@@ -36,5 +36,8 @@ export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
 # Ensure that the Ansible environment is properly prepared
 source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
 
+# Run linter tests
+python -m unittest discover -s ${WORKING_DIR}/ansible-lint/ -p "*.py"
+
 # Execute ansible-lint
 ansible-lint ${WORKING_DIR} -R -r ${WORKING_DIR}/ansible-lint/

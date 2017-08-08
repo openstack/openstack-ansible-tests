@@ -455,6 +455,15 @@ swift_account_server_workers: 2
 swift_container_server_workers: 2
 swift_object_server_workers: 2
 swift_proxy_server_workers: 2
+glance_wsgi_processes: 2
+cinder_wsgi_processes: 2
+neutron_wsgi_processes: 2
+swift_wsgi_processes: 2
+sahara_wsgi_processes: 2
+heat_wsgi_processes: 2
+octavia_wsgi_processes: 2
+ironic_wsgi_processes: 2
+
 
 # PIP install options
 

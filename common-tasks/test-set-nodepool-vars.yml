@@ -59,6 +59,28 @@
     - ansible_pkg_mgr == 'apt'
     - nodepool.stat.exists | bool
 
+- name: Discover the CentOS mirror URL when in nodepool
+  shell: |
+    source /etc/ci/mirror_info.sh
+    echo "${NODEPOOL_CENTOS_MIRROR}"
+  args:
+    executable: /bin/bash
+  register: centos_mirror_url
+  delegate_to: localhost
+  when:
+    - ansible_pkg_mgr in ['yum', 'dnf']
+    - nodepool.stat.exists | bool
+  tags:
+    - skip_ansible_lint
+
+# NOTE(mhayden): This mirror URL already has the '/centos' URI added.
+- name: Set a fact to override the CentOS mirror URL when in nodepool
+  set_fact:
+    pip_install_centos_mirror_url: "{{ centos_mirror_url.stdout }}"
+  when:
+    - ansible_pkg_mgr in ['yum', 'dnf']
+    - nodepool.stat.exists | bool
+
 # NOTE(mhayden): GPG checking for local package installs is normally disabled
 # by default in CentOS, but the ansible-hardening role enables GPG
 # checking for local packages. The RDO repository package isn't signed, but the

@@ -506,10 +506,15 @@ lxc_container_wait_params:
 ## Developer mode variables
 # Location of development repositories directory
 development_repo_directory: "{{ lookup('env', 'OPENSTACK_REPO_DIRECTORY') | default(lookup('env', 'TESTING_HOME') ~ '/git/openstack', true) }}"
-## Bind mount the repositories into each container to allow development work
+
+## Container bind mounts
+# Bind mount the repositories into each container to allow development work
 lxc_container_bind_mounts:
   - host_directory: "{{ development_repo_directory }}"
     container_directory: "{{ development_repo_directory }}"
+# Bind mount the pip cache into each container to speed up builds
+  - host_directory: "/root/.cache/pip"
+    container_directory: "/root/.cache/pip"
 
 ## haproxy variables
 haproxy_ssl: no

@@ -19,20 +19,45 @@
   register: nodepool
   delegate_to: localhost
 
-- name: Determine the existing Ubuntu repo URL
-  shell: 'awk "/^deb .*ubuntu\/? {{ ansible_distribution_release }} main/ {print \$2; exit}" /etc/apt/sources.list'
-  register: ubuntu_repo_url
-  changed_when: false
+- name: Discover the lxc_image_cache_server value when in nodepool
+  shell: |
+    source /etc/ci/mirror_info.sh
+    echo "${NODEPOOL_MIRROR_HOST}:8080/images.linuxcontainers"
+  args:
+    executable: /bin/bash
+  register: lxc_reverse_proxy
+  delegate_to: localhost
+  when:
+    - nodepool.stat.exists | bool
+  tags:
+    - skip_ansible_lint
+
+- name: Set a fact to override lxc_image_cache_server value when in nodepool
+  set_fact:
+    lxc_image_cache_server: "{{ lxc_reverse_proxy.stdout }}"
+  when:
+    - nodepool.stat.exists | bool
+
+- name: Discover the UCA repo URL value when in nodepool
+  shell: |
+    source /etc/ci/mirror_info.sh
+    echo "${NODEPOOL_UCA_MIRROR}"
+  args:
+    executable: /bin/bash
+  register: uca_repo_url
+  delegate_to: localhost
   when:
     - ansible_pkg_mgr == 'apt'
-  delegate_to: localhost
+    - nodepool.stat.exists | bool
+  tags:
+    - skip_ansible_lint
 
-- name: Set apt repo facts based on discovered information
+- name: Set a fact to override uca_apt_repo_url value when in nodepool
   set_fact:
-    lxc_container_template_main_apt_repo: "{{ ubuntu_repo_url.stdout }}"
-    lxc_container_template_security_apt_rep: "{{ ubuntu_repo_url.stdout }}"
+    uca_apt_repo_url: "{{ uca_repo_url.stdout }}"
   when:
-    - ansible_os_family == 'Debian'
+    - ansible_pkg_mgr == 'apt'
+    - nodepool.stat.exists | bool
 
 # NOTE(mhayden): GPG checking for local package installs is normally disabled
 # by default in CentOS, but the ansible-hardening role enables GPG
@@ -51,12 +76,4 @@
     lxc_container_cache_files:
       - { src: '/etc/pip.conf', dest: '/etc/pip.conf' }
   when:
-    - nodepool.stat.exists | bool
-
-- name: Set Ubuntu Cloud Archive repo URL based on discovered information
-  set_fact:
-    uca_apt_repo_url: "{{ ubuntu_repo_url.stdout | netorigin }}/ubuntu-cloud-archive"
-  when:
-    - nodepool.stat.exists | bool
-    - ansible_pkg_mgr == 'apt'
     - nodepool.stat.exists | bool

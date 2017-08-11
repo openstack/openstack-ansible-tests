@@ -28,26 +28,30 @@ git-core          [platform:dpkg]
 libssl-dev        [platform:dpkg]
 libffi-dev        [platform:dpkg]
 python2.7         [platform:dpkg]
+python-apt        [platform:dpkg]
 python-dev        [platform:dpkg]
 
-# Base requirements for CentOS
+# Base requirements for RPM distros
 gcc               [platform:rpm]
 gcc-c++           [platform:rpm]
 git               [platform:rpm]
-python-devel      [platform:rpm]
 libffi-devel      [platform:rpm]
-openssl-devel     [platform:rpm]
+openssl-devel     [platform:redhat]
+python-devel      [platform:rpm]
+python2-dnf       [platform:fedora]
 
 # For SELinux
-libselinux-python [platform:rpm]
+libselinux-python [platform:redhat]
+libsemanage-python [platform:redhat]
 
 # For SSL SNI support
 python-pyasn1               [platform:dpkg]
 python-openssl              [platform:dpkg]
-python-ndg-httpsclient      [platform:ubuntu]
-python2-pyasn1              [platform:rpm]
-python2-pyOpenSSL           [platform:rpm]
-python-ndg_httpsclient      [platform:rpm]
+python-ndg-httpsclient      [platform:ubuntu !platform:ubuntu-14]
+python2-pyasn1              [platform:redhat]
+pyOpenSSL                   [platform:redhat]
+python-ndg_httpsclient      [platform:redhat !platform:fedora]
+python2-ndg_httpsclient     [platform:fedora]
 
 # Required for compressing collected log files in CI
 gzip

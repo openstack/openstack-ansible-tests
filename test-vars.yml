@@ -202,11 +202,11 @@ nova_placement_container_mysql_password: "SuperSecrete"
 nova_placement_galera_database: nova_placement
 nova_placement_galera_address: "{{ test_galera_host }}"
 nova_placement_service_publicuri: "http://{{ test_nova_api_placement_host }}:8780"
-nova_placement_service_publicurl: "{{ nova_placement_service_publicuri }}/placement"
+nova_placement_service_publicurl: "{{ nova_placement_service_publicuri }}"
 nova_placement_service_adminuri: "http://{{ test_nova_api_placement_host }}:8780"
-nova_placement_service_adminurl: "{{ nova_placement_service_adminuri }}/placement"
+nova_placement_service_adminurl: "{{ nova_placement_service_adminuri }}"
 nova_placement_service_internaluri: "http://{{ test_nova_api_placement_host }}:8780"
-nova_placement_service_internalurl: "{{ nova_placement_service_internaluri }}/placement"
+nova_placement_service_internalurl: "{{ nova_placement_service_internaluri }}"
 nova_cell0_database: "nova_cell0"
 
 # Neutron specific settings

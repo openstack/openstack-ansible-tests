@@ -90,20 +90,7 @@
 
 
 - name: Deploy neutron server
-  hosts: neutron_server
-  user: root
-  become: true
-  gather_facts: true
-  any_errors_fatal: true
-  roles:
-    - role: "os_neutron"
-  vars_files:
-    - test-vars.yml
-
-
-
-- name: Deploy the rest of neutron
-  hosts: "neutron_all:!neutron_server"
+  hosts: neutron_all
   user: root
   become: true
   gather_facts: true

@@ -27,21 +27,36 @@
 
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 export RSYNC_CMD="rsync --archive --verbose --safe-links --ignore-errors"
+export RSYNC_ETC_CMD="${RSYNC_CMD} --no-links --exclude /etc/selinux"
 export ARA_CMD="${WORKING_DIR}/.tox/functional/bin/ara generate html"
 export TESTING_HOME=${TESTING_HOME:-$HOME}
 
 ## Main ----------------------------------------------------------------------
 
 if [[ -d "/etc/nodepool" ]]; then
-  mkdir -p "${WORKING_DIR}/logs/host" "${WORKING_DIR}/logs/openstack"
+  mkdir -vp \
+    "${WORKING_DIR}/logs/host" \
+    "${WORKING_DIR}/logs/openstack" \
+    "${WORKING_DIR}/logs/etc/host" \
+    "${WORKING_DIR}/logs/etc/openstack" \
 
   # NOTE(mhayden): We use sudo here to ensure that all logs are copied.
   sudo ${RSYNC_CMD} /var/log/ "${WORKING_DIR}/logs/host" || true
   sudo ${RSYNC_CMD} /openstack/log/ "${WORKING_DIR}/logs/openstack" || true
 
-  # NOTE(mhayden): All of the logs must be world-readable so that the log
+  # Archive host's /etc directory
+  sudo ${RSYNC_ETC_CMD} /etc/ "${WORKING_DIR}/logs/etc/host/" || true
+
+  # Loop over each container and archive its /etc directory
+  for CONTAINER_NAME in `sudo lxc-ls -1`; do
+    CONTAINER_PID=$(sudo lxc-info -p -n ${CONTAINER_NAME} | awk '{print $2}')
+    ETC_DIR="/proc/${CONTAINER_PID}/root/etc/"
+    sudo ${RSYNC_ETC_CMD} ${ETC_DIR} "${WORKING_DIR}/logs/etc/openstack/${CONTAINER_NAME}/" || true
+  done
+
+  # NOTE(mhayden): All of the files must be world-readable so that the log
   # pickup jobs will work properly. Without this, you get a "File not found"
-  # when trying to read the logs in the job results.
+  # when trying to read the files in the job results.
   sudo chown -R $(whoami) "${WORKING_DIR}/logs/"
   sudo chmod -R u+r,g+r,o+r "${WORKING_DIR}/logs/"
 

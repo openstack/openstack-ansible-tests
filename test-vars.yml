@@ -159,7 +159,7 @@ nova_container_mysql_password: "SuperSecrete"
 nova_developer_mode: true
 nova_galera_address: "{{ test_galera_host }}"
 nova_galera_database: nova
-nova_git_install_branch: master
+nova_git_install_branch: "{{ test_branch }}"
 nova_keystone_auth_plugin: password
 nova_management_address: "{{ ansible_host }}"
 nova_metadata_port: 8775

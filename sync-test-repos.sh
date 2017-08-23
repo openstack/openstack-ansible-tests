@@ -160,7 +160,7 @@ mkdir ${tempdir}
 pushd ${tempdir} &> /dev/null
 
 echo "=> Cloning openstack-ansible-tests repository"
-eval git clone ${openstack_git_url}/openstack/openstack-ansible-tests
+eval git clone -b stable/pike ${openstack_git_url}/openstack/openstack-ansible-tests
 echo -e "\n---------------------------------------------\n"
 
 for proj in ${osa_projects[@]}; do
@@ -170,7 +170,7 @@ for proj in ${osa_projects[@]}; do
     check_and_ignore ${proj_dir} && continue
 
     echo "=> ##### ${proj} #####"
-    eval git clone ${openstack_git_url}/$proj
+    eval git clone -b stable/pike ${openstack_git_url}/$proj
 
     pushd $proj_dir &> /dev/null
 

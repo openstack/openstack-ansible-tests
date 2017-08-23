@@ -121,7 +121,7 @@ else
         if [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-plugins" ]]; then
             ln -s ${WORKING_DIR} "${ANSIBLE_PLUGIN_DIR}"
         else
-            git clone \
+            git clone -b stable/pike \
                 https://git.openstack.org/openstack/openstack-ansible-plugins \
                 "${ANSIBLE_PLUGIN_DIR}"
         fi
@@ -133,7 +133,7 @@ else
         if [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-ops" ]]; then
             ln -s ${WORKING_DIR} "${OSA_OPS_DIR}"
         else
-            git clone \
+            git clone -b stable/pike \
                 https://git.openstack.org/openstack/openstack-ansible-ops \
                 "${OSA_OPS_DIR}"
         fi

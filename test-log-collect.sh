@@ -26,7 +26,7 @@
 ## Vars ----------------------------------------------------------------------
 
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
-export RSYNC_CMD="rsync --archive --safe-links --ignore-errors"
+export RSYNC_CMD="rsync --archive --safe-links --ignore-errors --chown $(whoami) --chmod=ugo+rX"
 export RSYNC_ETC_CMD="${RSYNC_CMD} --no-links --exclude /etc/selinux"
 export ARA_CMD="${WORKING_DIR}/.tox/functional/bin/ara generate html"
 export TESTING_HOME=${TESTING_HOME:-$HOME}
@@ -53,12 +53,6 @@ if [[ -d "/etc/nodepool" ]]; then
     ETC_DIR="/proc/${CONTAINER_PID}/root/etc/"
     sudo ${RSYNC_ETC_CMD} ${ETC_DIR} "${WORKING_DIR}/logs/etc/openstack/${CONTAINER_NAME}/" || true
   done
-
-  # NOTE(mhayden): All of the files must be world-readable so that the log
-  # pickup jobs will work properly. Without this, you get a "File not found"
-  # when trying to read the files in the job results.
-  sudo chown -R $(whoami) "${WORKING_DIR}/logs/"
-  sudo chmod -R u+r,g+r,o+r "${WORKING_DIR}/logs/"
 
   if [ ! -z "${ANSIBLE_LOG_DIR}" ]; then
     mkdir -p "${WORKING_DIR}/logs/ansible"

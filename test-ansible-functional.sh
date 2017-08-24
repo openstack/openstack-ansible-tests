@@ -72,7 +72,7 @@ function setup_ara {
   elif [[ "${ZUUL_PROJECT}" == "openstack/ara" ]]; then
     pip install "${WORKING_DIR}"
   else
-    pip install ara
+    pip install ara==0.14.0
   fi
 
   # Dynamically figure out the location of ARA (ex: py2 vs py3)

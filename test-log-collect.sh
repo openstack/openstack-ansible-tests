@@ -26,7 +26,7 @@
 ## Vars ----------------------------------------------------------------------
 
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
-export RSYNC_CMD="rsync --archive --safe-links --ignore-errors --chown $(whoami) --chmod=ugo+rX --quiet"
+export RSYNC_CMD="rsync --archive --safe-links --ignore-errors --quiet --no-perms --no-owner --no-group"
 export RSYNC_ETC_CMD="${RSYNC_CMD} --no-links --exclude selinux/"
 export ARA_CMD="${WORKING_DIR}/.tox/functional/bin/ara generate html"
 export TESTING_HOME=${TESTING_HOME:-$HOME}
@@ -57,6 +57,15 @@ if [[ -d "/etc/nodepool" ]]; then
     sudo ${RSYNC_ETC_CMD} ${ETC_DIR} "${WORKING_DIR}/logs/etc/openstack/${CONTAINER_NAME}/" || true
   done
 
+  # NOTE(mhayden): All of the files must be world-readable so that the log
+  # pickup jobs will work properly. Without this, you get a "File not found"
+  # when trying to read the files in the job results.
+  # NOTE(odyssey4me): Using '--chown $(whoami) --chmod=ugo+rX' in the rsync
+  # CMD to achieve this would be optimal, but the CentOS version of rsync
+  # (3.0.x) does not support that option.
+  sudo chmod -R ugo+rX "${WORKING_DIR}/logs/"
+  sudo chown -R $(whoami) "${WORKING_DIR}/logs/"
+
   if [ ! -z "${ANSIBLE_LOG_DIR}" ]; then
     mkdir -p "${WORKING_DIR}/logs/ansible"
     ${RSYNC_CMD} "${ANSIBLE_LOG_DIR}/" "${WORKING_DIR}/logs/ansible" || true
@@ -65,25 +74,32 @@ if [[ -d "/etc/nodepool" ]]; then
   # Rename all files gathered to have a .txt suffix so that the compressed
   # files are viewable via a web browser in OpenStack-CI.
   find "${WORKING_DIR}/logs/" -type f ! -name '*.html' -exec mv {} {}.txt \;
+
   # Get the ara sqlite database
   ${RSYNC_CMD} "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/" || true
+
   # Generate the ARA report
   ${ARA_CMD} "${WORKING_DIR}/logs/ara" || true
+
   # Get a dmesg output so we can look for kernel failures
   dmesg > "${WORKING_DIR}/logs/dmesg.log.txt" || true
+
   # output ram usage
   free -m > "${WORKING_DIR}/logs/memory-available.txt" || true
+
   # Redhat package debugging
   if which yum &>/dev/null || which dnf &>/dev/null; then
       # Prefer dnf over yum for CentOS.
       which dnf &>/dev/null && RHT_PKG_MGR='dnf' || RHT_PKG_MGR='yum'
       sudo $RHT_PKG_MGR repolist -v > "${WORKING_DIR}/logs/redhat-rpm-repolist.txt" || true
       sudo $RHT_PKG_MGR list installed > "${WORKING_DIR}/logs/redhat-rpm-list-installed.txt" || true
+
   # SUSE package debugging
   elif which zypper &>/dev/null; then
       sudo zypper lr -d > "${WORKING_DIR}/logs/suse-zypper-repolist.txt" || true
       sudo zypper pa -i > "${WORKING_DIR}/logs/suse-zypper-list-installed.txt" || true
   fi
+
   # Compress the files gathered so that they do not take up too much space.
   # We use 'command' to ensure that we're not executing with some sort of alias.
   command gzip --best --recursive "${WORKING_DIR}/logs/"

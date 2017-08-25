@@ -26,7 +26,7 @@
 ## Vars ----------------------------------------------------------------------
 
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
-export RSYNC_CMD="rsync --archive --verbose --safe-links --ignore-errors"
+export RSYNC_CMD="rsync --archive --safe-links --ignore-errors"
 export RSYNC_ETC_CMD="${RSYNC_CMD} --no-links --exclude /etc/selinux"
 export ARA_CMD="${WORKING_DIR}/.tox/functional/bin/ara generate html"
 export TESTING_HOME=${TESTING_HOME:-$HOME}

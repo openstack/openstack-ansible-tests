@@ -45,17 +45,21 @@ if [[ -d "/etc/nodepool" ]]; then
 
   # NOTE(mhayden): We use sudo here to ensure that all logs are copied.
   sudo ${RSYNC_CMD} /var/log/ "${WORKING_DIR}/logs/host" || true
-  sudo ${RSYNC_CMD} /openstack/log/ "${WORKING_DIR}/logs/openstack" || true
+  if [ -d "/openstack/log" ]; then
+    sudo ${RSYNC_CMD} /openstack/log/ "${WORKING_DIR}/logs/openstack" || true
+  fi
 
   # Archive host's /etc directory
   sudo ${RSYNC_ETC_CMD} /etc/ "${WORKING_DIR}/logs/etc/host/" || true
 
   # Loop over each container and archive its /etc directory
-  for CONTAINER_NAME in `sudo lxc-ls -1`; do
-    CONTAINER_PID=$(sudo lxc-info -p -n ${CONTAINER_NAME} | awk '{print $2}')
-    ETC_DIR="/proc/${CONTAINER_PID}/root/etc/"
-    sudo ${RSYNC_ETC_CMD} ${ETC_DIR} "${WORKING_DIR}/logs/etc/openstack/${CONTAINER_NAME}/" || true
-  done
+  if which lxc-ls &> /dev/null; then
+    for CONTAINER_NAME in `sudo lxc-ls -1`; do
+      CONTAINER_PID=$(sudo lxc-info -p -n ${CONTAINER_NAME} | awk '{print $2}')
+      ETC_DIR="/proc/${CONTAINER_PID}/root/etc/"
+      sudo ${RSYNC_ETC_CMD} ${ETC_DIR} "${WORKING_DIR}/logs/etc/openstack/${CONTAINER_NAME}/" || true
+    done
+  fi
 
   # NOTE(mhayden): All of the files must be world-readable so that the log
   # pickup jobs will work properly. Without this, you get a "File not found"

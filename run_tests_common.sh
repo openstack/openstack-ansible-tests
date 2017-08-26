@@ -33,6 +33,9 @@ case "${ID,,}" in
     amzn|centos|rhel)
         sudo $RHT_PKG_MGR install -y python-devel redhat-lsb-core epel-release yum-utils
         ;;
+    fedora)
+        sudo dnf install -y python-devel redhat-lsb-core redhat-rpm-config yum-utils
+        ;;
     ubuntu|debian)
         sudo apt-get update && sudo apt-get install -y python-dev lsb-release
         ;;

@@ -81,18 +81,6 @@
     - ansible_pkg_mgr in ['yum', 'dnf']
     - nodepool.stat.exists | bool
 
-# NOTE(mhayden): GPG checking for local package installs is normally disabled
-# by default in CentOS, but the ansible-hardening role enables GPG
-# checking for local packages. The RDO repository package isn't signed, but the
-# repos it installs have GPG checking enabled.
-- name: Install the RDO release package
-  package:
-    name: "https://repos.fedorapeople.org/repos/openstack/openstack-ocata/rdo-release-ocata.rpm"
-    state: "present"
-    disable_gpg_check: yes
-  when:
-    - ansible_pkg_mgr in ['yum', 'dnf']
-
 - name: Set the files to copy into the container cache for OpenStack-CI instances
   set_fact:
     lxc_container_cache_files:

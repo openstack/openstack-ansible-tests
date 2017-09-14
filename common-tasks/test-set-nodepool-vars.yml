@@ -22,7 +22,7 @@
 - name: Discover the lxc_image_cache_server value when in nodepool
   shell: |
     source /etc/ci/mirror_info.sh
-    echo "${NODEPOOL_MIRROR_HOST}:8080/images.linuxcontainers"
+    echo "http://${NODEPOOL_MIRROR_HOST}:8080/images.linuxcontainers/"
   args:
     executable: /bin/bash
   register: lxc_reverse_proxy
@@ -34,7 +34,7 @@
 
 - name: Set a fact to override lxc_image_cache_server value when in nodepool
   set_fact:
-    lxc_image_cache_server: "{{ lxc_reverse_proxy.stdout }}"
+    lxc_image_cache_server_mirrors: "{{ [lxc_reverse_proxy.stdout] }}"
   when:
     - nodepool.stat.exists | bool
 

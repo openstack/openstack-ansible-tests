@@ -120,10 +120,7 @@ keystone_galera_address: "{{ test_galera_host }}"
 keystone_container_mysql_password: "SuperSecrete"
 keystone_venv_tag: "testing"
 keystone_developer_mode: true
-# NOTE(mhayden): Pin keystone to a commit prior to the removal of v2
-# API endpoints. This can be removed when bug 1717011 is fixed and
-# v2 tempest tests are excluded.
-keystone_git_install_branch: 02dce056784cbf4b54d9d66e6d8451868e939a0a
+keystone_git_install_branch: "{{ test_branch }}" 
 keystone_service_region: RegionOne
 
 # Glance specific settings

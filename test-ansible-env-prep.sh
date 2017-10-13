@@ -94,7 +94,11 @@ mkdir -p "${ANSIBLE_LOG_DIR}"
 # If zuul-cloner is present, use it so that we
 # also include any dependent patches from the
 # plugins repo noted in the commit message.
-if [[ -x /usr/zuul-env/bin/zuul-cloner ]]; then
+# We only want to use zuul-cloner if we detect
+# zuul v2 running, so we check for the presence
+# of the ZUUL_REF environment variable.
+# ref: http://git.openstack.org/cgit/openstack-infra/zuul/tree/zuul/ansible/filter/zuul_filters.py?h=feature/zuulv3#n17
+if [[ -x /usr/zuul-env/bin/zuul-cloner ]] && [[ "${ZUUL_REF:-none}" != "none" ]]; then
 
     # Prepare the clonemap for zuul-cloner to use
     create_plugins_clonemap
@@ -117,8 +121,11 @@ if [[ -x /usr/zuul-env/bin/zuul-cloner ]]; then
 else
     if [[ ! -d "${ANSIBLE_PLUGIN_DIR}" ]]; then
         # The plugins repo doesn't need a clone, we can just
-        # symlink it.
-        if [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-plugins" ]]; then
+        # symlink it. As zuul v3 clones into a folder called
+        # 'workspace' we have to use one of its environment
+        # variables to determine the project name.
+        if [[ "${ZUUL_SHORT_PROJECT_NAME:-none}" == "openstack-ansible-plugins" ]] ||\
+           [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-plugins" ]]; then
             ln -s ${WORKING_DIR} "${ANSIBLE_PLUGIN_DIR}"
         else
             git clone \
@@ -129,8 +136,11 @@ else
 
     if [[ ! -d "${OSA_OPS_DIR}" ]]; then
         # The ops repo doesn't need a clone, we can just
-        # symlink it.
-        if [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-ops" ]]; then
+        # symlink it. As zuul v3 clones into a folder called
+        # 'workspace' we have to use one of its environment
+        # variables to determine the project name.
+        if [[ "${ZUUL_SHORT_PROJECT_NAME:-none}" == "openstack-ansible-ops" ]] ||\
+           [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-ops" ]]; then
             ln -s ${WORKING_DIR} "${OSA_OPS_DIR}"
         else
             git clone \
@@ -146,7 +156,7 @@ if [ ! -d "${ANSIBLE_ROLE_DIR}" ] && [ -f "${ANSIBLE_ROLE_REQUIREMENTS_PATH}" ];
    ansible-playbook -i ${ANSIBLE_INVENTORY} \
          ${COMMON_TESTS_PATH}/get-ansible-role-requirements.yml \
          -e "toxinidir=${WORKING_DIR} homedir=${TESTING_HOME}" \
-         -v
+         -vvv
 fi
 
 

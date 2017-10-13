@@ -87,7 +87,17 @@ if [[ -d "/etc/nodepool" ]]; then
   ${RSYNC_CMD} "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/" || true
 
   # Generate the ARA report
-  ${ARA_CMD} "${WORKING_DIR}/logs/ara" || true
+  # In order to reduce the quantity of unnecessary log content
+  # being kept in OpenStack-Infra we only generate the ARA report
+  # when the test result is a failure. The ARA sqlite database is
+  # still available for self generation if desired for successful
+  # tests.
+  if [[ "${TEST_EXIT_CODE}" != "0" ]]; then
+    echo "Generating ARA report due to non-zero exit code (${TEST_EXIT_CODE})."
+    ${ARA_CMD} "${WORKING_DIR}/logs/ara" || true
+  else
+    echo "Not generating ARA report due to test pass."
+  fi
 
   # Get a dmesg output so we can look for kernel failures
   dmesg > "${WORKING_DIR}/logs/dmesg.log.txt" || true

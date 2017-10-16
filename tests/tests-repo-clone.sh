@@ -33,6 +33,7 @@ set -e
 export TESTING_HOME=${TESTING_HOME:-$HOME}
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 export CLONE_UPGRADE_TESTS=${CLONE_UPGRADE_TESTS:-no}
+export ZUUL_TESTS_CLONE_LOCATION="/home/zuul/src/git.openstack.org/openstack/openstack-ansible-tests"
 
 ## Functions -----------------------------------------------------------------
 
@@ -84,6 +85,16 @@ elif [[ ! -d tests/common ]]; then
     if [[ "${ZUUL_SHORT_PROJECT_NAME:-none}" == "openstack-ansible-tests" ]] ||\
        [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-tests" ]]; then
         ln -s ${WORKING_DIR} ${WORKING_DIR}/tests/common
+
+    # In zuul v3 any dependent repository is placed into
+    # /home/zuul/src/git.openstack.org, so we check to see
+    # if there is a tests checkout there already. If so, we
+    # symlink that and use it.
+    elif [[ -d "${ZUUL_TESTS_CLONE_LOCATION}" ]]; then
+        ln -s "${ZUUL_TESTS_CLONE_LOCATION}" ${WORKING_DIR}/tests/common
+
+    # Otherwise we're clearly not in zuul or using a previously setup
+    # repo in some way, so just clone it from upstream.
     else
         git clone -b stable/pike \
             https://git.openstack.org/openstack/openstack-ansible-tests \
@@ -99,7 +110,7 @@ fi
 # tests repo are not supported.
 if [[ "${CLONE_UPGRADE_TESTS}" == "yes" ]]; then
     if [[ ! -d "${WORKING_DIR}/tests/common/previous" ]]; then
-        git clone -b stable/pike \
+        git clone -b stable/ocata \
             https://git.openstack.org/openstack/openstack-ansible-tests \
             ${WORKING_DIR}/tests/common/previous
   fi

@@ -156,7 +156,7 @@ if [ ! -d "${ANSIBLE_ROLE_DIR}" ] && [ -f "${ANSIBLE_ROLE_REQUIREMENTS_PATH}" ];
    ansible-playbook -i ${ANSIBLE_INVENTORY} \
          ${COMMON_TESTS_PATH}/get-ansible-role-requirements.yml \
          -e "toxinidir=${WORKING_DIR} homedir=${TESTING_HOME}" \
-         -vvv
+         -v
 fi
 
 

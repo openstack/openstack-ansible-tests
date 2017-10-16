@@ -1,0 +1,74 @@
+---
+# Copyright 2017, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- job:
+    name: openstack-ansible-functional
+    parent: base
+    description: |
+      Run functional tests for an OpenStack-Ansible project.
+      Uses tox with the ``functional`` environment by default,
+      but the environment name can be changed through the use
+      of the ``scenario`` variable.
+    required-projects:
+      - name: openstack/requirements
+    irrelevant-files:
+      - ^\.git.*
+      - ^.*\.(example|md|rst)$
+      - ^deploy-guide/.*
+      - ^doc/.*
+      - ^releasenotes/.*
+      - ^setup\.(cfg|py)$
+      - ^tox.ini$
+      - ^Vagrantfile
+    timeout: 5400 # 90 mins
+    run: zuul.d/playbooks/run
+    vars:
+      tox_env: functional
+
+- job:
+    name: openstack-ansible-upgrade
+    parent: openstack-ansible-functional
+    vars:
+      tox_env: upgrade
+
+- job:
+    name: openstack-ansible-functional-ubuntu-xenial
+    parent: openstack-ansible-functional
+    nodeset: ubuntu-xenial
+
+- job:
+    name: openstack-ansible-upgrade-ubuntu-xenial
+    parent: openstack-ansible-upgrade
+    nodeset: ubuntu-xenial
+
+- job:
+    name: openstack-ansible-functional-opensuse-423
+    parent: openstack-ansible-functional
+    nodeset: opensuse-423
+
+- job:
+    name: openstack-ansible-functional-opensuse-423-nv
+    parent: openstack-ansible-functional-opensuse-423
+    voting: false
+
+- job:
+    name: openstack-ansible-functional-centos-7
+    parent: openstack-ansible-functional
+    nodeset: centos-7
+
+- job:
+    name: openstack-ansible-functional-centos-7-nv
+    parent: openstack-ansible-functional-centos-7
+    voting: false

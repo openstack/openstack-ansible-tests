@@ -14,6 +14,16 @@
 # limitations under the License.
 
 - job:
+    name: openstack-ansible-linters
+    parent: openstack-tox-linters
+    description: |
+      Run lint tests for an OpenStack-Ansible project.
+      Uses tox with the ``linters`` environment.
+    required-projects:
+      - name: openstack/requirements
+    timeout: 600 # 5 mins
+
+- job:
     name: openstack-ansible-functional
     parent: base
     description: |

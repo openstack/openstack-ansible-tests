@@ -15,6 +15,18 @@
 
 - hosts: all
   tasks:
+    - name: Set current test repo (cross-repo)
+      set_fact:
+        current_test_repo: "git.openstack.org/{{ osa_test_repo }}"
+      when:
+        - osa_test_repo is defined
+
+    - name: Set current test repo (non-cross-repo)
+      set_fact:
+        current_test_repo: "{{ zuul.project.canonical_name }}"
+      when:
+        - osa_test_repo is not defined
+
     - name: Run log collection script
       shell: |
         echo "TEST_EXIT_CODE: ${TEST_EXIT_CODE}"
@@ -25,12 +37,24 @@
         fi
       args:
         executable: "/bin/bash"
-        chdir: "{{ ansible_user_dir }}/src/{{ zuul.project.canonical_name }}"
+        chdir: "{{ ansible_user_dir }}/src/{{ current_test_repo }}"
       environment:
-        TEST_EXIT_CODE: "{{ zuul_success }}"
+        TEST_EXIT_CODE: "{{ zuul_success | lower }}"
+
+    - name: Check whether a logs folder exists
+      stat:
+        path: "{{ ansible_user_dir }}/src/{{ current_test_repo }}/logs"
+        get_attributes: no
+        get_checksum: no
+        get_md5: no
+        get_mime: no
+      register: logs_folder
 
     - name: Copy logs back to the executor
       synchronize:
-        src: "{{ ansible_user_dir }}/src/{{ zuul.project.canonical_name }}/logs/"
+        src: "{{ ansible_user_dir }}/src/{{ current_test_repo }}/logs/"
         dest: "{{ zuul.executor.log_root }}"
         mode: pull
+      when:
+        - logs_folder.stat is defined
+        - logs_folder.stat.exists | bool

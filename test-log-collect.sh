@@ -90,11 +90,11 @@ ${RSYNC_CMD} "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/" || tru
 # when the test result is a failure. The ARA sqlite database is
 # still available for self generation if desired for successful
 # tests.
-if [[ "${TEST_EXIT_CODE}" != "0" ]]; then
-    echo "Generating ARA report due to non-zero exit code (${TEST_EXIT_CODE})."
+if [[ "${TEST_EXIT_CODE}" != "0" ]] && [[ "${TEST_EXIT_CODE}" != "true" ]]; then
+    echo "Generating ARA report."
     ${ARA_CMD} "${WORKING_DIR}/logs/ara" || true
 else
-    echo "Not generating ARA report due to test pass."
+    echo "Not generating ARA report."
 fi
 
 # Get a dmesg output so we can look for kernel failures

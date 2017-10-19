@@ -68,11 +68,11 @@ function setup_ara {
 
   # Install ARA from source if running in ARA gate, otherwise install from PyPi
   if [[ -d "${TESTING_HOME}/git/openstack/ara" ]]; then
-    pip install "${TESTING_HOME}/git/openstack/ara"
+    pip install --constraint "${COMMON_TESTS_PATH}/test-ansible-deps.txt" "${TESTING_HOME}/git/openstack/ara"
   elif [[ "${ZUUL_PROJECT}" == "openstack/ara" ]]; then
-    pip install "${WORKING_DIR}"
+    pip install --constraint "${COMMON_TESTS_PATH}/test-ansible-deps.txt" "${WORKING_DIR}"
   else
-    pip install ara==0.14.0
+    pip install --constraint "${COMMON_TESTS_PATH}/test-ansible-deps.txt" ara==0.14.0
   fi
 
   # Dynamically figure out the location of ARA (ex: py2 vs py3)

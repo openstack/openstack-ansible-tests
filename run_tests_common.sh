@@ -72,7 +72,7 @@ if [[ ${#BINDEP_PKGS} > 0 ]]; then
         *suse*)
             sudo zypper -n in $BINDEP_PKGS
             ;;
-        centos)
+        centos|fedora)
             sudo $RHT_PKG_MGR install -y $BINDEP_PKGS
             ;;
         ubuntu|debian)

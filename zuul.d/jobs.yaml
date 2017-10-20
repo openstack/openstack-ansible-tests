@@ -112,6 +112,7 @@
       - ^Vagrantfile
     timeout: 5400 # 90 mins
     run: zuul.d/playbooks/run.yml
+    post-run: zuul.d/playbooks/post.yml
     vars:
       tox_env: functional
 
@@ -150,3 +151,17 @@
     name: openstack-ansible-functional-centos-7-nv
     parent: openstack-ansible-functional-centos-7
     voting: false
+
+- job:
+    name: openstack-ansible-cross-repo-functional
+    parent: openstack-ansible-functional
+    description: |
+      Run functional tests for an OpenStack-Ansible project.
+      Uses tox with the ``functional`` environment by default,
+      but the environment name can be changed through the use
+      of the ``tox_env`` variable. The OpenStack-Ansible repo
+      to execute the tests from must be specified in the
+      ``osa_test_repo`` variable.
+    run: zuul.d/playbooks/cross-repo-run.yml
+    post-run: zuul.d/playbooks/cross-repo-post.yml
+    nodeset: ubuntu-xenial

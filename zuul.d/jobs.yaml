@@ -112,6 +112,7 @@
       - ^Vagrantfile
     timeout: 5400 # 90 mins
     run: zuul.d/playbooks/run
+    post-run: zuul.d/playbooks/post
     vars:
       tox_env: functional
 
@@ -165,4 +166,5 @@
       to execute the tests from must be specified in the
       ``osa_test_repo`` variable.
     run: zuul.d/playbooks/cross-repo-run
+    post-run: zuul.d/playbooks/cross-repo-post
     nodeset: ubuntu-xenial

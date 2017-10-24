@@ -64,7 +64,7 @@
       Run functional tests for an OpenStack-Ansible project.
       Uses tox with the ``functional`` environment by default,
       but the environment name can be changed through the use
-      of the ``scenario`` variable.
+      of the ``tox_env`` variable.
     required-projects:
       - name: openstack/ansible-hardening
       - name: openstack/openstack-ansible-apt_package_pinning
@@ -118,6 +118,9 @@
 - job:
     name: openstack-ansible-upgrade
     parent: openstack-ansible-functional
+    description: |
+      Run upgrade tests for an OpenStack-Ansible project.
+      Uses tox with the ``upgrade`` environment.
     vars:
       tox_env: upgrade
 
@@ -150,3 +153,16 @@
     name: openstack-ansible-functional-centos-7-nv
     parent: openstack-ansible-functional-centos-7
     voting: false
+
+- job:
+    name: openstack-ansible-cross-repo-functional
+    parent: openstack-ansible-functional
+    description: |
+      Run functional tests for an OpenStack-Ansible project.
+      Uses tox with the ``functional`` environment by default,
+      but the environment name can be changed through the use
+      of the ``tox_env`` variable. The OpenStack-Ansible repo
+      to execute the tests from must be specified in the
+      ``osa_test_repo`` variable.
+    run: zuul.d/playbooks/cross-repo-run
+    nodeset: ubuntu-xenial

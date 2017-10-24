@@ -82,10 +82,10 @@ function gate_job_exit_tasks {
 # by default. This step ensures that only the base, epel, and updates
 # repositories are enabled.
 if which yum &>/dev/null; then
-  sudo yum-config-manager --disable \*
-  sudo yum-config-manager --enable base
-  sudo yum-config-manager --enable epel
-  sudo yum-config-manager --enable updates
+  sudo yum-config-manager --disable \* > /dev/null
+  sudo yum-config-manager --enable base > /dev/null
+  sudo yum-config-manager --enable epel > /dev/null
+  sudo yum-config-manager --enable updates > /dev/null
 fi
 
 # Ensure that the Ansible environment is properly prepared

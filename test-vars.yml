@@ -505,7 +505,7 @@ lxc_container_wait_params:
 
 ## Developer mode variables
 # Location of development repositories directory
-development_repo_directory: "{{ lookup('env', 'OPENSTACK_REPO_DIRECTORY') | default(lookup('env', 'TESTING_HOME') ~ '/git/openstack', true) }}"
+development_repo_directory: "{{ lookup('env', 'OPENSTACK_REPO_DIRECTORY') | default(lookup('env', 'TESTING_HOME') ~ '/src', true) }}"
 
 ## Container bind mounts
 # Bind mount the repositories into each container to allow development work

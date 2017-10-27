@@ -96,6 +96,14 @@ function execute_ansible_playbook {
 
 }
 
+function gate_job_exit_tasks {
+  # This environment variable captures the exit code
+  # which was present when the trap was initiated.
+  # This would be the success/failure of the test.
+  export TEST_EXIT_CODE=$?
+  source "${COMMON_TESTS_PATH}/test-log-collect.sh"
+}
+
 ## Main ----------------------------------------------------------------------
 
 # NOTE(mhayden): CentOS images in the gate have several slow mirrors enabled
@@ -111,6 +119,9 @@ fi
 # Ensure that the Ansible environment is properly prepared
 source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
 setup_ara
+
+# Set gate job exit traps, this is run regardless of exit state when the job finishes.
+trap gate_job_exit_tasks EXIT
 
 # Prepare the extra CLI parameters used in each execution
 set_ansible_parameters

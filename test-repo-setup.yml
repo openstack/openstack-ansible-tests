@@ -23,20 +23,32 @@
       file:
         state: directory
         path: "{{ development_repo_directory }}"
+
+    # Git clones for developer testing are expected to be in the
+    # following structure, which mirrors how zuul v3 implements
+    # the clones:
+    #
+    # <user home directory>/src/<git organisation>/<repo>
+    #
+    # eg: /home/zuul/src/git.openstack.org/keystone
+    #     /home/zuul/src/github.com/projectcalico/felix
+    #
     - name: Check for repositories that are cloned in the repos directory
-      find:
-        paths: "{{ development_repo_directory }}/"
-        file_type: directory
+      command: "find {{ development_repo_directory }} -maxdepth 3 -mindepth 3 -type d"
       register: projects_directory_find
+      tags:
+        - skip_ansible_lint
+
+    # For the constraint file we assume that the egg name
+    # matches the repo folder name.
     - name: Set var for git install branch
       copy:
         dest: "{{ development_repo_directory }}/local-package-constraints-{{ test_branch | replace('/','_') }}.txt"
         content: |
           ## Ansible Managed
-          {% if projects_directory_find.files is defined %}
-          {% for project in projects_directory_find.files %}
-          file://{{ project.path }}#egg={{ project.path.split("/")[-1] }}
+          {% for folder_path in projects_directory_find.stdout_lines %}
+          file://{{ folder_path }}#egg={{ folder_path.split("/")[-1] }}
           {% endfor %}
-          {% endif %}
+
   vars_files:
     - test-vars.yml

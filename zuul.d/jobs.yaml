@@ -167,6 +167,4 @@
       of the ``tox_env`` variable. The OpenStack-Ansible repo
       to execute the tests from must be specified in the
       ``osa_test_repo`` variable.
-    run: zuul.d/playbooks/cross-repo-run.yml
-    post-run: zuul.d/playbooks/cross-repo-post.yml
     nodeset: ubuntu-xenial

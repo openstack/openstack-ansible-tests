@@ -38,16 +38,14 @@ extra_include_project() {
 # List of the projects that need to be excluded for various
 # reasons
 #
-# os_swift_sync is retired
+# retired projects
+exclude_project openstack-ansible-os_freezer
 exclude_project openstack-ansible-os_swift_sync
-# pip_lock_down will be retired with Mitaka
 exclude_project openstack-ansible-pip_lock_down
-# py_from_git will be retired with Mitaka
 exclude_project openstack-ansible-py_from_git
+exclude_project openstack-ansible-security
 # ansible-tests is where we are so we know it's maintained
 exclude_project openstack-ansible-tests
-# openstack-ansible-security is retired
-exclude_project openstack-ansible-security
 #
 ############## END OF EXCLUDED PROJECTS ###############
 

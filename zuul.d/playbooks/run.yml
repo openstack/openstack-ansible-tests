@@ -15,9 +15,21 @@
 
 - hosts: all
   tasks:
+    - name: Set current test repo (cross-repo)
+      set_fact:
+        current_test_repo: "git.openstack.org/{{ osa_test_repo }}"
+      when:
+        - osa_test_repo is defined
+
+    - name: Set current test repo (non-cross-repo)
+      set_fact:
+        current_test_repo: "{{ zuul.project.canonical_name }}"
+      when:
+        - osa_test_repo is not defined
+
     - name: Run testing script
       shell: |
         ./run_tests.sh {{ tox_env }}
       args:
         executable: "/bin/bash"
-        chdir: "{{ ansible_user_dir }}/src/{{ zuul.project.canonical_name }}"
+        chdir: "{{ ansible_user_dir }}/src/{{ current_test_repo }}"

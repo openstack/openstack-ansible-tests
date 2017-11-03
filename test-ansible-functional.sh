@@ -72,10 +72,6 @@ function execute_ansible_playbook {
 
 }
 
-function gate_job_exit_tasks {
-  source "${COMMON_TESTS_PATH}/test-log-collect.sh"
-}
-
 ## Main ----------------------------------------------------------------------
 
 # NOTE(mhayden): CentOS images in the gate have several slow mirrors enabled
@@ -90,9 +86,6 @@ fi
 
 # Ensure that the Ansible environment is properly prepared
 source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
-
-# Set gate job exit traps, this is run regardless of exit state when the job finishes.
-trap gate_job_exit_tasks EXIT
 
 # Prepare the extra CLI parameters used in each execution
 set_ansible_parameters

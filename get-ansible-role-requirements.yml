@@ -13,31 +13,209 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Note(odyssey4me):
+# This uses a local connection for the lint test which
+# never sets up host keys and therefore cannot connect
+# to localhost as a remote host.
+#
 - name: Clone the role ansible-role-requirements
   hosts: localhost
   connection: local
-  user: root
+  gather_facts: false
   tasks:
-    - name: Remove target directory if required
+
+    - name: Remove target role directories if they are not git repositories
       shell: |
-        if [[ ! -d "{{ item.path | default('/etc/ansible/roles') }}/{{ item.name | default(item.src | basename) }}/.git" ]]; then
-          rm -rf "{{ item.path | default('/etc/ansible/roles') }}/{{ item.name | default(item.src | basename) }}"
+        EXIT_CODE=0
+        {% for role in osa_roles %}
+        {%   if role['scm'] == "git" or role['scm'] is undefined %}
+        ROLE_REPO_PATH="{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ role['name'] | default(role['src'] | basename) }}"
+        if [[ -e ${ROLE_REPO_PATH} ]] && [[ ! -d "${ROLE_REPO_PATH}/.git" ]]; then
+          echo "${ROLE_REPO_PATH} is not a git repo, deleting..."
+          rm -rf "${ROLE_REPO_PATH}"
+          EXIT_CODE=2
         fi
+        {%   endif %}
+        {% endfor %}
+        exit ${EXIT_CODE}
       args:
         executable: /bin/bash
+      register: existing_dir_cleanup
+      changed_when: existing_dir_cleanup.rc == 2
+      failed_when: existing_dir_cleanup.rc not in [0,2]
+
+    - name: Create the ansible role directory
+      file:
+        dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}"
+        state: directory
+
+    - name: Check whether zuul-cloner is installed and provide the path to it
+      shell: |
+        which zuul-cloner || { [[ -x /usr/zuul-env/bin/zuul-cloner ]] && echo '/usr/zuul-env/bin/zuul-cloner'; }
+      args:
+        executable: /bin/bash
+      changed_when: false
+      failed_when: false
+      register: _zuul_cloner_check
+
+    - name: Set fact to decide which version of zuul to cater to, if any
+      set_fact:
+        zuul_version: >-
+          {#- This tells us that we are running under zuul v2 or v3 #}
+          {%- if _zuul_cloner_check.rc == 0 %}
+          {#-   So now we check for an environment variable that's unique to zuul v2 #}
+          {#-   ref: http://git.openstack.org/cgit/openstack-infra/zuul/tree/zuul/ansible/filter/zuul_filters.py?h=feature/zuulv3#n17 #}
+          {%-   if lookup('env', 'ZUUL_REF') != "" %}
+          {%-     set version_output="2" %}
+          {%-   else %}
+          {%-     set version_output="3" %}
+          {%-   endif %}
+          {%- else %}
+          {%-   set version_output="none" %}
+          {%- endif %}
+          {{- version_output }}
+
+    # Clone git repos (no zuul)
+    - block:
+        - name: Prepare git clone list
+          set_fact:
+            git_roles: "{{ osa_roles }}"
+
+        - name: Clone git repos
+          git:
+            repo: "{{ item['src'] }}"
+            dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
+            version: "{{ item['version'] | default('master') }}"
+            update: true
+            force: true
+          with_items: "{{ git_roles }}"
+          when:
+            - item['scm'] == "git" or item['scm'] is undefined
       when:
-        - item.scm == "git" or item.scm is undefined
-      with_items: "{{ roles }}"
-    - name: Clone git repos
-      git:
-        repo: "{{ item.src }}"
-        dest: "{{ homedir }}/.ansible/roles/{{ item.name | default(item.src | basename) }}"
-        version: "{{ item.version | default('master') }}"
-        update: true
-        force: true
+        - zuul_version == "none"
+
+    # Clone git repos (zuul v2)
+    - block:
+        - name: Prepare git clone list
+          set_fact:
+            git_roles: >
+              {%- set filtered_role_list = [] %}
+              {%- for role in osa_roles %}
+              {%-   if (not role.src | match(".*git.openstack.org.*")) or
+                       (role.name | match("os_previous_.*")) or
+                       (role.name | match("previous_.*")) %}
+              {%-     set _ = filtered_role_list.append(role) %}
+              {%-   endif %}
+              {%- endfor %}
+              {{- filtered_role_list -}}
+            zuul_roles: >
+              {%- set filtered_role_list = [] %}
+              {%- for role in osa_roles %}
+              {%-   if (role.src | match(".*git.openstack.org.*")) and (not role.name | match("os_previous_.*")) %}
+              {%-     set role_src_cleaned = role.src | regex_replace('https://git.openstack.org/', '') %}
+              {%-     set _ = filtered_role_list.append(role_src_cleaned) %}
+              {%-   endif %}
+              {%- endfor %}
+              {{- filtered_role_list -}}
+            openstack_repo_list: >
+              {%- set filtered_repo_list = [] %}
+              {%- set repo_list = lookup('env', 'ZUUL_CHANGES').split('^') %}
+              {%- for repo in repo_list %}
+              {%-   set repo_cleaned = repo | regex_replace(':.*$', '') %}
+              {%-   if not repo_cleaned | match("^openstack/openstack-ansible.*") %}
+              {%-     set _ = filtered_repo_list.append(repo_cleaned) %}
+              {%-   endif %}
+              {%- endfor %}
+              {{- filtered_repo_list -}}
+
+        - name: Clone git repos (non openstack)
+          git:
+            repo: "{{ item['src'] }}"
+            dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
+            version: "{{ item['version'] | default('master') }}"
+            update: true
+            force: true
+          with_items: "{{ git_roles }}"
+          when:
+            - item['scm'] == "git" or item['scm'] is undefined
+
+        - name: Create clone map
+          copy:
+            content: |
+              clonemap:
+                - name: 'openstack/openstack-ansible-tests'
+                  dest: '{{ lookup("env", "WORKING_DIR") }}/tests/common'
+                - name: 'openstack/openstack-ansible-(?!tests)(.*)'
+                  dest: '{{ lookup("env", "ANSIBLE_ROLE_DIR") }}/\1'
+                - name: 'openstack/(?!openstack-ansible)(.*)'
+                  dest: '{{ homedir }}/git/openstack/\1'
+            dest: "{{ homedir }}/.ansible/clonemap.yml"
+
+        - name: Clone git repos (with zuul-cloner)
+          shell: |
+            {{ _zuul_cloner_check.stdout }} \
+                    -m {{ homedir }}/.ansible/clonemap.yml \
+                    --cache-dir /opt/git \
+                    git://git.openstack.org \
+            {% for repo in zuul_roles + openstack_repo_list %}
+                    {{ repo }} \
+            {% endfor %}
       when:
-        - item.scm == "git" or item.scm is undefined
-      with_items: "{{ roles }}"
+        - zuul_version == "2"
+
+    # Clone git repos (zuul v3)
+    - block:
+        - name: Find repositories already cloned by zuul
+          command: "find {{ zuul_git_src_dir }} -type d -maxdepth 2"
+          register: zuul_src_folder
+
+        - name: Simplify the given src repository list
+          set_fact:
+            zuul_src_repo_list: >
+              {%- set filtered_repo_list = [] %}
+              {%- for folder_path in zuul_src_folder['stdout_lines'] %}
+              {%-   if folder_path | match("^" ~ zuul_git_src_dir ~ "/openstack/openstack-ansible-(?!tests).*") %}
+              {%-     set repo_cleaned = folder_path | regex_replace('^' ~ zuul_git_src_dir ~ '/', '') %}
+              {%-     set _ = filtered_repo_list.append(repo_cleaned) %}
+              {%-   endif %}
+              {%- endfor %}
+              {{- filtered_repo_list -}}
+
+        - name: Prepare git clone list
+          set_fact:
+            git_roles: >
+              {%- set filtered_role_list = [] %}
+              {%- for role in osa_roles %}
+              {%-   if (role['name'] | match('os_previous_.*')) or
+                       (role['name'] | match('previous_.*')) or
+                       (role['src'] | regex_replace('https://git.openstack.org/', '') not in zuul_src_repo_list) %}
+              {%-       set _ = filtered_role_list.append(role) %}
+              {%-   endif %}
+              {%- endfor %}
+              {{- filtered_role_list -}}
+
+        - name: Link the zuul provided roles
+          file:
+            src: "{{ zuul_git_src_dir }}/{{ item }}"
+            dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ item | regex_replace('openstack/openstack-ansible-', '') }}"
+            state: link
+            force: yes
+          with_items: "{{ zuul_src_repo_list }}"
+
+        - name: Clone the remaining git repos
+          git:
+            repo: "{{ item['src'] }}"
+            dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
+            version: "{{ item['version'] | default('master') }}"
+            update: true
+            force: true
+          with_items: "{{ git_roles }}"
+          when:
+            - item['scm'] == "git" or item['scm'] is undefined
+      when:
+        - zuul_version == "3"
+
   vars:
     role_file: "{{ toxinidir }}/tests/ansible-role-requirements.yml"
-    roles: "{{ lookup('file', role_file) | from_yaml }}"
+    osa_roles: "{{ lookup('file', role_file) | from_yaml }}"
+    zuul_git_src_dir: "/home/zuul/src/git.openstack.org"

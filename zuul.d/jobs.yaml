@@ -54,6 +54,7 @@
       - name: openstack/openstack-ansible-repo_server
       - name: openstack/openstack-ansible-rsyslog_client
       - name: openstack/openstack-ansible-rsyslog_server
+      - name: openstack/openstack-ansible-tests
       - name: openstack/requirements
     timeout: 600 # 5 mins
 
@@ -100,6 +101,7 @@
       - name: openstack/openstack-ansible-repo_server
       - name: openstack/openstack-ansible-rsyslog_client
       - name: openstack/openstack-ansible-rsyslog_server
+      - name: openstack/openstack-ansible-tests
       - name: openstack/requirements
     irrelevant-files:
       - ^\.git.*
@@ -112,6 +114,7 @@
       - ^Vagrantfile
     timeout: 5400 # 90 mins
     run: zuul.d/playbooks/run.yml
+    post-run: zuul.d/playbooks/post.yml
     vars:
       tox_env: functional
 

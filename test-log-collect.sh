@@ -121,3 +121,4 @@ fi
 command gzip --best --recursive "${WORKING_DIR}/logs/"
 
 echo "#### END LOG COLLECTION ###"
+

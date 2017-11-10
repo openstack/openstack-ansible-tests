@@ -86,9 +86,12 @@
             repo: "{{ item['src'] }}"
             dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
             version: "{{ item['version'] | default('master') }}"
+            depth: "{{ item['depth'] | default('10') }}"
             update: true
             force: true
           with_items: "{{ git_roles }}"
+          retries: "{{ git_clone_retries | default(3) }}"
+          delay: "{{ git_clone_retry_delay | default(5) }}"
           when:
             - item['scm'] == "git" or item['scm'] is undefined
       when:
@@ -133,9 +136,12 @@
             repo: "{{ item['src'] }}"
             dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
             version: "{{ item['version'] | default('master') }}"
+            depth: "{{ item['depth'] | default('10') }}"
             update: true
             force: true
           with_items: "{{ git_roles }}"
+          retries: "{{ git_clone_retries | default(3) }}"
+          delay: "{{ git_clone_retry_delay | default(5) }}"
           when:
             - item['scm'] == "git" or item['scm'] is undefined
 
@@ -207,9 +213,12 @@
             repo: "{{ item['src'] }}"
             dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
             version: "{{ item['version'] | default('master') }}"
+            depth: "{{ item['depth'] | default('10') }}"
             update: true
             force: true
           with_items: "{{ git_roles }}"
+          retries: "{{ git_clone_retries | default(3) }}"
+          delay: "{{ git_clone_retry_delay | default(5) }}"
           when:
             - item['scm'] == "git" or item['scm'] is undefined
       when:

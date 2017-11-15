@@ -31,6 +31,7 @@ set -e
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
 export ANSIBLE_INVENTORY=${ANSIBLE_INVENTORY:-$WORKING_DIR/tests/inventory}
+export TEST_PLAYBOOK=${TEST_PLAYBOOK:-$WORKING_DIR/tests/test.yml}
 
 ## Main ----------------------------------------------------------------------
 
@@ -40,4 +41,4 @@ source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
 # Execute the Ansible syntax check
 ansible-playbook --syntax-check \
                  --list-tasks \
-                 ${WORKING_DIR}/tests/test.yml
+                 ${TEST_PLAYBOOK}

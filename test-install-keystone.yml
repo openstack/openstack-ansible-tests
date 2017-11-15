@@ -76,5 +76,7 @@
       command: "/openstack/venvs/keystone-{{ keystone_venv_tag }}/bin/keystone-manage db_sync --contract"
       become: yes
       become_user: keystone
+      tags:
+        - skip_ansible_lint
   vars_files:
     - test-vars.yml

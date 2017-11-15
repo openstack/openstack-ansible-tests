@@ -22,7 +22,10 @@
     - include: "common-tasks/test-set-nodepool-vars.yml"
     - name: Clear iptables rules
       shell: "{{ playbook_dir }}/iptables-clear.sh"
-    - set_fact:
+      tags:
+        - skip_ansible_lint
+    - name: Set ssh key fact
+      set_fact:
         lxc_container_ssh_key: "{{ hostvars['localhost']['lxc_container_ssh_key'] }}"
     - name: Ensure roots new public ssh key is in authorized_keys
       authorized_key:
@@ -192,15 +195,23 @@
     - name: Determine iptables path
       shell: which iptables
       register: _iptables_path
+      tags:
+        - skip_ansible_lint
 
     - name: Add iptables rule to ensure traffic checksum is correct
       command: "{{ _iptables_path.stdout }} -A POSTROUTING -t mangle -p tcp -j CHECKSUM --checksum-fill"
+      tags:
+        - skip_ansible_lint
 
     - name: Add iptables rule to provide internet connectivity to instances
       command: "{{ _iptables_path.stdout }} -t nat -A POSTROUTING -o eth0 -j MASQUERADE"
+      tags:
+        - skip_ansible_lint
 
     - name: Add iptables rules for lxc natting
       command: /usr/local/bin/lxc-system-manage iptables-create
+      tags:
+        - skip_ansible_lint
 
   vars_files:
     - test-vars.yml

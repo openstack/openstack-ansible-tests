@@ -33,13 +33,14 @@ export TESTING_HOME=${TESTING_HOME:-$HOME}
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 export ROLE_NAME=${ROLE_NAME:-''}
 export ANSIBLE_INVENTORY=${ANSIBLE_INVENTORY:-$WORKING_DIR/tests/inventory}
+export ANSIBLE_ROLE_REQUIREMENTS_PATH=${ANSIBLE_ROLE_REQUIREMENTS_PATH:-$WORKING_DIR/tests/ansible-role-requirements.yml}
+export ANSIBLE_EXTRA_ROLE_DIRS=${ANSIBLE_EXTRA_ROLE_DIRS:-''}
 
 export ANSIBLE_CFG_PATH="${TESTING_HOME}/.ansible.cfg"
 export ANSIBLE_LOG_DIR="${TESTING_HOME}/.ansible/logs"
 export ANSIBLE_NOCOLOR=1
 export ANSIBLE_PLUGIN_DIR="${TESTING_HOME}/.ansible/plugins"
 export ANSIBLE_ROLE_DIR="${TESTING_HOME}/.ansible/roles"
-export ANSIBLE_ROLE_REQUIREMENTS_PATH="${WORKING_DIR}/tests/ansible-role-requirements.yml"
 export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
 export OSA_OPS_DIR="${WORKING_DIR}/openstack-ansible-ops"
 
@@ -155,7 +156,6 @@ fi
 if [ ! -d "${ANSIBLE_ROLE_DIR}" ] && [ -f "${ANSIBLE_ROLE_REQUIREMENTS_PATH}" ]; then
    ansible-playbook -i ${ANSIBLE_INVENTORY} \
          ${COMMON_TESTS_PATH}/get-ansible-role-requirements.yml \
-         -e "toxinidir=${WORKING_DIR} homedir=${TESTING_HOME}" \
          -v
 fi
 
@@ -182,4 +182,12 @@ if [ ! -f "${ANSIBLE_CFG_PATH}" ]; then
   fi
 else
   echo "Found ${ANSIBLE_CFG_PATH} so there's nothing more to do."
+fi
+
+# Adjust the Ansible configuration file to include the extra
+# role paths if any are provided and they're not already set.
+if [ ! -z "${ANSIBLE_EXTRA_ROLE_DIRS}" ]; then
+  if ! grep -q "roles_path.*${ANSIBLE_EXTRA_ROLE_DIRS}" "${ANSIBLE_CFG_PATH}"; then
+    sed -i "s|HOME/.ansible/roles.*|HOME/.ansible/roles:${ANSIBLE_EXTRA_ROLE_DIRS}|" "${ANSIBLE_CFG_PATH}"
+  fi
 fi

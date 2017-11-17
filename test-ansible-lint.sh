@@ -30,6 +30,7 @@ set -e
 
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
+export TEST_PLAYBOOK=${TEST_PLAYBOOK:-$WORKING_DIR/tests/test.yml}
 
 ## Main ----------------------------------------------------------------------
 
@@ -37,4 +38,4 @@ export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
 source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
 
 # Execute ansible-lint
-ansible-lint ${WORKING_DIR} -R -r ${WORKING_DIR}/ansible-lint/
+ansible-lint -R -r ${COMMON_TESTS_PATH}/ansible-lint/ ${TEST_PLAYBOOK}

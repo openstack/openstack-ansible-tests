@@ -24,5 +24,9 @@
 - name: First ensure apt cache is always refreshed
   apt:
     update_cache: true
+  register: _update
+  retries: 5
+  delay: 2
+  until: _update | succeeded
   when:
     - ansible_pkg_mgr == 'apt'

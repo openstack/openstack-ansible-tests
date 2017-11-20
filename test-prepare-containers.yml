@@ -25,7 +25,6 @@
 
 - name: Playbook for creating containers
   hosts: all_containers
-  serial: 1
   become: True
   gather_facts: False
   any_errors_fatal: true

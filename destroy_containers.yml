@@ -15,7 +15,6 @@
 
 - name: Playbook for destroying test containers
   hosts: all_containers
-  serial: 1
   become: true
   gather_facts: false
   tasks:

@@ -25,14 +25,6 @@ which dnf &>/dev/null && RHT_PKG_MGR='dnf' || RHT_PKG_MGR='yum'
 
 case "${ID,,}" in
     *suse*)
-        # FIXME(hwoarang) workaround for broken rsync.opensuse.org. See
-        # https://progress.opensuse.org/issues/27699
-        for repo in /etc/zypp/repos.d/*.repo; do
-           sudo sed -i "/baseurl/s@\(http://\).*/opensuse\(.*\)@\1download.opensuse.org\2@" $repo
-        done
-        sudo zypper --non-interactive clean -a
-        sudo zypper --no-gpg-checks --non-interactive ref -f
-        sudo zypper --no-gpg-checks --non-interactive modifyrepo --all --refresh
         # Need to pull libffi and python-pyOpenSSL early
         # because we install ndg-httpsclient from pip on Leap 42.1
         [[ "${VERSION}" == "42.1" ]] && extra_suse_deps="libffi-devel python-pyOpenSSL"

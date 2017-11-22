@@ -86,7 +86,6 @@
             repo: "{{ item['src'] }}"
             dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
             version: "{{ item['version'] | default('master') }}"
-            depth: "{{ item['depth'] | default('10') }}"
             update: true
             force: true
           with_items: "{{ git_roles }}"
@@ -136,7 +135,6 @@
             repo: "{{ item['src'] }}"
             dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
             version: "{{ item['version'] | default('master') }}"
-            depth: "{{ item['depth'] | default('10') }}"
             update: true
             force: true
           with_items: "{{ git_roles }}"
@@ -213,7 +211,6 @@
             repo: "{{ item['src'] }}"
             dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
             version: "{{ item['version'] | default('master') }}"
-            depth: "{{ item['depth'] | default('10') }}"
             update: true
             force: true
           with_items: "{{ git_roles }}"

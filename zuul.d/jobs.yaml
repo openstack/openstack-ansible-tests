@@ -141,9 +141,6 @@
     name: openstack-ansible-functional-opensuse-423
     parent: openstack-ansible-functional
     nodeset: opensuse-423
-    # TODO(odyssey4me):
-    # Remove this once the tests are stable again.
-    voting: false
 
 - job:
     name: openstack-ansible-functional-opensuse-423-nv

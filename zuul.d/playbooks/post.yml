@@ -41,7 +41,7 @@
     - name: Copy logs back to the executor
       synchronize:
         src: "{{ ansible_user_dir }}/src/{{ zuul.project.canonical_name }}/logs/"
-        dest: "{{ zuul.executor.log_root }}"
+        dest: "{{ zuul.executor.log_root }}/"
         mode: pull
       when:
         - logs_folder.stat is defined

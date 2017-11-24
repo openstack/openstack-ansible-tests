@@ -30,7 +30,7 @@
         state: directory
         owner: root
         group: root
-        mode: 0700
+        mode: "0700"
 
     - name: Create ssh key pair for root
       user:
@@ -87,7 +87,7 @@
         state: directory
         owner: "{{ ansible_user_id }}"
         group: "{{ ansible_user_gid }}"
-        mode: 0700
+        mode: "0700"
       when: ansible_user_id != 'root'
 
     - name: Ensure user has the known private key

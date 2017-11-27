@@ -28,7 +28,6 @@
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 export RSYNC_CMD="rsync --archive --safe-links --ignore-errors --quiet --no-perms --no-owner --no-group"
 export RSYNC_ETC_CMD="${RSYNC_CMD} --no-links --exclude selinux/"
-export ARA_CMD="${WORKING_DIR}/.tox/functional/bin/ara generate html"
 export TESTING_HOME=${TESTING_HOME:-$HOME}
 
 ## Main ----------------------------------------------------------------------
@@ -36,6 +35,7 @@ export TESTING_HOME=${TESTING_HOME:-$HOME}
 echo "#### BEGIN LOG COLLECTION ###"
 
 mkdir -vp \
+    "${WORKING_DIR}/logs/ara" \
     "${WORKING_DIR}/logs/host" \
     "${WORKING_DIR}/logs/openstack" \
     "${WORKING_DIR}/logs/etc/host" \
@@ -82,19 +82,33 @@ fi
 find "${WORKING_DIR}/logs/" -type f ! -name '*.html' -exec mv {} {}.txt \;
 
 # Get the ara sqlite database
-${RSYNC_CMD} "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/" || true
+${RSYNC_CMD} "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/ara/" || true
 
-# Generate the ARA report
-# In order to reduce the quantity of unnecessary log content
-# being kept in OpenStack-Infra we only generate the ARA report
-# when the test result is a failure. The ARA sqlite database is
-# still available for self generation if desired for successful
-# tests.
-if [[ "${TEST_EXIT_CODE}" != "0" ]] && [[ "${TEST_EXIT_CODE}" != "true" ]]; then
-    echo "Generating ARA report."
-    ${ARA_CMD} "${WORKING_DIR}/logs/ara" || true
-else
-    echo "Not generating ARA report."
+# Figure out the correct path for ARA
+# As this script is not run through tox, and the tox envs are all
+# different names, we need to try and find the right path to execute
+# ARA from.
+ARA_CMD="$(find ${WORKING_DIR}/.tox -path "*/bin/ara" -type f | head -n 1)"
+
+# If we could not find ARA, assume it was not installed
+# and skip all the related activities.
+if [[ "${ARA_CMD}" != "" ]]; then
+    # Generate the ARA report
+    # In order to reduce the quantity of unnecessary log content
+    # being kept in OpenStack-Infra we only generate the ARA report
+    # when the test result is a failure. The ARA sqlite database is
+    # still available for self generation if desired for successful
+    # tests.
+    if [[ "${TEST_EXIT_CODE}" != "0" ]] && [[ "${TEST_EXIT_CODE}" != "true" ]]; then
+        echo "Generating ARA report."
+        ${ARA_CMD} generate html "${WORKING_DIR}/logs/ara" || true
+    else
+        echo "Not generating ARA report."
+    fi
+
+    # We still want the subunit report though, as that reflects
+    # success/failure in OpenStack Health
+    ${ARA_CMD} generate subunit "${WORKING_DIR}/logs/ara/testrepository.subunit" || true
 fi
 
 # Get a dmesg output so we can look for kernel failures

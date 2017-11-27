@@ -28,7 +28,8 @@ case "${ID,,}" in
         # Need to pull libffi and python-pyOpenSSL early
         # because we install ndg-httpsclient from pip on Leap 42.1
         [[ "${VERSION}" == "42.1" ]] && extra_suse_deps="libffi-devel python-pyOpenSSL"
-        sudo zypper -n in python-devel lsb-release ${extra_suse_deps:-}
+        sudo zypper -n in ca-certificates-mozilla python-devel \
+            python-xml lsb-release ${extra_suse_deps:-}
         ;;
     amzn|centos|rhel)
         sudo $RHT_PKG_MGR install -y python-devel redhat-lsb-core epel-release yum-utils

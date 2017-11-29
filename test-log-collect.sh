@@ -26,42 +26,97 @@
 ## Vars ----------------------------------------------------------------------
 
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
-export RSYNC_CMD="rsync --archive --safe-links --ignore-errors --quiet --no-perms --no-owner --no-group"
-export RSYNC_ETC_CMD="${RSYNC_CMD} --no-links --exclude selinux/"
 export TESTING_HOME=${TESTING_HOME:-$HOME}
+
+export RSYNC_CMD="rsync --archive --safe-links --ignore-errors --quiet --no-perms --no-owner --no-group"
+
+# NOTE(cloudnull): This is a very simple list of common directories in /etc we
+#                  wish to search for when storing gate artifacts. When adding
+#                  things to this list please alphabetize the entries so it's
+#                  easy for folks to find and adjust items as needed.
+COMMON_ETC_LOG_NAMES="apt \
+                      aodh \
+                      barbican \
+                      ceilometer \
+                      cinder \
+                      designate \
+                      glance \
+                      gnocchi \
+                      haproxy \
+                      heat \
+                      horizon \
+                      ironic \
+                      keystone \
+                      magnum \
+                      memcached \
+                      molteniron \
+                      my.cnf \
+                      mysql \
+                      network \
+                      nginx \
+                      neutron \
+                      nova \
+                      octavia \
+                      rabbitmq \
+                      rally \
+                      repo \
+                      rsyslog \
+                      sahara \
+                      swift \
+                      sysconfig/network-scripts \
+                      sysconfig/network \
+                      tacker \
+                      tempest \
+                      trove \
+                      yum \
+                      zypp"
+
+## Functions -----------------------------------------------------------------
+
+function store_artifacts {
+  # Store known artifacts only if they exist. If the target directory does
+  # exist, it will be created.
+  # USAGE: store_artifacts /src/to/artifacts /path/to/store
+  if [[ -e "${1}" ]]; then
+    if [[ ! -d "${2}" ]]; then
+      mkdir -vp "${2}"
+    fi
+    echo "Running artifact sync for \"${1}\" to \"${2}\""
+    sudo ${RSYNC_CMD} ${1} ${2} || true
+  fi
+}
 
 ## Main ----------------------------------------------------------------------
 
 echo "#### BEGIN LOG COLLECTION ###"
 
-mkdir -vp \
-    "${WORKING_DIR}/logs/ara" \
-    "${WORKING_DIR}/logs/host" \
-    "${WORKING_DIR}/logs/openstack" \
-    "${WORKING_DIR}/logs/etc/host" \
-    "${WORKING_DIR}/logs/etc/openstack" \
+mkdir -vp "${WORKING_DIR}/logs"
 
-# NOTE(mhayden): We use sudo here to ensure that all logs are copied.
-sudo ${RSYNC_CMD} /var/log/ "${WORKING_DIR}/logs/host" || true
-if [ -d "/openstack/log" ]; then
-    sudo ${RSYNC_CMD} /openstack/log/ "${WORKING_DIR}/logs/openstack" || true
+# Gather basic logs
+store_artifacts /openstack/log/ansible-logging/ "${WORKING_DIR}/logs/ansible"
+store_artifacts /openstack/log/ "${WORKING_DIR}/logs/openstack"
+store_artifacts /var/log/ "${WORKING_DIR}/logs/host"
+
+# Get the ara sqlite database
+store_artifacts "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/ara/"
+
+# Gather host etc artifacts
+for service in ${COMMON_ETC_LOG_NAMES}; do
+    store_artifacts "/etc/${service}" "${WORKING_DIR}/logs/etc/host/"
+done
+
+# Gather container etc artifacts
+if which lxc-ls &> /dev/null; then
+ for CONTAINER_NAME in $(sudo lxc-ls -1); do
+   CONTAINER_PID=$(sudo lxc-info -p -n ${CONTAINER_NAME} | awk '{print $2}')
+   ETC_DIR="/proc/${CONTAINER_PID}/root/etc"
+   LOG_DIR="/proc/${CONTAINER_PID}/root/var/log"
+   for service in ${COMMON_ETC_LOG_NAMES}; do
+      store_artifacts ${ETC_DIR}/${service} "${WORKING_DIR}/logs/etc/openstack/${CONTAINER_NAME}/"
+      store_artifacts ${LOG_DIR}/${service} "${WORKING_DIR}/logs/openstack/${CONTAINER_NAME}/"
+   done
+ done
 fi
-
-# NOTE(cloudnull): This is collection thousands of files resulting in infra upload
-#                  issues. To remove immediate pressure this is being stopped and
-#                  we can circle back on this to make the etc file collection more
-#                  focused.
-#  # Archive host's /etc directory
-#  sudo ${RSYNC_ETC_CMD} /etc/ "${WORKING_DIR}/logs/etc/host/" || true
-#
-#  # Loop over each container and archive its /etc directory
-#  if which lxc-ls &> /dev/null; then
-#    for CONTAINER_NAME in `sudo lxc-ls -1`; do
-#      CONTAINER_PID=$(sudo lxc-info -p -n ${CONTAINER_NAME} | awk '{print $2}')
-#      ETC_DIR="/proc/${CONTAINER_PID}/root/etc/"
-#      sudo ${RSYNC_ETC_CMD} ${ETC_DIR} "${WORKING_DIR}/logs/etc/openstack/${CONTAINER_NAME}/" || true
-#    done
-#  fi
 
 # NOTE(mhayden): All of the files must be world-readable so that the log
 # pickup jobs will work properly. Without this, you get a "File not found"
@@ -72,17 +127,9 @@ fi
 sudo chmod -R ugo+rX "${WORKING_DIR}/logs/"
 sudo chown -R $(whoami) "${WORKING_DIR}/logs/"
 
-if [ ! -z "${ANSIBLE_LOG_DIR}" ]; then
-    mkdir -p "${WORKING_DIR}/logs/ansible"
-    ${RSYNC_CMD} "${ANSIBLE_LOG_DIR}/" "${WORKING_DIR}/logs/ansible" || true
-fi
-
 # Rename all files gathered to have a .txt suffix so that the compressed
 # files are viewable via a web browser in OpenStack-CI.
 find "${WORKING_DIR}/logs/" -type f ! -name '*.html' -exec mv {} {}.txt \;
-
-# Get the ara sqlite database
-${RSYNC_CMD} "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/ara/" || true
 
 # Figure out the correct path for ARA
 # As this script is not run through tox, and the tox envs are all
@@ -99,6 +146,7 @@ if [[ "${ARA_CMD}" != "" ]]; then
     # when the test result is a failure. The ARA sqlite database is
     # still available for self generation if desired for successful
     # tests.
+    mkdir -vp "${WORKING_DIR}/logs/ara"
     if [[ "${TEST_EXIT_CODE}" != "0" ]] && [[ "${TEST_EXIT_CODE}" != "true" ]]; then
         echo "Generating ARA report."
         ${ARA_CMD} generate html "${WORKING_DIR}/logs/ara" || true
@@ -134,6 +182,15 @@ elif which apt-get &> /dev/null; then
     sudo apt-cache policy | grep http | awk '{print $1" "$2" "$3}' | sort -u > "${WORKING_DIR}/logs/ubuntu-apt-repolist.txt" || true
     sudo apt list --installed > "${WORKING_DIR}/logs/ubuntu-apt-list-installed.txt" || true
 fi
+
+# Record the active interface configs
+for interface in $(ip -o link | awk -F':' '{print $2}'); do
+    if which ethtool &> /dev/null; then
+        ethtool -k ${interface} > "${WORKING_DIR}/logs/ethtool-${interface}-cfg.txt"
+    else
+        echo "No ethtool available" | tee -a "${WORKING_DIR}/logs/no-ethtool.txt"
+    fi
+done
 
 # Compress the files gathered so that they do not take up too much space.
 # We use 'command' to ensure that we're not executing with some sort of alias.

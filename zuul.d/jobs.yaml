@@ -168,3 +168,20 @@
       to execute the tests from must be specified in the
       ``osa_test_repo`` variable.
     nodeset: ubuntu-xenial
+
+- job:
+    name: openstack-ansible-integrated-deploy-aio
+    parent: openstack-ansible-deploy-aio
+    voting: false
+    required-projects:
+      - openstack/openstack-ansible
+    description: |
+      Run AIO tests for an OpenStack-Ansible project.
+      This uses the integrated repository openstack-ansible
+      on Ubuntu Xenial with the scenario ``deploy`` ``aio``.
+      Any project can then use
+      the ``openstack-ansible-integrated-deploy-aio`` job in
+      whatever pipeline is appropriate.
+    vars:
+      osa_test_repo: "openstack/openstack-ansible"
+

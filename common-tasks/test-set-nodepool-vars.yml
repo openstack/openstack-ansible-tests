@@ -15,7 +15,7 @@
 
 - name: Check if this is an OpenStack-CI nodepool instance
   stat:
-    path: /etc/nodepool/provider
+    path: /etc/nodepool
   register: nodepool
   delegate_to: localhost
 
@@ -79,6 +79,29 @@
     pip_install_centos_mirror_url: "{{ centos_mirror_url.stdout }}"
   when:
     - ansible_pkg_mgr in ['yum', 'dnf']
+    - nodepool.stat.exists | bool
+
+- name: Discover the openSUSE mirror URL when in nodepool
+  shell: |
+    source /etc/ci/mirror_info.sh
+    echo "${NODEPOOL_OPENSUSE_MIRROR}"
+  args:
+    executable: /bin/bash
+  register: opensuse_mirror
+  delegate_to: localhost
+  when:
+    - ansible_pkg_mgr == 'zypper'
+    - nodepool.stat.exists | bool
+  tags:
+    - skip_ansible_lint
+
+- name: Set a fact to override the openSUSE mirror URL when in nodepool
+  set_fact:
+    opensuse_mirror: "{{ opensuse_mirror.stdout }}"
+    # OpenStack infra doesn't mirror OBS repos so use the upstream one
+    opensuse_mirror_obs: "http://download.opensuse.org"
+  when:
+    - ansible_pkg_mgr == 'zypper'
     - nodepool.stat.exists | bool
 
 - name: Set the files to copy into the container cache for OpenStack-CI instances

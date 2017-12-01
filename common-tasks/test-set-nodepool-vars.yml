@@ -76,7 +76,7 @@
 # NOTE(mhayden): This mirror URL already has the '/centos' URI added.
 - name: Set a fact to override the CentOS mirror URL when in nodepool
   set_fact:
-    pip_install_centos_mirror_url: "{{ centos_mirror_url.stdout }}"
+    openstack_hosts_centos_mirror_url: "{{ centos_mirror_url.stdout }}"
   when:
     - ansible_pkg_mgr in ['yum', 'dnf']
     - nodepool.stat.exists | bool

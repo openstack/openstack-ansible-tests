@@ -185,7 +185,11 @@ fi
 
 # Record the active interface configs
 for interface in $(ip -o link | awk -F':' '{print $2}'); do
-    ethtool -k ${interface} > "${WORKING_DIR}/logs/ethtool-${interface}-cfg.txt"
+    if which ethtool &> /dev/null; then
+        ethtool -k ${interface} > "${WORKING_DIR}/logs/ethtool-${interface}-cfg.txt"
+    else
+        echo "No ethtool available" | tee -a "${WORKING_DIR}/logs/no-ethtool.txt"
+    fi
 done
 
 # Compress the files gathered so that they do not take up too much space.

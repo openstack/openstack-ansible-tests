@@ -17,6 +17,8 @@
   hosts: localhost
   become: true
   gather_facts: true
+  tasks:
+    - include: "common-tasks/test-set-nodepool-vars.yml"
 
 - include: destroy_containers.yml
   when: destroy_first | default(True) | bool
@@ -27,14 +29,30 @@
   become: True
   gather_facts: False
   any_errors_fatal: true
-  roles:
-    - role: "lxc_container_create"
-  post_tasks:
+  tasks:
+    - name: Create containers
+      include_role:
+        name: "lxc_container_create"
     - name: Wait for container connectivity
       wait_for_connection:
         connect_timeout: "{{ lxc_container_wait_params.connect_timeout | default(omit) }}"
         delay: "{{ lxc_container_wait_params.delay | default(omit) }}"
         sleep: "{{ lxc_container_wait_params.sleep | default(omit) }}"
         timeout: "{{ lxc_container_wait_params.timeout | default(omit) }}"
+  vars_files:
+    - test-vars.yml
+
+# TODO(evrardjp): Move this as an include_role above like the patch
+# https://review.openstack.org/525109
+# when https://review.openstack.org/#/c/521598 is in,
+# to optimize serialization
+- name: Execute the openstack-host role on containers
+  hosts: all_containers
+  become: true
+  gather_facts: true
+  pre_tasks:
+    - include: "common-tasks/test-set-nodepool-vars.yml"
+  roles:
+    - role: "openstack_hosts"
   vars_files:
     - test-vars.yml

@@ -87,7 +87,7 @@
     echo "${NODEPOOL_OPENSUSE_MIRROR}"
   args:
     executable: /bin/bash
-  register: opensuse_mirror
+  register: _opensuse_mirror
   delegate_to: localhost
   when:
     - ansible_pkg_mgr == 'zypper'
@@ -97,7 +97,7 @@
 
 - name: Set a fact to override the openSUSE mirror URL when in nodepool
   set_fact:
-    opensuse_mirror: "{{ opensuse_mirror.stdout }}"
+    opensuse_mirror: "{{ _opensuse_mirror.stdout }}"
     # OpenStack infra doesn't mirror OBS repos so use the upstream one
     opensuse_mirror_obs: "http://download.opensuse.org"
   when:

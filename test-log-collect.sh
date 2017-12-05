@@ -162,6 +162,9 @@ fi
 # Get a dmesg output so we can look for kernel failures
 dmesg > "${WORKING_DIR}/logs/dmesg.log.txt" || true
 
+# Collect job environment
+env > "${WORKING_DIR}/logs/environment.txt"  || true
+
 # output ram usage
 free -m > "${WORKING_DIR}/logs/memory-available.txt" || true
 

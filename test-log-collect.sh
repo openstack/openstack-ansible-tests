@@ -77,7 +77,7 @@ function store_artifacts {
   # Store known artifacts only if they exist. If the target directory does
   # exist, it will be created.
   # USAGE: store_artifacts /src/to/artifacts /path/to/store
-  if [[ -e "${1}" ]]; then
+  if sudo test -e "${1}"; then
     if [[ ! -d "${2}" ]]; then
       mkdir -vp "${2}"
     fi

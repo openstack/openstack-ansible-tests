@@ -186,9 +186,9 @@ fi
 # Record the active interface configs
 for interface in $(ip -o link | awk -F':' '{print $2}'); do
     if which ethtool &> /dev/null; then
-        ethtool -k ${interface} > "${WORKING_DIR}/logs/ethtool-${interface}-cfg.txt"
+        ethtool -k ${interface} > "${WORKING_DIR}/logs/ethtool-${interface}-cfg.txt" || true
     else
-        echo "No ethtool available" | tee -a "${WORKING_DIR}/logs/no-ethtool.txt"
+        echo "No ethtool available" | tee -a "${WORKING_DIR}/logs/ethtool-${interface}-cfg.txt"
     fi
 done
 
@@ -197,4 +197,3 @@ done
 command gzip --best --recursive "${WORKING_DIR}/logs/"
 
 echo "#### END LOG COLLECTION ###"
-

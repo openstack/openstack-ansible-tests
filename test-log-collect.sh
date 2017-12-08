@@ -73,6 +73,28 @@ COMMON_ETC_LOG_NAMES="apt \
 
 ## Functions -----------------------------------------------------------------
 
+function repo_information {
+    [[ "${1}" != "host" ]] && lxc_cmd="lxc-attach --name ${1} --"
+    echo "Collecting list of installed packages and enabled repositories for \"${1}\""
+    # Redhat package debugging
+    if eval sudo ${lxc_cmd} which yum &>/dev/null || eval sudo ${lxc_cmd} which dnf &>/dev/null; then
+        # Prefer dnf over yum for CentOS.
+        eval sudo ${lxc_cmd} which dnf &>/dev/null && RHT_PKG_MGR='dnf' || RHT_PKG_MGR='yum'
+        eval sudo ${lxc_cmd} $RHT_PKG_MGR repolist -v > "${WORKING_DIR}/logs/redhat-rpm-repolist-${1}.txt" || true
+        eval sudo ${lxc_cmd} $RHT_PKG_MGR list installed > "${WORKING_DIR}/logs/redhat-rpm-list-installed-${1}.txt" || true
+
+    # SUSE package debugging
+    elif eval sudo ${lxc_cmd} which zypper &>/dev/null; then
+        eval sudo ${lxc_cmd} zypper lr -d > "${WORKING_DIR}/logs/suse-zypper-repolist-${1}.txt" || true
+        eval sudo ${lxc_cmd} zypper pa -i > "${WORKING_DIR}/logs/suse-zypper-list-installed-${1}.txt" || true
+
+    # Ubuntu package debugging
+    elif eval sudo ${lxc_cmd} which apt-get &> /dev/null; then
+        eval sudo ${lxc_cmd} apt-cache policy | grep http | awk '{print $1" "$2" "$3}' | sort -u > "${WORKING_DIR}/logs/ubuntu-apt-repolist-${1}.txt" || true
+        eval sudo ${lxc_cmd} apt list --installed > "${WORKING_DIR}/logs/ubuntu-apt-list-installed-${1}.txt" || true
+    fi
+}
+
 function store_artifacts {
   # Store known artifacts only if they exist. If the target directory does
   # exist, it will be created.
@@ -111,6 +133,7 @@ if which lxc-ls &> /dev/null; then
    CONTAINER_PID=$(sudo lxc-info -p -n ${CONTAINER_NAME} | awk '{print $2}')
    ETC_DIR="/proc/${CONTAINER_PID}/root/etc"
    LOG_DIR="/proc/${CONTAINER_PID}/root/var/log"
+   repo_information ${CONTAINER_NAME}
    for service in ${COMMON_ETC_LOG_NAMES}; do
       store_artifacts ${ETC_DIR}/${service} "${WORKING_DIR}/logs/etc/openstack/${CONTAINER_NAME}/"
       store_artifacts ${LOG_DIR}/${service} "${WORKING_DIR}/logs/openstack/${CONTAINER_NAME}/"
@@ -165,23 +188,7 @@ dmesg > "${WORKING_DIR}/logs/dmesg.log.txt" || true
 # output ram usage
 free -m > "${WORKING_DIR}/logs/memory-available.txt" || true
 
-# Redhat package debugging
-if which yum &>/dev/null || which dnf &>/dev/null; then
-    # Prefer dnf over yum for CentOS.
-    which dnf &>/dev/null && RHT_PKG_MGR='dnf' || RHT_PKG_MGR='yum'
-    sudo $RHT_PKG_MGR repolist -v > "${WORKING_DIR}/logs/redhat-rpm-repolist.txt" || true
-    sudo $RHT_PKG_MGR list installed > "${WORKING_DIR}/logs/redhat-rpm-list-installed.txt" || true
-
-# SUSE package debugging
-elif which zypper &>/dev/null; then
-    sudo zypper lr -d > "${WORKING_DIR}/logs/suse-zypper-repolist.txt" || true
-    sudo zypper pa -i > "${WORKING_DIR}/logs/suse-zypper-list-installed.txt" || true
-
-# Ubuntu package debugging
-elif which apt-get &> /dev/null; then
-    sudo apt-cache policy | grep http | awk '{print $1" "$2" "$3}' | sort -u > "${WORKING_DIR}/logs/ubuntu-apt-repolist.txt" || true
-    sudo apt list --installed > "${WORKING_DIR}/logs/ubuntu-apt-list-installed.txt" || true
-fi
+repo_information host
 
 # Record the active interface configs
 for interface in $(ip -o link | awk -F':' '{print $2}'); do

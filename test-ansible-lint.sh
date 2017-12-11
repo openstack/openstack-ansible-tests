@@ -31,6 +31,10 @@ set -e
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
 export TEST_PLAYBOOK=${TEST_PLAYBOOK:-$WORKING_DIR/tests/test.yml}
+export ANSIBLE_LINT_PARAMS=${ANSIBLE_LINT_PARAMS:-}
+
+echo "TEST_PLAYBOOK: ${TEST_PLAYBOOK}"
+echo "ANSIBLE_LINT_PARAMS: ${ANSIBLE_LINT_PARAMS}"
 
 ## Main ----------------------------------------------------------------------
 
@@ -38,4 +42,4 @@ export TEST_PLAYBOOK=${TEST_PLAYBOOK:-$WORKING_DIR/tests/test.yml}
 source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
 
 # Execute ansible-lint
-ansible-lint -R -r ${COMMON_TESTS_PATH}/ansible-lint/ ${TEST_PLAYBOOK}
+ansible-lint ${ANSIBLE_LINT_PARAMS} -R -r ${COMMON_TESTS_PATH}/ansible-lint/ ${TEST_PLAYBOOK}

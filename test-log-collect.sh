@@ -204,6 +204,6 @@ done
 
 # Compress the files gathered so that they do not take up too much space.
 # We use 'command' to ensure that we're not executing with some sort of alias.
-command gzip --best --recursive "${WORKING_DIR}/logs/"
+command gzip --force --best --recursive "${WORKING_DIR}/logs/"
 
 echo "#### END LOG COLLECTION ###"

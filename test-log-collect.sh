@@ -57,6 +57,7 @@ COMMON_ETC_LOG_NAMES="apt \
                       neutron \
                       nova \
                       octavia \
+                      pip.conf \
                       rabbitmq \
                       rally \
                       repo \

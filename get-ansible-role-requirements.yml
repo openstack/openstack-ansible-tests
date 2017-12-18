@@ -24,12 +24,16 @@
   gather_facts: false
   tasks:
 
+    - name: Set name for role under testing
+      set_fact:
+        role_name: "{{ lookup('env', 'ROLE_NAME') | default('') }}"
+
     - name: Remove target role directories if they are not git repositories
       shell: |
         EXIT_CODE=0
         {% for role in osa_roles %}
         {%   if role['scm'] == "git" or role['scm'] is undefined %}
-        ROLE_REPO_PATH="{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ role['name'] | default(role['src'] | basename) }}"
+        ROLE_REPO_PATH="{{ lookup('env', 'ANSIBLE_ROLE_DEP_DIR') }}/{{ role['name'] | default(role['src'] | basename) }}"
         if [[ -e ${ROLE_REPO_PATH} ]] && [[ ! -d "${ROLE_REPO_PATH}/.git" ]]; then
           echo "${ROLE_REPO_PATH} is not a git repo, deleting..."
           rm -rf "${ROLE_REPO_PATH}"
@@ -46,7 +50,7 @@
 
     - name: Create the ansible role directory
       file:
-        dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}"
+        dest: "{{ lookup('env', 'ANSIBLE_ROLE_DEP_DIR') }}"
         state: directory
 
     - name: Check whether zuul-cloner is installed and provide the path to it
@@ -84,7 +88,7 @@
         - name: Clone git repos
           git:
             repo: "{{ item['src'] }}"
-            dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
+            dest: "{{ lookup('env', 'ANSIBLE_ROLE_DEP_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
             version: "{{ item['version'] | default('master') }}"
             depth: "{{ item['depth'] | default('10') }}"
             update: true
@@ -134,7 +138,7 @@
         - name: Clone git repos (non openstack)
           git:
             repo: "{{ item['src'] }}"
-            dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
+            dest: "{{ lookup('env', 'ANSIBLE_ROLE_DEP_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
             version: "{{ item['version'] | default('master') }}"
             depth: "{{ item['depth'] | default('10') }}"
             update: true
@@ -152,7 +156,7 @@
                 - name: 'openstack/openstack-ansible-tests'
                   dest: '{{ lookup("env", "WORKING_DIR") }}/tests/common'
                 - name: 'openstack/openstack-ansible-(?!tests)(.*)'
-                  dest: '{{ lookup("env", "ANSIBLE_ROLE_DIR") }}/\1'
+                  dest: '{{ lookup("env", "ANSIBLE_ROLE_DEP_DIR") }}/\1'
                 - name: 'openstack/(?!openstack-ansible)(.*)'
                   dest: '{{ homedir }}/git/openstack/\1'
             dest: "{{ homedir }}/.ansible/clonemap.yml"
@@ -203,15 +207,17 @@
         - name: Link the zuul provided roles
           file:
             src: "{{ zuul_git_src_dir }}/{{ item }}"
-            dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ item | regex_replace('openstack/openstack-ansible-', '') }}"
+            dest: "{{ lookup('env', 'ANSIBLE_ROLE_DEP_DIR') }}/{{ item | regex_replace('openstack/openstack-ansible-', '') }}"
             state: link
             force: yes
           with_items: "{{ zuul_src_repo_list }}"
+          # Do not link the role we are testing
+          when: role_name == '' or not item | search(role_name)
 
         - name: Clone the remaining git repos
           git:
             repo: "{{ item['src'] }}"
-            dest: "{{ lookup('env', 'ANSIBLE_ROLE_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
+            dest: "{{ lookup('env', 'ANSIBLE_ROLE_DEP_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
             version: "{{ item['version'] | default('master') }}"
             depth: "{{ item['depth'] | default('10') }}"
             update: true

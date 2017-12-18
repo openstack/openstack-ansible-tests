@@ -40,7 +40,8 @@ export ANSIBLE_CFG_PATH="${TESTING_HOME}/.ansible.cfg"
 export ANSIBLE_LOG_DIR="${TESTING_HOME}/.ansible/logs"
 export ANSIBLE_NOCOLOR=1
 export ANSIBLE_PLUGIN_DIR="${TESTING_HOME}/.ansible/plugins"
-export ANSIBLE_ROLE_DIR="${TESTING_HOME}/.ansible/roles"
+export ANSIBLE_ROLE_DEP_DIR="${TESTING_HOME}/.ansible/roles"
+export ANSIBLE_ROLE_DIR="${TESTING_HOME}/.ansible/testing-role"
 export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
 export OSA_OPS_DIR="${WORKING_DIR}/openstack-ansible-ops"
 
@@ -153,7 +154,7 @@ fi
 
 # Download the Ansible role repositories if they are not present on the host.
 # This is ignored if there is no ansible-role-requirements file.
-if [ ! -d "${ANSIBLE_ROLE_DIR}" ] && [ -f "${ANSIBLE_ROLE_REQUIREMENTS_PATH}" ]; then
+if [ ! -d "${ANSIBLE_ROLE_DEP_DIR}" ] && [ -f "${ANSIBLE_ROLE_REQUIREMENTS_PATH}" ]; then
    ansible-playbook -i ${ANSIBLE_INVENTORY} \
          ${COMMON_TESTS_PATH}/get-ansible-role-requirements.yml \
          -v
@@ -188,6 +189,6 @@ fi
 # role paths if any are provided and they're not already set.
 if [ ! -z "${ANSIBLE_EXTRA_ROLE_DIRS}" ]; then
   if ! grep -q "roles_path.*${ANSIBLE_EXTRA_ROLE_DIRS}" "${ANSIBLE_CFG_PATH}"; then
-    sed -i "s|HOME/.ansible/roles.*|HOME/.ansible/roles:${ANSIBLE_EXTRA_ROLE_DIRS}|" "${ANSIBLE_CFG_PATH}"
+    sed -i "s|HOME/.ansible/roles.*|HOME/.ansible/roles:${ANSIBLE_ROLE_DIR}:${ANSIBLE_EXTRA_ROLE_DIRS}|" "${ANSIBLE_CFG_PATH}"
   fi
 fi

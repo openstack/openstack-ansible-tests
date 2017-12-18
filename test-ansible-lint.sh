@@ -41,5 +41,8 @@ echo "ANSIBLE_LINT_PARAMS: ${ANSIBLE_LINT_PARAMS}"
 # Ensure that the Ansible environment is properly prepared
 source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
 
-# Execute ansible-lint
-ansible-lint ${ANSIBLE_LINT_PARAMS} -R -r ${COMMON_TESTS_PATH}/ansible-lint/ ${TEST_PLAYBOOK}
+# Execute ansible-lint. We do not want to test dependent roles located
+# in $HOME/.ansible/roles since we only care about the role we are currently
+# testing.
+ansible-lint ${ANSIBLE_LINT_PARAMS} --exclude=$HOME/.ansible/roles \
+  -R -r ${COMMON_TESTS_PATH}/ansible-lint/ ${TEST_PLAYBOOK}

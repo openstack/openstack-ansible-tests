@@ -208,3 +208,4 @@ done
 command gzip --force --best --recursive "${WORKING_DIR}/logs/" || echo 'Note: gzip log files failed'
 
 echo "#### END LOG COLLECTION ###"
+

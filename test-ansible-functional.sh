@@ -61,28 +61,6 @@ function set_ansible_parameters {
 
 }
 
-function setup_ara {
-
-  # Don't do anything if ARA has already been set up
-  [[ -L "${ANSIBLE_PLUGIN_DIR}/callback/ara" ]] && return 0
-
-  # Install ARA from source if running in ARA gate, otherwise install from PyPi
-  ARA_SRC_HOME="${TESTING_HOME}/src/git.openstack.org/openstack/ara"
-  if [[ -d "${ARA_SRC_HOME}" ]]; then
-    pip install --constraint "${COMMON_TESTS_PATH}/test-ansible-deps.txt" "${ARA_SRC_HOME}"
-  else
-    pip install --constraint "${COMMON_TESTS_PATH}/test-ansible-deps.txt" ara
-  fi
-
-  # Dynamically figure out the location of ARA (ex: py2 vs py3)
-  ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
-
-  echo "Linking ${ANSIBLE_PLUGIN_DIR}/callback/ara to ${ara_location}/plugins/callbacks/"
-  mkdir -p "${ANSIBLE_PLUGIN_DIR}/callback/ara"
-  ln -sf "${ara_location}/plugins/callbacks" "${ANSIBLE_PLUGIN_DIR}/callback/ara/"
-
-}
-
 function execute_ansible_playbook {
 
   CMD_TO_EXECUTE="ansible-playbook ${TEST_PLAYBOOK} $@ ${ANSIBLE_CLI_PARAMETERS}"
@@ -109,7 +87,6 @@ fi
 
 # Ensure that the Ansible environment is properly prepared
 source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
-setup_ara
 
 # Prepare the extra CLI parameters used in each execution
 set_ansible_parameters

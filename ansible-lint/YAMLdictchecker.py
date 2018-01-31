@@ -15,10 +15,10 @@
 #
 
 
-from ansiblelint import AnsibleLintRule
+import ansiblelint
 
 
-class YAMLdictchecker(AnsibleLintRule):
+class YAMLdictchecker(ansiblelint.AnsibleLintRule):
     id = 'OSA0001'
     shortdesc = 'Please use ":" YAML dictionary format instead of "="'
     description = 'Please follow YAML dictionary format while creating'

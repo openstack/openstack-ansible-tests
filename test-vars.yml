@@ -120,8 +120,9 @@ keystone_galera_address: "{{ test_galera_host }}"
 keystone_container_mysql_password: "SuperSecrete"
 keystone_venv_tag: "testing"
 keystone_developer_mode: true
-keystone_git_install_branch: "{{ test_branch }}" 
+keystone_git_install_branch: "{{ test_branch }}"
 keystone_service_region: RegionOne
+keystone_cache_servers: "[{% for host in groups[test_memcached_group] %}\"{{ hostvars[host]['ansible_host'] }}:11211\"{% if not loop.last %},{% endif %}{% endfor %}]"
 
 # Glance specific settings
 glance_service_publicuri: "http://{{ test_glance_host }}:9292"

@@ -154,7 +154,7 @@ nova_container_mysql_password: "SuperSecrete"
 nova_developer_mode: true
 nova_galera_address: "{{ test_galera_host }}"
 nova_galera_database: nova
-nova_git_install_branch: bcc88d4cad3d2a86e9e1c841a4afdb5a9d87c0f1 # HEAD of "stable/newton" as of 03.10.2017
+nova_git_install_branch: newton-eol
 nova_keystone_auth_plugin: password
 nova_management_address: "{{ ansible_host }}"
 nova_metadata_port: 8775
@@ -317,7 +317,7 @@ heat_rabbitmq_vhost: /heat
 # Ironic specific settings
 ironic_venv_tag: "testing"
 ironic_developer_mode: True
-ironic_git_install_branch: 58a41817fde4088cbf4a51991ed71663f86348fb # HEAD of "stable/newton" as of 03.10.2017
+ironic_git_install_branch: newton-eol
 ironic_service_publicuri: "http://{{ test_ironic_api_host }}:6385"
 ironic_service_publicurl: "{{ ironic_service_publicuri }}"
 ironic_service_adminuri: "http://{{ test_ironic_api_host }}:6385"

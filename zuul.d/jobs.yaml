@@ -38,6 +38,7 @@
       - name: openstack/openstack-ansible-os_cinder
       - name: openstack/openstack-ansible-os_designate
       - name: openstack/openstack-ansible-os_glance
+      - name: openstack/openstack-ansible-os_gnocchi
       - name: openstack/openstack-ansible-os_heat
       - name: openstack/openstack-ansible-os_keystone
       - name: openstack/openstack-ansible-os_magnum
@@ -184,4 +185,3 @@
       whatever pipeline is appropriate.
     vars:
       osa_test_repo: "openstack/openstack-ansible"
-

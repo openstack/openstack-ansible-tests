@@ -85,6 +85,14 @@ if [[ -x /usr/bin/yum-config-manager ]] && [[ -e /etc/centos-release ]]; then
   sudo yum-config-manager --enable updates > /dev/null
 fi
 
+# Check if SELinux is present and which mode is currently set.
+if [[ -x /usr/sbin/getenforce ]]; then
+  SELINUX_STATUS=$(/usr/sbin/getenforce)
+else
+  SELINUX_STATUS="Unavailable"
+fi
+echo "Current SELinux status: ${SELINUX_STATUS}"
+
 # Ensure that the Ansible environment is properly prepared
 source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
 

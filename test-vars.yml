@@ -199,9 +199,6 @@ nova_discover_hosts_in_cells_interval: '-1'
 lxd_trust_password: "SuperSecrete"
 # nova placement vars
 nova_placement_service_password: "secrete"
-nova_placement_container_mysql_password: "SuperSecrete"
-nova_placement_galera_database: nova_placement
-nova_placement_galera_address: "{{ test_galera_host }}"
 nova_placement_service_publicuri: "http://{{ test_nova_api_placement_host }}:8780"
 nova_placement_service_publicurl: "{{ nova_placement_service_publicuri }}"
 nova_placement_service_adminuri: "http://{{ test_nova_api_placement_host }}:8780"

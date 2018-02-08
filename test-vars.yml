@@ -38,6 +38,7 @@ test_nova_api_placement_group: "{{ ((groups['nova_api_placement'] is defined) an
 test_nova_console_group: "{{ ((groups['nova_console'] is defined) and (groups['nova_console'] | length > 0)) | ternary('nova_console', 'all_containers') }}"
 test_neutron_server_group: "{{ ((groups['neutron_server'] is defined) and (groups['neutron_server'] | length > 0)) | ternary('neutron_server', 'all_containers') }}"
 test_swift_proxy_group: "{{ ((groups['swift_proxy'] is defined) and (groups['swift_proxy'] | length > 0)) | ternary('swift_proxy', 'all_containers') }}"
+test_gnocchi_group: "{{ ((groups['gnocchi_all'] is defined) and (groups['gnocchi_all'] | length > 0)) | ternary('gnocchi_all', 'all_containers') }}"
 test_ironic_api_group: "{{ ((groups['ironic_api'] is defined) and (groups['ironic_api'] | length > 0)) | ternary('ironic_api', 'all_containers') }}"
 test_sahara_group: "{{ ((groups['sahara_all'] is defined) and (groups['sahara_all'] | length > 0)) | ternary('sahara_all', 'all_containers') }}"
 test_cinder_api_group: "{{ ((groups['cinder_api'] is defined) and (groups['cinder_api'] | length > 0)) | ternary('cinder_api', 'all_containers') }}"
@@ -52,6 +53,7 @@ test_nova_api_placement_host: "{{ hostvars[groups[test_nova_api_placement_group]
 test_nova_console_host: "{{ hostvars[groups[test_nova_console_group][0]]['ansible_host'] }}"
 test_neutron_server_host: "{{ hostvars[groups[test_neutron_server_group][0]]['ansible_host'] }}"
 test_swift_proxy_host: "{{ hostvars[groups[test_swift_proxy_group][0]]['ansible_host'] }}"
+test_gnocchi_api_host: "{{ hostvars[groups[test_gnocchi_group][0]]['ansible_host'] }}"
 test_ironic_api_host: "{{ hostvars[groups[test_ironic_api_group][0]]['ansible_host'] }}"
 test_sahara_host: "{{ hostvars[groups[test_sahara_group][0]]['ansible_host'] }}"
 test_cinder_api_host: "{{ hostvars[groups[test_cinder_api_group][0]]['ansible_host'] }}"
@@ -337,6 +339,9 @@ heat_rabbitmq_vhost: /heat
 # Gnocchi specific settings
 gnocchi_venv_tag: "testing"
 gnocchi_developer_mode: true
+gnocchi_service_publicuri: "http://{{ test_gnocchi_api_host }}:8041"
+gnocchi_service_adminuri: "http://{{ test_gnocchi_api_host }}:8041"
+gnocchi_service_internaluri: "http://{{ test_gnocchi_api_host }}:8041"
 gnocchi_database_name: "gnocchi"
 gnocchi_container_mysql_password: "secrete"
 gnocchi_keystone_auth: yes
@@ -519,4 +524,3 @@ lxc_container_bind_mounts:
 
 ## haproxy variables
 haproxy_ssl: no
-

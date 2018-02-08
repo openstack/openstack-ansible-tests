@@ -26,40 +26,105 @@
 ## Vars ----------------------------------------------------------------------
 
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
+export TESTING_HOME=${TESTING_HOME:-$HOME}
+
 export RSYNC_CMD="rsync --archive --safe-links --ignore-errors --quiet --no-perms --no-owner --no-group"
-export RSYNC_ETC_CMD="${RSYNC_CMD} --no-links --exclude selinux/"
+
+# NOTE(cloudnull): This is a very simple list of common directories in /etc we
+#                  wish to search for when storing gate artifacts. When adding
+#                  things to this list please alphabetize the entries so it's
+#                  easy for folks to find and adjust items as needed.
+COMMON_ETC_LOG_NAMES="apt \
+                      aodh \
+                      barbican \
+                      ceilometer \
+                      cinder \
+                      designate \
+                      glance \
+                      gnocchi \
+                      haproxy \
+                      heat \
+                      horizon \
+                      ironic \
+                      keystone \
+                      magnum \
+                      memcached \
+                      my.cnf \
+                      mysql \
+                      network \
+                      nginx \
+                      neutron \
+                      nova \
+                      pip.conf \
+                      rabbitmq \
+                      rally \
+                      repo \
+                      rsyslog \
+                      sahara \
+                      swift \
+                      sysconfig/network-scripts \
+                      sysconfig/network \
+                      tempest \
+                      trove"
+
+## Functions -----------------------------------------------------------------
+
+function repo_information {
+    [[ "${1}" != "host" ]] && lxc_cmd="lxc-attach --name ${1} --"
+    echo "Collecting list of installed packages and enabled repositories for \"${1}\""
+
+    # Ubuntu package debugging
+    if eval sudo ${lxc_cmd} which apt-get &> /dev/null; then
+       eval sudo ${lxc_cmd} apt-cache policy | grep http | awk '{print $1" "$2" "$3}' | sort -u > "${WORKING_DIR}/logs/ubuntu-apt-repolist-${1}.txt" || true
+       eval sudo ${lxc_cmd} apt list --installed > "${WORKING_DIR}/logs/ubuntu-apt-list-installed-${1}.txt" || true
+    fi
+}
+
+function store_artifacts {
+  # Store known artifacts only if they exist. If the target directory does
+  # exist, it will be created.
+  # USAGE: store_artifacts /src/to/artifacts /path/to/store
+  if sudo test -e "${1}"; then
+    if [[ ! -d "${2}" ]]; then
+      mkdir -vp "${2}"
+    fi
+    echo "Running artifact sync for \"${1}\" to \"${2}\""
+    sudo ${RSYNC_CMD} ${1} ${2} || true
+  fi
+}
 
 ## Main ----------------------------------------------------------------------
 
 echo "#### BEGIN LOG COLLECTION ###"
 
-mkdir -vp \
-    "${WORKING_DIR}/logs/host" \
-    "${WORKING_DIR}/logs/openstack" \
-    "${WORKING_DIR}/logs/etc/host" \
-    "${WORKING_DIR}/logs/etc/openstack" \
+mkdir -vp "${WORKING_DIR}/logs"
 
-# NOTE(mhayden): We use sudo here to ensure that all logs are copied.
-sudo ${RSYNC_CMD} /var/log/ "${WORKING_DIR}/logs/host" || true
-if [ -d "/openstack/log" ]; then
-    sudo ${RSYNC_CMD} /openstack/log/ "${WORKING_DIR}/logs/openstack" || true
+# Gather basic logs
+store_artifacts /openstack/log/ansible-logging/ "${WORKING_DIR}/logs/ansible"
+store_artifacts /openstack/log/ "${WORKING_DIR}/logs/openstack"
+store_artifacts /var/log/ "${WORKING_DIR}/logs/host"
+
+# Get the ara sqlite database
+store_artifacts "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/ara/"
+
+# Gather host etc artifacts
+for service in ${COMMON_ETC_LOG_NAMES}; do
+    store_artifacts "/etc/${service}" "${WORKING_DIR}/logs/etc/host/"
+done
+
+# Gather container etc artifacts
+if which lxc-ls &> /dev/null; then
+ for CONTAINER_NAME in $(sudo lxc-ls -1); do
+   CONTAINER_PID=$(sudo lxc-info -p -n ${CONTAINER_NAME} | awk '{print $2}')
+   ETC_DIR="/proc/${CONTAINER_PID}/root/etc"
+   LOG_DIR="/proc/${CONTAINER_PID}/root/var/log"
+   repo_information ${CONTAINER_NAME}
+   for service in ${COMMON_ETC_LOG_NAMES}; do
+      store_artifacts ${ETC_DIR}/${service} "${WORKING_DIR}/logs/etc/openstack/${CONTAINER_NAME}/"
+      store_artifacts ${LOG_DIR}/${service} "${WORKING_DIR}/logs/openstack/${CONTAINER_NAME}/"
+   done
+ done
 fi
-
-# NOTE(cloudnull): This is collection thousands of files resulting in infra upload
-#                  issues. To remove immediate pressure this is being stopped and
-#                  we can circle back on this to make the etc file collection more
-#                  focused.
-#  # Archive host's /etc directory
-#  sudo ${RSYNC_ETC_CMD} /etc/ "${WORKING_DIR}/logs/etc/host/" || true
-#
-#  # Loop over each container and archive its /etc directory
-#  if which lxc-ls &> /dev/null; then
-#    for CONTAINER_NAME in `sudo lxc-ls -1`; do
-#      CONTAINER_PID=$(sudo lxc-info -p -n ${CONTAINER_NAME} | awk '{print $2}')
-#      ETC_DIR="/proc/${CONTAINER_PID}/root/etc/"
-#      sudo ${RSYNC_ETC_CMD} ${ETC_DIR} "${WORKING_DIR}/logs/etc/openstack/${CONTAINER_NAME}/" || true
-#    done
-#  fi
 
 # NOTE(mhayden): All of the files must be world-readable so that the log
 # pickup jobs will work properly. Without this, you get a "File not found"
@@ -70,11 +135,6 @@ fi
 sudo chmod -R ugo+rX "${WORKING_DIR}/logs/"
 sudo chown -R $(whoami) "${WORKING_DIR}/logs/"
 
-if [ ! -z "${ANSIBLE_LOG_DIR}" ]; then
-    mkdir -p "${WORKING_DIR}/logs/ansible"
-    ${RSYNC_CMD} "${ANSIBLE_LOG_DIR}/" "${WORKING_DIR}/logs/ansible" || true
-fi
-
 # Rename all files gathered to have a .txt suffix so that the compressed
 # files are viewable via a web browser in OpenStack-CI.
 find "${WORKING_DIR}/logs/" -type f ! -name '*.html' -exec mv {} {}.txt \;
@@ -82,19 +142,26 @@ find "${WORKING_DIR}/logs/" -type f ! -name '*.html' -exec mv {} {}.txt \;
 # Get a dmesg output so we can look for kernel failures
 dmesg > "${WORKING_DIR}/logs/dmesg.log.txt" || true
 
+# Collect job environment
+env > "${WORKING_DIR}/logs/environment.txt"  || true
+
 # output ram usage
 free -m > "${WORKING_DIR}/logs/memory-available.txt" || true
 
-# Redhat package debugging
-if which yum &>/dev/null || which dnf &>/dev/null; then
-    # Prefer dnf over yum for CentOS.
-    which dnf &>/dev/null && RHT_PKG_MGR='dnf' || RHT_PKG_MGR='yum'
-    sudo $RHT_PKG_MGR repolist -v > "${WORKING_DIR}/logs/redhat-rpm-repolist.txt" || true
-    sudo $RHT_PKG_MGR list installed > "${WORKING_DIR}/logs/redhat-rpm-list-installed.txt" || true
-fi
+repo_information host
+
+# Record the active interface configs
+for interface in $(ip -o link | awk -F':' '{print $2}'); do
+    if which ethtool &> /dev/null; then
+        ethtool -k ${interface} > "${WORKING_DIR}/logs/ethtool-${interface}-cfg.txt" || true
+    else
+        echo "No ethtool available" | tee -a "${WORKING_DIR}/logs/ethtool-${interface}-cfg.txt"
+    fi
+done
 
 # Compress the files gathered so that they do not take up too much space.
 # We use 'command' to ensure that we're not executing with some sort of alias.
 command gzip --force --best --recursive "${WORKING_DIR}/logs/" || echo 'Note: gzip log files failed'
 
 echo "#### END LOG COLLECTION ###"
+

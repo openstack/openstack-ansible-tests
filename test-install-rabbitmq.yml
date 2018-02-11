@@ -13,8 +13,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# The rabbitmq needs access to hostvars for all containers in order
+# to set the values in /etc/hosts. We therefore collect all host/container
+# facts before continuing.
+- name: Gather facts
+  hosts: "rabbitmq_all"
+  user: root
+  gather_facts: true
+
+# The cluster must be stopped when doing major/minor upgrades
+# http://www.rabbitmq.com/clustering.html#upgrading
+- name: Stop RabbitMQ nodes that are not the upgrader
+  hosts: "rabbitmq_all[1:]"
+  serial: 1
+  any_errors_fatal: true
+  user: root
+  tasks:
+    - name: "Stop RabbitMQ"
+      service:
+        name: "rabbitmq-server"
+        state: "stopped"
+      when:
+        - (rabbitmq_upgrade | default(false)) | bool
+
 - name: Deploy Rabbitmq
   hosts: rabbitmq_all
+  serial: 1
   user: root
   become: true
   gather_facts: true

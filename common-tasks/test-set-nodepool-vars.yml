@@ -110,3 +110,9 @@
       - { src: '/etc/pip.conf', dest: '/etc/pip.conf' }
   when:
     - nodepool.stat.exists | bool
+
+- name: Set a fact to disable yum's fastestmirror support when in nodepool
+  set_fact:
+    openstack_hosts_enable_yum_fastestmirror: no
+  when:
+    - nodepool.stat.exists | bool

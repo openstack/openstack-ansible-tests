@@ -24,7 +24,7 @@
       vhost_name: "{{ heat_rabbitmq_vhost }}"
       user_name: "{{ heat_rabbitmq_userid }}"
       user_password: "{{ heat_rabbitmq_password }}"
-      when: "{{ groups['rabbitmq_all'] is defined }}"
+      when: groups['rabbitmq_all'] is defined
     - include: create-grant-db.yml
       db_name: "{{ heat_galera_database }}"
       db_password: "{{ heat_container_mysql_password }}"

@@ -55,6 +55,7 @@
         src: "{{ ansible_user_dir }}/src/{{ current_test_repo }}/logs"
         dest: "{{ zuul.executor.log_root }}/"
         mode: pull
+      no_log: True
       when:
         - logs_folder.stat is defined
         - logs_folder.stat.exists | bool

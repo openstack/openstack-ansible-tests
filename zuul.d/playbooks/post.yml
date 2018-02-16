@@ -43,6 +43,8 @@
         src: "{{ ansible_user_dir }}/src/{{ zuul.project.canonical_name }}/logs"
         dest: "{{ zuul.executor.log_root }}/"
         mode: pull
+        rsync_opts:
+          - "--quiet"
       when:
         - logs_folder.stat is defined
         - logs_folder.stat.exists | bool

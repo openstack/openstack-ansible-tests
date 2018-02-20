@@ -93,6 +93,14 @@ else
 fi
 echo "Current SELinux status: ${SELINUX_STATUS}"
 
+# NOTE(mhayden): SELinux policies for CentOS 7 are still incomplete. Ensure
+# SELinux is not in enforcing mode during tests.
+if [ "${SELINUX_STATUS}" == "Enforcing" ]; then
+  echo "NOTE: CentOS 7 SELinux policies are incomplete."
+  echo "Switching SELinux mode from Enforcing to Permissive."
+  sudo /usr/sbin/setenforce 0
+fi
+
 # Ensure that the Ansible environment is properly prepared
 source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
 

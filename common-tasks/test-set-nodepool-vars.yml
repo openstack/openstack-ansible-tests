@@ -116,3 +116,24 @@
     openstack_hosts_enable_yum_fastestmirror: no
   when:
     - nodepool.stat.exists | bool
+
+- name: Discover the OpenStack-Infra pypi/wheel mirror
+  shell: |
+    source /etc/ci/mirror_info.sh
+    echo ${NODEPOOL_PYPI_MIRROR}
+    echo ${NODEPOOL_WHEEL_MIRROR}
+  args:
+    executable: /bin/bash
+  register: _pypi_wheel_mirror
+  delegate_to: localhost
+  when:
+    - nodepool.stat.exists | bool
+
+- name: Enable the use of the OpenStack-Infra pypi/wheel mirror
+  set_fact:
+    pip_default_index: "{{ _pypi_wheel_mirror.stdout_lines[0] }}"
+    pip_links:
+      - name: "infra_wheel_mirror"
+        link: "{{ _pypi_wheel_mirror.stdout_lines[1] }}"
+  when:
+    - nodepool.stat.exists | bool

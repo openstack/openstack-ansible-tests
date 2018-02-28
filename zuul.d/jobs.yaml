@@ -139,6 +139,11 @@
     nodeset: ubuntu-xenial
 
 - job:
+    name: openstack-ansible-upgrade-ubuntu-xenial-nv
+    parent: openstack-ansible-upgrade-ubuntu-xenial
+    voting: false
+
+- job:
     name: openstack-ansible-functional-opensuse-423
     parent: openstack-ansible-functional
     nodeset: opensuse-423

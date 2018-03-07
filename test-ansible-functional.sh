@@ -128,12 +128,13 @@ if [ "${TEST_IDEMPOTENCE}" == "true" ]; then
   # Execute the test playbook
   execute_ansible_playbook
 
-  # Check the output log for changed/failed tasks
-  if grep -q "changed=0.*failed=0" ${ANSIBLE_LOG_PATH}; then
-    echo "Idempotence test: pass"
-  else
+  # Exit with a failure if we find "changed" or "failed" followed by anything
+  # other than a zero.
+  if grep -qP '(changed|failed)=(?!0)' ${ANSIBLE_LOG_PATH}; then
     echo "Idempotence test: fail"
     exit 1
+  else
+    echo "Idempotence test: pass"
   fi
 
 fi

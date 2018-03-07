@@ -27,6 +27,7 @@
     executable: /bin/bash
   register: lxc_reverse_proxy
   delegate_to: localhost
+  changed_when: false
   when:
     - nodepool.stat.exists | bool
   tags:
@@ -46,6 +47,7 @@
     executable: /bin/bash
   register: uca_repo_url
   delegate_to: localhost
+  changed_when: false
   when:
     - ansible_pkg_mgr == 'apt'
     - nodepool.stat.exists | bool
@@ -67,6 +69,7 @@
     executable: /bin/bash
   register: centos_mirror_url
   delegate_to: localhost
+  changed_when: false
   when:
     - ansible_pkg_mgr in ['yum', 'dnf']
     - nodepool.stat.exists | bool
@@ -89,6 +92,7 @@
     executable: /bin/bash
   register: _opensuse_mirror
   delegate_to: localhost
+  changed_when: false
   when:
     - ansible_pkg_mgr == 'zypper'
     - nodepool.stat.exists | bool
@@ -126,6 +130,7 @@
     executable: /bin/bash
   register: _pypi_wheel_mirror
   delegate_to: localhost
+  changed_when: false
   when:
     - nodepool.stat.exists | bool
 

@@ -18,4 +18,13 @@
   gather_facts: true
   any_errors_fatal: true
   tasks:
-    - include: "common-tasks/test-set-nodepool-vars.yml"
+
+    - name: Check if this is an OpenStack-CI nodepool instance
+      stat:
+        path: /etc/nodepool
+      register: nodepool
+      delegate_to: localhost
+
+    - include_tasks: "common-tasks/test-set-nodepool-vars.yml"
+      when:
+        - nodepool.stat.exists | bool

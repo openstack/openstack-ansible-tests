@@ -227,7 +227,7 @@ fi
 # role paths if any are provided and they're not already set.
 if [ ! -z "${ANSIBLE_EXTRA_ROLE_DIRS}" ]; then
   if ! grep -q "roles_path.*${ANSIBLE_EXTRA_ROLE_DIRS}" "${ANSIBLE_CFG_PATH}"; then
-    sed -i "s|HOME/.ansible/roles.*|HOME/.ansible/roles:${ANSIBLE_ROLE_DIR}:${ANSIBLE_EXTRA_ROLE_DIRS}|" "${ANSIBLE_CFG_PATH}"
+    sed -i "s|roles_path.*HOME/.ansible/roles.*|roles_path       = $HOME/.ansible/roles:${ANSIBLE_ROLE_DIR}:${ANSIBLE_EXTRA_ROLE_DIRS}|" "${ANSIBLE_CFG_PATH}"
   fi
 fi
 

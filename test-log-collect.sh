@@ -61,11 +61,13 @@ COMMON_ETC_LOG_NAMES="apt \
                       rabbitmq \
                       rally \
                       repo \
+                      resolv.conf \
                       rsyslog \
                       sahara \
                       swift \
                       sysconfig/network-scripts \
                       sysconfig/network \
+                      systemd/network \
                       tacker \
                       tempest \
                       trove \

@@ -42,12 +42,12 @@
       with_items:
         - "91.189.91.21 images.linuxcontainers.org us.images.linuxcontainers.org"
         - "91.189.88.37 images.linuxcontainers.org uk.images.linuxcontainers.org"
-    # NOTE(mhayden): Using package_state=present on CentOS 7 should allow for
+    # NOTE(mhayden): Using package_state=present on CentOS or openSUSE should allow for
     # more gate jobs to complete properly and expose more problems that can
     # be fixed (instead of timeouts).
-    - name: Use present for package_state on CentOS 7
+    - name: Use present for package_state on CentOS and openSUSE
       set_fact:
-        package_state: "{{ (ansible_os_family == 'RedHat') | ternary('present', 'latest') }}"
+        package_state: "{{ (ansible_pkg_mgr in ['dnf', 'yum', 'zypper']) | ternary('present', 'latest') }}"
 
 - include: test-install-openstack-hosts.yml
 

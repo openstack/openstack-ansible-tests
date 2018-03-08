@@ -180,6 +180,9 @@ if [ ! -d "${ANSIBLE_ROLE_DEP_DIR}" ] && [ -f "${ANSIBLE_ROLE_REQUIREMENTS_PATH}
    ansible-playbook -i ${ANSIBLE_INVENTORY} \
          ${COMMON_TESTS_PATH}/get-ansible-role-requirements.yml \
          -v
+   if [[ ! -e "${ANSIBLE_ROLE_DEP_DIR}/plugins" ]]; then
+     ln -s "${ANSIBLE_PLUGIN_DIR}" "${ANSIBLE_ROLE_DEP_DIR}/plugins"
+   fi
 fi
 
 

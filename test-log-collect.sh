@@ -109,6 +109,30 @@ function store_artifacts {
   fi
 }
 
+function find_files {
+  find "${WORKING_DIR}/logs/" -type f \
+    ! -name "*.gz" \
+    ! -name '*.html' \
+    ! -name '*.subunit' \
+    ! -name 'ansible.sqlite'
+}
+
+function rename_files {
+  find_files |\
+    while read filename; do \
+      mv ${filename} ${filename}.txt || echo "WARNING: Could not rename ${filename}"; \
+    done
+}
+
+function compress_files {
+  # We use 'command' to ensure that we're not executing with an alias.
+  GZIP_CMD="command gzip --force --best"
+  find_files |\
+    while read filename; do \
+      ${GZIP_CMD} ${filename} || echo "WARNING: Could not gzip ${filename}"; \
+    done
+}
+
 ## Main ----------------------------------------------------------------------
 
 echo "#### BEGIN LOG COLLECTION ###"
@@ -120,8 +144,8 @@ store_artifacts /openstack/log/ansible-logging/ "${WORKING_DIR}/logs/ansible"
 store_artifacts /openstack/log/ "${WORKING_DIR}/logs/openstack"
 store_artifacts /var/log/ "${WORKING_DIR}/logs/host"
 
-# Get the ara sqlite database
-store_artifacts "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/ara/"
+# Store the ara sqlite database in the openstack-ci expected path
+store_artifacts "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/ara-report/"
 
 # Gather host etc artifacts
 for service in ${COMMON_ETC_LOG_NAMES}; do
@@ -153,7 +177,7 @@ sudo chown -R $(whoami) "${WORKING_DIR}/logs/"
 
 # Rename all files gathered to have a .txt suffix so that the compressed
 # files are viewable via a web browser in OpenStack-CI.
-find "${WORKING_DIR}/logs/" -type f ! -name '*.html' -exec mv {} {}.txt \;
+rename_files
 
 # Figure out the correct path for ARA
 # As this script is not run through tox, and the tox envs are all
@@ -164,23 +188,11 @@ ARA_CMD="$(find ${WORKING_DIR}/.tox -path "*/bin/ara" -type f | head -n 1)"
 # If we could not find ARA, assume it was not installed
 # and skip all the related activities.
 if [[ "${ARA_CMD}" != "" ]]; then
-    # Generate the ARA report
-    # In order to reduce the quantity of unnecessary log content
-    # being kept in OpenStack-Infra we only generate the ARA report
-    # when the test result is a failure. The ARA sqlite database is
-    # still available for self generation if desired for successful
-    # tests.
-    mkdir -vp "${WORKING_DIR}/logs/ara"
-    if [[ "${TEST_EXIT_CODE}" != "0" ]] && [[ "${TEST_EXIT_CODE}" != "true" ]]; then
-        echo "Generating ARA report."
-        ${ARA_CMD} generate html "${WORKING_DIR}/logs/ara" || true
-    else
-        echo "Not generating ARA report."
-    fi
-
-    # We still want the subunit report though, as that reflects
-    # success/failure in OpenStack Health
-    ${ARA_CMD} generate subunit "${WORKING_DIR}/logs/ara/testrepository.subunit" || true
+    # Generate the ARA subunit report so that the
+    # results reflect in OpenStack-Health
+    mkdir -vp "${WORKING_DIR}/logs/ara-data"
+    echo "Generating ARA report subunit report."
+    ${ARA_CMD} generate subunit "${WORKING_DIR}/logs/ara-data/testrepository.subunit" || true
 fi
 
 # Get a dmesg output so we can look for kernel failures
@@ -204,8 +216,7 @@ for interface in $(ip -o link | awk -F':' '{print $2}'); do
 done
 
 # Compress the files gathered so that they do not take up too much space.
-# We use 'command' to ensure that we're not executing with some sort of alias.
-command gzip --force --best --recursive "${WORKING_DIR}/logs/" || echo 'Note: gzip log files failed'
+compress_files
 
 echo "#### END LOG COLLECTION ###"
 

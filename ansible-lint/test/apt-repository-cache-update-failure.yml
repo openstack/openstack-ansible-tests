@@ -1,0 +1,23 @@
+- tasks:
+
+    - name: APT cache updates implicitly enabled
+      apt_repository:
+        repo: "deb https://example.com/foo/ bar baz"
+
+    - name: APT cache updates explicitly enabled
+      apt_repository:
+        repo: "deb https://example.com/foo/ bar baz"
+        update_cache: true
+
+    - name: APT cache updates implicitly enabled and retries
+      apt_repository:
+        repo: "deb https://example.com/foo/ bar baz"
+      register: add_repo
+      until: add_repo|success
+
+    - name: APT cache updates explicitly enabled and retries
+      apt_repository:
+        repo: "deb https://example.com/foo/ bar baz"
+        update_cache: true
+      register: add_repo
+      until: add_repo|success

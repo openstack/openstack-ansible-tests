@@ -41,6 +41,9 @@ echo "ANSIBLE_LINT_PARAMS: ${ANSIBLE_LINT_PARAMS}"
 # Ensure that the Ansible environment is properly prepared
 source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
 
+# Run unit tests for OSA ansible-lint rules
+python -m unittest discover -s "${WORKING_DIR}/ansible-lint" -p 'Test*.py'
+
 # Execute ansible-lint. We do not want to test dependent roles located
 # in $HOME/.ansible/roles since we only care about the role we are currently
 # testing.

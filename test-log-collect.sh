@@ -167,17 +167,17 @@ ARA_CMD="$(find ${WORKING_DIR}/.tox -path "*/bin/ara" -type f | head -n 1)"
 # and skip all the related activities.
 if [[ "${ARA_CMD}" != "" ]]; then
     # Generate the ARA report
-    # In order to reduce the quantity of unnecessary log content
-    # being kept in OpenStack-Infra we only generate the ARA report
-    # when the test result is a failure. The ARA sqlite database is
-    # still available for self generation if desired for successful
-    # tests.
+    # To avoid consuming lots of inodes in OpenStack's CI infra, we tar up the
+    # ARA report when we have a successful job.
     mkdir -vp "${WORKING_DIR}/logs/ara"
-    if [[ "${TEST_EXIT_CODE}" != "0" ]] && [[ "${TEST_EXIT_CODE}" != "true" ]]; then
-        echo "Generating ARA report."
-        ${ARA_CMD} generate html "${WORKING_DIR}/logs/ara" || true
-    else
-        echo "Not generating ARA report."
+    echo "Generating ARA report."
+    ${ARA_CMD} generate html "${WORKING_DIR}/logs/ara" || true
+    if [[ "${TEST_EXIT_CODE}" == "0" ]] || [[ "${TEST_EXIT_CODE}" == "true" ]]; then
+        pushd "${WORKING_DIR}/logs"
+          tar cvf ara-report.tar ara/
+          rm -rf ara/*
+          mv ara-report.tar ara/
+        popd
     fi
 
     # We still want the subunit report though, as that reflects

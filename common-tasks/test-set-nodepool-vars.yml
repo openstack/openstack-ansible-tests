@@ -13,132 +13,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Check if this is an OpenStack-CI nodepool instance
-  stat:
-    path: /etc/nodepool
-  register: nodepool
-  delegate_to: localhost
-
-- name: Discover the lxc_image_cache_server value when in nodepool
+- name: Discover variables from OpenStack's CI environment when in nodepool
   shell: |
     source /etc/ci/mirror_info.sh
-    echo "http://${NODEPOOL_MIRROR_HOST}:8080/images.linuxcontainers/"
+    echo "lxc_reverse_proxy=${NODEPOOL_MIRROR_HOST}"
+    echo "uca_apt_repo_url=${NODEPOOL_UCA_MIRROR}"
+    echo "openstack_hosts_centos_mirror_url=${NODEPOOL_CENTOS_MIRROR}"
+    echo "opensuse_mirror=${NODEPOOL_OPENSUSE_MIRROR}"
+    echo "pip_default_index=${NODEPOOL_PYPI_MIRROR}"
+    echo "pip_wheel_mirror=${NODEPOOL_WHEEL_MIRROR}"
   args:
     executable: /bin/bash
-  register: lxc_reverse_proxy
+  register: nodepool_variables
   delegate_to: localhost
   changed_when: false
-  when:
-    - nodepool.stat.exists | bool
   tags:
     - skip_ansible_lint
 
-- name: Set a fact to override lxc_image_cache_server value when in nodepool
+- name: Set facts automatically from OpenStack's CI environment variables
   set_fact:
-    lxc_image_cache_server_mirrors: "{{ [lxc_reverse_proxy.stdout] }}"
-  when:
-    - nodepool.stat.exists | bool
+    "{{ item.split('=', 1)[0] }}": "{{ item.split('=', 1)[1] }}"
+  with_items:
+    - "{{ nodepool_variables.stdout_lines }}"
 
-- name: Discover the UCA repo URL value when in nodepool
-  shell: |
-    source /etc/ci/mirror_info.sh
-    echo "${NODEPOOL_UCA_MIRROR}"
-  args:
-    executable: /bin/bash
-  register: uca_repo_url
-  delegate_to: localhost
-  changed_when: false
-  when:
-    - ansible_pkg_mgr == 'apt'
-    - nodepool.stat.exists | bool
-  tags:
-    - skip_ansible_lint
-
-- name: Set a fact to override uca_apt_repo_url value when in nodepool
+- name: Set facts manually when in nodepool
   set_fact:
-    uca_apt_repo_url: "{{ uca_repo_url.stdout }}"
-  when:
-    - ansible_pkg_mgr == 'apt'
-    - nodepool.stat.exists | bool
-
-- name: Discover the CentOS mirror URL when in nodepool
-  shell: |
-    source /etc/ci/mirror_info.sh
-    echo "${NODEPOOL_CENTOS_MIRROR}"
-  args:
-    executable: /bin/bash
-  register: centos_mirror_url
-  delegate_to: localhost
-  changed_when: false
-  when:
-    - ansible_pkg_mgr in ['yum', 'dnf']
-    - nodepool.stat.exists | bool
-  tags:
-    - skip_ansible_lint
-
-# NOTE(mhayden): This mirror URL already has the '/centos' URI added.
-- name: Set a fact to override the CentOS mirror URL when in nodepool
-  set_fact:
-    openstack_hosts_centos_mirror_url: "{{ centos_mirror_url.stdout }}"
-  when:
-    - ansible_pkg_mgr in ['yum', 'dnf']
-    - nodepool.stat.exists | bool
-
-- name: Discover the openSUSE mirror URL when in nodepool
-  shell: |
-    source /etc/ci/mirror_info.sh
-    echo "${NODEPOOL_OPENSUSE_MIRROR}"
-  args:
-    executable: /bin/bash
-  register: _opensuse_mirror
-  delegate_to: localhost
-  changed_when: false
-  when:
-    - ansible_pkg_mgr == 'zypper'
-    - nodepool.stat.exists | bool
-  tags:
-    - skip_ansible_lint
-
-- name: Set a fact to override the openSUSE mirror URL when in nodepool
-  set_fact:
-    opensuse_mirror: "{{ _opensuse_mirror.stdout }}"
-    # OpenStack infra doesn't mirror OBS repos so use the upstream one
-    opensuse_mirror_obs: "http://download.opensuse.org"
-  when:
-    - ansible_pkg_mgr == 'zypper'
-    - nodepool.stat.exists | bool
-
-- name: Set the files to copy into the container cache for OpenStack-CI instances
-  set_fact:
+    lxc_image_cache_server_mirrors:
+      - "http://{{ lxc_reverse_proxy }}:8080/images.linuxcontainers/"
     lxc_container_cache_files:
       - { src: '/etc/pip.conf', dest: '/etc/pip.conf' }
-  when:
-    - nodepool.stat.exists | bool
-
-- name: Set a fact to disable yum's fastestmirror support when in nodepool
-  set_fact:
+    # CentOS mirrors are set to OpenStack's CI mirrors, so fastestmirror is
+    # disabled to speed up package downloads.
     openstack_hosts_enable_yum_fastestmirror: no
-  when:
-    - nodepool.stat.exists | bool
-
-- name: Discover the OpenStack-Infra pypi/wheel mirror
-  shell: |
-    source /etc/ci/mirror_info.sh
-    echo ${NODEPOOL_PYPI_MIRROR}
-    echo ${NODEPOOL_WHEEL_MIRROR}
-  args:
-    executable: /bin/bash
-  register: _pypi_wheel_mirror
-  delegate_to: localhost
-  changed_when: false
-  when:
-    - nodepool.stat.exists | bool
-
-- name: Enable the use of the OpenStack-Infra pypi/wheel mirror
-  set_fact:
-    pip_default_index: "{{ _pypi_wheel_mirror.stdout_lines[0] }}"
+    opensuse_mirror_obs: "http://download.opensuse.org"
     pip_links:
       - name: "infra_wheel_mirror"
-        link: "{{ _pypi_wheel_mirror.stdout_lines[1] }}"
-  when:
-    - nodepool.stat.exists | bool
+        link: "{{ pip_wheel_mirror }}"

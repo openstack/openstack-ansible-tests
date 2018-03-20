@@ -21,6 +21,9 @@
       Uses tox with the ``linters`` environment.
     required-projects:
       - name: openstack/ansible-hardening
+      - name: openstack/ansible-role-systemd_mount
+      - name: openstack/ansible-role-systemd_networkd
+      - name: openstack/ansible-role-systemd_service
       - name: openstack/openstack-ansible-apt_package_pinning
       - name: openstack/openstack-ansible-ceph_client
       - name: openstack/openstack-ansible-galera_client
@@ -69,6 +72,9 @@
       of the ``tox_env`` variable.
     required-projects:
       - name: openstack/ansible-hardening
+      - name: openstack/ansible-role-systemd_mount
+      - name: openstack/ansible-role-systemd_networkd
+      - name: openstack/ansible-role-systemd_service
       - name: openstack/openstack-ansible-apt_package_pinning
       - name: openstack/openstack-ansible-ceph_client
       - name: openstack/openstack-ansible-galera_client

@@ -13,39 +13,47 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Discover variables from OpenStack's CI environment when in nodepool
-  shell: |
-    source /etc/ci/mirror_info.sh
-    echo "lxc_reverse_proxy=${NODEPOOL_MIRROR_HOST}"
-    echo "uca_apt_repo_url=${NODEPOOL_UCA_MIRROR}"
-    echo "openstack_hosts_centos_mirror_url=${NODEPOOL_CENTOS_MIRROR}"
-    echo "opensuse_mirror=${NODEPOOL_OPENSUSE_MIRROR}"
-    echo "pip_default_index=${NODEPOOL_PYPI_MIRROR}"
-    echo "pip_wheel_mirror=${NODEPOOL_WHEEL_MIRROR}"
-  args:
-    executable: /bin/bash
-  register: nodepool_variables
-  delegate_to: localhost
-  changed_when: false
-  tags:
-    - skip_ansible_lint
+- name: Ensure ci data exists before setting variables.
+  stat:
+    path: /etc/ci/mirror_info.sh
+  register: ci_mirror_info
 
-- name: Set facts automatically from OpenStack's CI environment variables
-  set_fact:
-    "{{ item.split('=', 1)[0] }}": "{{ item.split('=', 1)[1] }}"
-  with_items:
-    - "{{ nodepool_variables.stdout_lines }}"
+- name: Set nodepool vars
+  block:
+    - name: Discover variables from OpenStack's CI environment when in nodepool
+      shell: |
+        source /etc/ci/mirror_info.sh
+        echo "lxc_reverse_proxy=${NODEPOOL_MIRROR_HOST}"
+        echo "uca_apt_repo_url=${NODEPOOL_UCA_MIRROR}"
+        echo "openstack_hosts_centos_mirror_url=${NODEPOOL_CENTOS_MIRROR}"
+        echo "opensuse_mirror=${NODEPOOL_OPENSUSE_MIRROR}"
+        echo "pip_default_index=${NODEPOOL_PYPI_MIRROR}"
+        echo "pip_wheel_mirror=${NODEPOOL_WHEEL_MIRROR}"
+      args:
+        executable: /bin/bash
+      register: nodepool_variables
+      delegate_to: localhost
+      changed_when: false
+      tags:
+        - skip_ansible_lint
 
-- name: Set facts manually when in nodepool
-  set_fact:
-    lxc_image_cache_server_mirrors:
-      - "http://{{ lxc_reverse_proxy }}:8080/images.linuxcontainers/"
-    lxc_container_cache_files:
-      - { src: '/etc/pip.conf', dest: '/etc/pip.conf' }
-    # CentOS mirrors are set to OpenStack's CI mirrors, so fastestmirror is
-    # disabled to speed up package downloads.
-    openstack_hosts_enable_yum_fastestmirror: no
-    opensuse_mirror_obs: "http://download.opensuse.org"
-    pip_links:
-      - name: "infra_wheel_mirror"
-        link: "{{ pip_wheel_mirror }}"
+    - name: Set facts automatically from OpenStack's CI environment variables
+      set_fact:
+        "{{ item.split('=', 1)[0] }}": "{{ item.split('=', 1)[1] }}"
+      with_items:
+        - "{{ nodepool_variables.stdout_lines }}"
+
+    - name: Set facts manually when in nodepool
+      set_fact:
+        lxc_image_cache_server_mirrors:
+          - "http://{{ lxc_reverse_proxy }}:8080/images.linuxcontainers/"
+        lxc_container_cache_files:
+          - { src: '/etc/pip.conf', dest: '/etc/pip.conf' }
+        # CentOS mirrors are set to OpenStack's CI mirrors, so fastestmirror is
+        # disabled to speed up package downloads.
+        openstack_hosts_enable_yum_fastestmirror: no
+        opensuse_mirror_obs: "http://download.opensuse.org"
+        pip_links:
+          - name: "infra_wheel_mirror"
+            link: "{{ pip_wheel_mirror }}"
+  when: ci_mirror_info.stat.exists

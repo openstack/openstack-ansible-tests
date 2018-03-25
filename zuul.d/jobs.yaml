@@ -133,6 +133,11 @@
     nodeset: ubuntu-xenial
 
 - job:
+    name: openstack-ansible-functional-ubuntu-xenial-nv
+    parent: openstack-ansible-functional-ubuntu-xenial
+    voting: false
+
+- job:
     name: openstack-ansible-upgrade-ubuntu-xenial
     parent: openstack-ansible-upgrade
     nodeset: ubuntu-xenial

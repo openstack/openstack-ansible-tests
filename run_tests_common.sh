@@ -13,16 +13,56 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -o pipefail
-set -euov
+## Shell Opts ----------------------------------------------------------------
 
+set -o pipefail
+set -xeuo
+
+## Prerequisite check --------------------------------------------------------
+
+# Check whether the require environment variables are set.
+if [[ -z ${WORKING_DIR+x} ]] ||\
+   [[ -z ${COMMON_TESTS_PATH+x} ]] ||\
+   [[ -z ${TESTING_HOME+x} ]] ||\
+   [[ -z ${TESTING_BRANCH+x} ]]; then
+     echo "Required environment variables are not set."
+     echo "Please ensure that run_tests.sh is used to execute tests."
+     exit 1
+fi
+
+## Vars ----------------------------------------------------------------------
+
+# Set the source branch for upgrade tests
+# Be sure to change this whenever a new stable branch
+# is created. The checkout must always be N-1.
+UPGRADE_SOURCE_BRANCH=${UPGRADE_SOURCE_BRANCH:-'stable/queens'}
+
+# The bindep file contains the basic distribution packages
+# required in order to install pip, and ansible via pip.
 BINDEP_FILE=${BINDEP_FILE:-bindep.txt}
 
+## Main ----------------------------------------------------------------------
+
+# If this test set includes an upgrade test, the
+# previous stable release tests repo must also be
+# cloned.
+# Note:
+# Dependent patches to the previous stable release
+# tests repo are not supported.
+if [[ ! -d "${COMMON_TESTS_PATH}/previous" ]]; then
+  git clone -b ${UPGRADE_SOURCE_BRANCH} \
+      https://git.openstack.org/openstack/openstack-ansible-tests \
+      ${COMMON_TESTS_PATH}/previous
+fi
+
+# Source distribution information
 source /etc/os-release || source /usr/lib/os-release
 
 # Prefer dnf over yum for CentOS.
 which dnf &>/dev/null && RHT_PKG_MGR='dnf' || RHT_PKG_MGR='yum'
 
+# Perform the initial distribution package install
+# to allow pip and bindep to work.
 case "${ID,,}" in
     *suse*)
         # Need to pull libffi and python-pyOpenSSL early

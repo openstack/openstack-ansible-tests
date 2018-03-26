@@ -24,7 +24,10 @@ set -xeuo
 if [[ -z ${WORKING_DIR+x} ]] ||\
    [[ -z ${COMMON_TESTS_PATH+x} ]] ||\
    [[ -z ${TESTING_HOME+x} ]] ||\
-   [[ -z ${TESTING_BRANCH+x} ]]; then
+   [[ -z ${TESTING_BRANCH+x} ]] ||\
+   [[ -z ${pkg_mgr_cmd+x} ]] ||\
+   [[ -z ${ID+x} ]] ||\
+   [[ -z ${VERSION+x} ]]; then
      echo "Required environment variables are not set."
      echo "Please ensure that run_tests.sh is used to execute tests."
      exit 1
@@ -55,12 +58,6 @@ if [[ ! -d "${COMMON_TESTS_PATH}/previous" ]]; then
       ${COMMON_TESTS_PATH}/previous
 fi
 
-# Source distribution information
-source /etc/os-release || source /usr/lib/os-release
-
-# Prefer dnf over yum for CentOS.
-which dnf &>/dev/null && RHT_PKG_MGR='dnf' || RHT_PKG_MGR='yum'
-
 # Perform the initial distribution package install
 # to allow pip and bindep to work.
 case "${ID,,}" in
@@ -68,22 +65,23 @@ case "${ID,,}" in
         # Need to pull libffi and python-pyOpenSSL early
         # because we install ndg-httpsclient from pip on Leap 42.1
         [[ "${VERSION}" == "42.1" ]] && extra_suse_deps="libffi-devel python-pyOpenSSL"
-        sudo zypper -n in ca-certificates-mozilla python-devel \
-            python-xml lsb-release ${extra_suse_deps:-}
+        pkg_list="ca-certificates-mozilla python-devel python-xml lsb-release ${extra_suse_deps:-}"
         ;;
     amzn|centos|rhel)
-        sudo $RHT_PKG_MGR install -y python-devel redhat-lsb-core epel-release yum-utils
+        pkg_list="python-devel redhat-lsb-core epel-release yum-utils"
         ;;
     fedora)
-        sudo dnf install -y python-devel redhat-lsb-core redhat-rpm-config yum-utils
+        pkg_list="python-devel redhat-lsb-core redhat-rpm-config yum-utils"
         ;;
     ubuntu|debian)
-        sudo apt-get update && sudo apt-get install -y python-dev lsb-release
+        pkg_list="python-dev lsb-release"
+        sudo apt-get update
         ;;
     *)
         echo "Unsupported distribution: ${ID,,}"
         exit 1
 esac
+eval sudo ${pkg_mgr_cmd} ${pkg_list}
 
 # Install pip
 if ! which pip &>/dev/null; then

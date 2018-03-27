@@ -56,7 +56,12 @@ exclude_project openstack-ansible-tests
 #
 # ansible-hardening. Used by AIO in favor of the retired
 # openstack-ansible-security
+extra_include_project ansible-config_template
 extra_include_project ansible-hardening
+extra_include_project ansible-role-python_venv_build
+extra_include_project ansible-role-systemd_mount
+extra_include_project ansible-role-systemd_networkd
+extra_include_project ansible-role-systemd_service
 ############## END OF INCLUDED PROJECTS ###############
 
 # Replace spaces with newlines as expected by grep -F

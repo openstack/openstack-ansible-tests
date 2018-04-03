@@ -417,11 +417,9 @@ horizon_external_ssl: False
 # for general role testing as it's more stable.
 tempest_developer_mode: False
 tempest_venv_download: False
-tempest_git_install_branch: "{{ test_branch }}"
-tempest_venv_tag: "{{ tempest_git_install_branch }}"
-# tempest_venv_bin is the same as the default in os_tempest role, but we set
-# it again here so we can refer to it in test-nova-functional.yml
-tempest_venv_bin: "/opt/tempest_{{ tempest_venv_tag }}/bin"
+# tempest_venv_bin is set to use the same naming convention
+# as the other venvs (with the tag 'testing')
+tempest_venv_bin: "/opt/tempest-testing/bin"
 tempest_public_subnet_cidr: 10.1.3.0/24
 tempest_log_dir: "/var/log/"
 tempest_main_group: utility_all

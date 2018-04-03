@@ -79,6 +79,28 @@ EOF
 
 }
 
+function setup_ara {
+
+  # Don't do anything if ARA has already been set up
+  [[ -L "${ANSIBLE_PLUGIN_DIR}/callback/ara" ]] && return 0
+
+  # Install ARA from source if running in ARA gate, otherwise install from PyPi
+  ARA_SRC_HOME="${TESTING_HOME}/src/git.openstack.org/openstack/ara"
+  if [[ -d "${ARA_SRC_HOME}" ]]; then
+    pip install --constraint "${COMMON_TESTS_PATH}/test-ansible-deps.txt" "${ARA_SRC_HOME}"
+  else
+    pip install --constraint "${COMMON_TESTS_PATH}/test-ansible-deps.txt" ara==0.14.0
+  fi
+
+  # Dynamically figure out the location of ARA (ex: py2 vs py3)
+  ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
+
+  echo "Linking ${ANSIBLE_PLUGIN_DIR}/callback/ara to ${ara_location}/plugins/callbacks/"
+  mkdir -p "${ANSIBLE_PLUGIN_DIR}/callback/ara"
+  ln -sf "${ara_location}/plugins/callbacks" "${ANSIBLE_PLUGIN_DIR}/callback/ara/"
+
+}
+
 ## Main ----------------------------------------------------------------------
 
 # If the test reset toggle is set, destroy the existing cloned data.
@@ -192,3 +214,5 @@ if [ ! -z "${ANSIBLE_EXTRA_ROLE_DIRS}" ]; then
     sed -i "s|HOME/.ansible/roles.*|HOME/.ansible/roles:${ANSIBLE_ROLE_DIR}:${ANSIBLE_EXTRA_ROLE_DIRS}|" "${ANSIBLE_CFG_PATH}"
   fi
 fi
+
+setup_ara

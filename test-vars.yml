@@ -195,7 +195,6 @@ nova_service_user_domain_id: default
 nova_service_user_name: nova
 nova_venv_bin: "/openstack/venvs/nova-{{ nova_venv_tag }}/bin"
 nova_venv_tag: "testing"
-nova_virt_type: qemu
 nova_discover_hosts_in_cells_interval: '-1'
 # lxd specific vars
 lxd_trust_password: "SuperSecrete"

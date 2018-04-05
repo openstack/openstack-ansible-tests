@@ -57,10 +57,13 @@
         name: "{{ required_packages[ansible_pkg_mgr] }}"
         state: present
 
-    - include: ensure-rabbitmq.yml
-      vhost_name: "{{ nova_rabbitmq_vhost }}"
-      user_name: "{{ nova_rabbitmq_userid }}"
-      user_password: "{{ nova_rabbitmq_password }}"
+    - include: ensure-oslomsg.yml
+      rpc_vhost: "{{ nova_oslomsg_rpc_vhost }}"
+      rpc_user: "{{ nova_oslomsg_rpc_userid }}"
+      rpc_password: "{{ nova_oslomsg_rpc_password }}"
+      notify_vhost: "{{ nova_oslomsg_notify_vhost }}"
+      notify_user: "{{ nova_oslomsg_notify_userid }}"
+      notify_password: "{{ nova_oslomsg_notify_password }}"
 
     - include: create-grant-db.yml
       db_name: "{{ nova_galera_database }}"

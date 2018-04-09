@@ -30,7 +30,7 @@
         echo "pip_default_index=${NODEPOOL_PYPI_MIRROR}"
         echo "pip_wheel_mirror=${NODEPOOL_WHEEL_MIRROR}"
         if [[ ${NODEPOOL_PYPI_MIRROR} == *.ovh.* ]]; then
-          echo "nova_virt_type='qemu'"
+          echo "nova_virt_type=qemu"
         fi
       args:
         executable: /bin/bash

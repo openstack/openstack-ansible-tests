@@ -55,7 +55,7 @@
       - name: openstack/openstack-ansible-rsyslog_server
       - name: openstack/openstack-ansible-tests
       - name: openstack/requirements
-    timeout: 600 # 5 mins
+    timeout: 900 # 15 mins
 
 - job:
     name: openstack-ansible-functional

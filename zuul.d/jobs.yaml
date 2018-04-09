@@ -84,7 +84,7 @@
       Run lint tests for an OpenStack-Ansible project.
       Uses tox with the ``linters`` environment.
     irrelevant-files: []
-    timeout: 600 # 5 mins
+    timeout: 900 # 15 mins
     nodeset: ubuntu-xenial
     vars:
       tox_env: linters

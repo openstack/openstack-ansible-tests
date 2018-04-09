@@ -195,3 +195,10 @@
       whatever pipeline is appropriate.
     vars:
       osa_test_repo: "openstack/openstack-ansible"
+
+- job:
+    name: openstack-ansible-integrated-deploy-ceph
+    parent: openstack-ansible-integrated-deploy-aio
+    voting: false
+    vars:
+      scenario: ceph

@@ -29,3 +29,4 @@
     state: "present"
   delegate_to: "{{ groups['rabbitmq_all'][0] }}"
   run_once: True
+  no_log: true

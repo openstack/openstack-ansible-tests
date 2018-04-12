@@ -73,9 +73,11 @@
   any_errors_fatal: true
   tasks:
     - name: Perform a Keystone DB sync contract
-      command: "/openstack/venvs/keystone-{{ keystone_venv_tag }}/bin/keystone-manage db_sync --contract"
+      command: keystone-manage db_sync --contract
       become: yes
       become_user: keystone
+      environment:
+        PATH: "/openstack/venvs/keystone-{{ keystone_venv_tag }}/bin:{{ ansible_env.PATH }}"
       tags:
         - skip_ansible_lint
   vars_files:

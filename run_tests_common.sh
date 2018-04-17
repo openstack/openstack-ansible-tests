@@ -77,9 +77,13 @@ case "${ID,,}" in
         pkg_list="python-dev lsb-release"
         sudo apt-get update
         ;;
+    gentoo)
+        sudo emaint-sync -A
+        ;;
     *)
         echo "Unsupported distribution: ${ID,,}"
         exit 1
+        ;;
 esac
 eval sudo ${pkg_mgr_cmd} ${pkg_list}
 
@@ -92,36 +96,39 @@ fi
 # Install bindep and tox
 sudo pip install 'bindep>=2.4.0' tox
 
-if [[ ${ID,,} == "centos" ]]; then
+if [[ "${ID,,}" == "centos" ]]; then
     # epel-release could be installed but not enabled (which is very common
     # in openstack-ci) so enable it here if needed
     sudo yum-config-manager --enable epel > /dev/null || true
-elif [[ ${ID,,} == "fedora" ]]; then
+elif [[ "${ID,,}" == "fedora" ]]; then
     sudo dnf -y install redhat-lsb-core yum-utils
 # openSUSE 42.1 does not have python-ndg-httpsclient
-elif [[ ${ID,,} == *suse* ]] && [[ ${VERSION} == "42.1" ]]; then
+elif [[ "${ID,,}" == *suse* ]] && [[ ${VERSION} == "42.1" ]]; then
     sudo pip install ndg-httpsclient
 fi
 
 # Get a list of packages to install with bindep. If packages need to be
 # installed, bindep exits with an exit code of 1.
-BINDEP_PKGS=$(bindep -b -f ${BINDEP_FILE} test || true)
+BINDEP_PKGS=$(bindep -b -f "${BINDEP_FILE}" test || true)
 echo "Packages to install: ${BINDEP_PKGS}"
 
 # Install OS packages using bindep
 if [[ ${#BINDEP_PKGS} > 0 ]]; then
     case "${ID,,}" in
         *suse*)
-            sudo zypper -n in $BINDEP_PKGS
+            sudo zypper -n in ${BINDEP_PKGS}
             ;;
         centos|fedora)
-            sudo $RHT_PKG_MGR install -y $BINDEP_PKGS
+            sudo "${RHT_PKG_MGR}" install -y ${BINDEP_PKGS}
             ;;
         ubuntu|debian)
             sudo apt-get update
             DEBIAN_FRONTEND=noninteractive \
                 sudo apt-get -q --option "Dpkg::Options::=--force-confold" \
-                --assume-yes install $BINDEP_PKGS
+                --assume-yes install ${BINDEP_PKGS}
+            ;;
+        gentoo)
+            sudo emerge -q --jobs="$(nrpoc)" ${BINDEP_PKGS}
             ;;
     esac
 fi

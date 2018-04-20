@@ -172,3 +172,14 @@
     voting: false
     vars:
       scenario: ceph
+
+- job:
+    name: openstack-ansible-python3-ubuntu-xenial
+    parent: openstack-ansible-functional-ubuntu-xenial
+    vars:
+      tox_env: func_py3
+
+- job:
+    name: openstack-ansible-python3-ubuntu-xenial-nv
+    parent: openstack-ansible-python3-ubuntu-xenial
+    voting: false

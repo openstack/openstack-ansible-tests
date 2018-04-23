@@ -176,15 +176,22 @@ fi
 
 # Download the Ansible role repositories if they are not present on the host.
 # This is ignored if there is no ansible-role-requirements file.
-if [ ! -d "${ANSIBLE_ROLE_DEP_DIR}" ] && [ -f "${ANSIBLE_ROLE_REQUIREMENTS_PATH}" ]; then
-   ansible-playbook -i ${ANSIBLE_INVENTORY} \
-         ${COMMON_TESTS_PATH}/get-ansible-role-requirements.yml \
-         -v
-   if [[ ! -e "${ANSIBLE_ROLE_DEP_DIR}/plugins" ]]; then
-     ln -s "${ANSIBLE_PLUGIN_DIR}" "${ANSIBLE_ROLE_DEP_DIR}/plugins"
-   fi
-fi
+if [[ ! -d "${ANSIBLE_ROLE_DEP_DIR}" ]]; then
+  # Download the common test Ansible role repositories.
+  ANSIBLE_ROLE_REQUIREMENTS_PATH=${COMMON_TESTS_PATH}/test-ansible-role-requirements.yml \
+    ansible-playbook -i ${ANSIBLE_INVENTORY} \
+    ${COMMON_TESTS_PATH}/get-ansible-role-requirements.yml \
+    -v
 
+  if [[ -f "${ANSIBLE_ROLE_REQUIREMENTS_PATH}" ]]; then
+     ansible-playbook -i ${ANSIBLE_INVENTORY} \
+           ${COMMON_TESTS_PATH}/get-ansible-role-requirements.yml \
+           -v
+    if [[ ! -e "${ANSIBLE_ROLE_DEP_DIR}/plugins" ]]; then
+      ln -s "${ANSIBLE_PLUGIN_DIR}" "${ANSIBLE_ROLE_DEP_DIR}/plugins"
+    fi
+  fi
+fi
 
 # If a role name is provided, replace the role in the roles folder with a link
 # to the current folder. This ensures that the test executes with the checked

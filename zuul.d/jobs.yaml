@@ -109,6 +109,17 @@
     voting: false
 
 - job:
+    name: openstack-ansible-functional-distro_install-ubuntu-xenial
+    parent: openstack-ansible-functional-ubuntu-xenial
+    vars:
+      tox_env: distro_install
+
+- job:
+    name: openstack-ansible-functional-distro_install-ubuntu-xenial-nv
+    parent: openstack-ansible-functional-distro_install-ubuntu-xenial
+    voting: false
+
+- job:
     name: openstack-ansible-upgrade-ubuntu-xenial
     parent: openstack-ansible-upgrade
     nodeset: ubuntu-xenial
@@ -129,6 +140,19 @@
     voting: false
 
 - job:
+    name: openstack-ansible-functional-distro_install-opensuse-423
+    parent: openstack-ansible-functional
+    nodeset: opensuse-423
+    vars:
+      tox_env: distro_install
+
+- job:
+    name: openstack-ansible-functional-distro_install-opensuse-423-nv
+    parent: openstack-ansible-functional-distro_install-opensuse-423
+    nodeset: opensuse-423
+    voting: false
+
+- job:
     name: openstack-ansible-functional-centos-7
     parent: openstack-ansible-functional
     nodeset: centos-7
@@ -136,6 +160,19 @@
 - job:
     name: openstack-ansible-functional-centos-7-nv
     parent: openstack-ansible-functional-centos-7
+    voting: false
+
+- job:
+    name: openstack-ansible-functional-distro_install-centos-7
+    parent: openstack-ansible-functional
+    nodeset: centos-7
+    vars:
+      tox_env: distro_install
+
+- job:
+    name: openstack-ansible-functional-distro_install-centos-7-nv
+    parent: openstack-ansible-functional-distro_install-centos-7
+    nodeset: centos-7
     voting: false
 
 - job:

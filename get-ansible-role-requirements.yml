@@ -91,7 +91,7 @@
             zuul_src_repo_list: >
               {%- set filtered_repo_list = [] %}
               {%- for folder_path in zuul_src_folder['stdout_lines'] %}
-              {%-   if folder_path | match("^" ~ zuul_git_src_dir ~ "/openstack/openstack-ansible-(?!tests).*") %}
+              {%-   if folder_path | match("^" ~ zuul_git_src_dir ~ "/openstack/(openstack-ansible-|ansible-role-){1}(?!tests).*") %}
               {%-     set repo_cleaned = folder_path | regex_replace('^' ~ zuul_git_src_dir ~ '/', '') %}
               {%-     set _ = filtered_repo_list.append(repo_cleaned) %}
               {%-   endif %}
@@ -114,7 +114,7 @@
         - name: Link the zuul provided roles
           file:
             src: "{{ zuul_git_src_dir }}/{{ item }}"
-            dest: "{{ lookup('env', 'ANSIBLE_ROLE_DEP_DIR') }}/{{ item | regex_replace('openstack/openstack-ansible-', '') }}"
+            dest: "{{ lookup('env', 'ANSIBLE_ROLE_DEP_DIR') }}/{{ item | regex_replace('openstack/(openstack-ansible-|ansible-role-)', '') }}"
             state: link
             force: yes
           with_items: "{{ zuul_src_repo_list }}"

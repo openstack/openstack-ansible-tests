@@ -53,33 +53,13 @@
         dest: "{{ lookup('env', 'ANSIBLE_ROLE_DEP_DIR') }}"
         state: directory
 
-    - name: Check whether zuul-cloner is installed and provide the path to it
-      shell: |
-        which zuul-cloner || { [[ -x /usr/zuul-env/bin/zuul-cloner ]] && echo '/usr/zuul-env/bin/zuul-cloner'; }
-      args:
-        executable: /bin/bash
-      changed_when: false
-      failed_when: false
-      register: _zuul_cloner_check
+    - name: Check whether we are in openstack-ci
+      stat:
+        path: /etc/ci/mirror_info.sh
+      register: _openstack_ci
 
-    - name: Set fact to decide which version of zuul to cater to, if any
-      set_fact:
-        zuul_version: >-
-          {#- This tells us that we are running under zuul v2 or v3 #}
-          {%- if _zuul_cloner_check.rc == 0 %}
-          {#-   So now we check for an environment variable that's unique to zuul v2 #}
-          {#-   ref: http://git.openstack.org/cgit/openstack-infra/zuul/tree/zuul/ansible/filter/zuul_filters.py?h=feature/zuulv3#n17 #}
-          {%-   if lookup('env', 'ZUUL_REF') != "" %}
-          {%-     set version_output="2" %}
-          {%-   else %}
-          {%-     set version_output="3" %}
-          {%-   endif %}
-          {%- else %}
-          {%-   set version_output="none" %}
-          {%- endif %}
-          {{- version_output }}
-
-    - name: Clone git repos (no zuul)
+    - name: Clone git repos (outside openstack-ci)
+      when: not _openstack_ci.stat.exists
       block:
         - name: Prepare git clone list
           set_fact:
@@ -98,82 +78,9 @@
           delay: "{{ git_clone_retry_delay | default(5) }}"
           when:
             - item['scm'] == "git" or item['scm'] is undefined
-      when:
-        - zuul_version == "none"
 
-    - name: Clone git repos (zuul v2)
-      block:
-        - name: Prepare git clone list
-          set_fact:
-            git_roles: >
-              {%- set filtered_role_list = [] %}
-              {%- for role in osa_roles %}
-              {%-   if (not role.src | match(".*git.openstack.org.*")) or
-                       (role.name | match("os_previous_.*")) or
-                       (role.name | match("previous_.*")) %}
-              {%-     set _ = filtered_role_list.append(role) %}
-              {%-   endif %}
-              {%- endfor %}
-              {{- filtered_role_list -}}
-            zuul_roles: >
-              {%- set filtered_role_list = [] %}
-              {%- for role in osa_roles %}
-              {%-   if (role.src | match(".*git.openstack.org.*")) and (not role.name | match("os_previous_.*")) %}
-              {%-     set role_src_cleaned = role.src | regex_replace('https://git.openstack.org/', '') %}
-              {%-     set _ = filtered_role_list.append(role_src_cleaned) %}
-              {%-   endif %}
-              {%- endfor %}
-              {{- filtered_role_list -}}
-            openstack_repo_list: >
-              {%- set filtered_repo_list = [] %}
-              {%- set repo_list = lookup('env', 'ZUUL_CHANGES').split('^') %}
-              {%- for repo in repo_list %}
-              {%-   set repo_cleaned = repo | regex_replace(':.*$', '') %}
-              {%-   if not repo_cleaned | match("^openstack/openstack-ansible.*") %}
-              {%-     set _ = filtered_repo_list.append(repo_cleaned) %}
-              {%-   endif %}
-              {%- endfor %}
-              {{- filtered_repo_list -}}
-
-        - name: Clone git repos (non openstack)
-          git:
-            repo: "{{ item['src'] }}"
-            dest: "{{ lookup('env', 'ANSIBLE_ROLE_DEP_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
-            version: "{{ item['version'] | default('master') }}"
-            depth: "{{ item['depth'] | default('10') }}"
-            update: true
-            force: true
-          with_items: "{{ git_roles }}"
-          retries: "{{ git_clone_retries | default(3) }}"
-          delay: "{{ git_clone_retry_delay | default(5) }}"
-          when:
-            - item['scm'] == "git" or item['scm'] is undefined
-
-        - name: Create clone map
-          copy:
-            content: |
-              clonemap:
-                - name: 'openstack/openstack-ansible-tests'
-                  dest: '{{ lookup("env", "WORKING_DIR") }}/tests/common'
-                - name: 'openstack/openstack-ansible-(?!tests)(.*)'
-                  dest: '{{ lookup("env", "ANSIBLE_ROLE_DEP_DIR") }}/\1'
-                - name: 'openstack/(?!openstack-ansible)(.*)'
-                  dest: '{{ homedir }}/git/openstack/\1'
-            dest: "{{ homedir }}/.ansible/clonemap.yml"
-
-        - name: Clone git repos (with zuul-cloner)
-          shell: |
-            {{ _zuul_cloner_check.stdout }} \
-                    -m {{ homedir }}/.ansible/clonemap.yml \
-                    --cache-dir /opt/git \
-                    git://git.openstack.org \
-            {% for repo in zuul_roles + openstack_repo_list %}
-                    {{ repo }} \
-            {% endfor %}
-      when:
-        - zuul_version == "2"
-
-    - name: Clone git repos (zuul v3)
+    - name: Clone git repos (inside openstack-ci)
+      when: _openstack_ci.stat.exists
       block:
         - name: Find repositories already cloned by zuul
           command: "find {{ zuul_git_src_dir }} -type d -maxdepth 2"
@@ -227,8 +134,6 @@
           delay: "{{ git_clone_retry_delay | default(5) }}"
           when:
             - item['scm'] == "git" or item['scm'] is undefined
-      when:
-        - zuul_version == "3"
 
   vars:
     homedir: "{{ lookup('env', 'TESTING_HOME') }}"

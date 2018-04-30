@@ -61,10 +61,6 @@
     - name: Clone git repos (outside openstack-ci)
       when: not _openstack_ci.stat.exists
       block:
-        - name: Prepare git clone list
-          set_fact:
-            git_roles: "{{ osa_roles }}"
-
         - name: Clone git repos
           git:
             repo: "{{ item['src'] }}"
@@ -73,11 +69,12 @@
             depth: "{{ item['depth'] | default('10') }}"
             update: true
             force: true
-          with_items: "{{ git_roles }}"
+          with_items: "{{ osa_roles }}"
           retries: "{{ git_clone_retries | default(3) }}"
           delay: "{{ git_clone_retry_delay | default(5) }}"
           when:
             - item['scm'] == "git" or item['scm'] is undefined
+            - role_name == '' or item['name'] != role_name
 
     - name: Clone git repos (inside openstack-ci)
       when: _openstack_ci.stat.exists

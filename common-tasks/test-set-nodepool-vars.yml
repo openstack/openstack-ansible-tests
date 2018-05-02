@@ -50,8 +50,6 @@
       set_fact:
         lxc_image_cache_server_mirrors:
           - "http://{{ lxc_reverse_proxy }}:8080/images.linuxcontainers/"
-        lxc_container_cache_files:
-          - { src: '/etc/pip.conf', dest: '/etc/pip.conf' }
         # CentOS mirrors are set to OpenStack's CI mirrors, so fastestmirror is
         # disabled to speed up package downloads.
         openstack_hosts_enable_yum_fastestmirror: no

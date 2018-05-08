@@ -99,6 +99,26 @@
       tox_env: upgrade
 
 - job:
+    name: openstack-ansible-functional-ubuntu-bionic
+    parent: openstack-ansible-functional
+    nodeset: ubuntu-bionic
+
+- job:
+    name: openstack-ansible-functional-ubuntu-bionic-nv
+    parent: openstack-ansible-functional-ubuntu-bionic
+    voting: false
+
+- job:
+    name: openstack-ansible-upgrade-ubuntu-bionic
+    parent: openstack-ansible-upgrade
+    nodeset: ubuntu-bionic
+
+- job:
+    name: openstack-ansible-upgrade-ubuntu-bionic-nv
+    parent: openstack-ansible-upgrade-ubuntu-bionic
+    voting: false
+
+- job:
     name: openstack-ansible-functional-ubuntu-xenial
     parent: openstack-ansible-functional
     nodeset: ubuntu-xenial

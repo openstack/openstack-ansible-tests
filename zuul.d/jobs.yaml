@@ -187,7 +187,6 @@
     name: openstack-ansible-functional-centos-7
     parent: openstack-ansible-functional
     nodeset: centos-7
-    voting: false
 
 - job:
     name: openstack-ansible-functional-centos-7-nv

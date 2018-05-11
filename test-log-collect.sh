@@ -77,7 +77,7 @@ COMMON_ETC_LOG_NAMES="apt \
 ## Functions -----------------------------------------------------------------
 
 function repo_information {
-    [[ "${1}" != "host" ]] && lxc_cmd="lxc-attach --name ${1} --"
+    [[ "${1}" != "host" ]] && lxc_cmd="lxc-attach --name ${1} --" || lxc_cmd=""
     echo "Collecting list of installed packages and enabled repositories for \"${1}\""
     # Redhat package debugging
     if eval sudo ${lxc_cmd} which yum &>/dev/null || eval sudo ${lxc_cmd} which dnf &>/dev/null; then

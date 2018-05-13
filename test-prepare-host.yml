@@ -18,7 +18,9 @@
 - name: Playbook for configuring hosts
   hosts: localhost
   become: true
-  pre_tasks:
+  vars_files:
+    - test-vars.yml
+  tasks:
     - include: "common-tasks/test-set-nodepool-vars.yml"
     - name: Clear iptables rules
       shell: "{{ playbook_dir }}/iptables-clear.sh"
@@ -48,12 +50,18 @@
     - name: Use present for package_state on CentOS and openSUSE
       set_fact:
         package_state: "{{ (ansible_pkg_mgr in ['dnf', 'yum', 'zypper']) | ternary('present', 'latest') }}"
+    - name: Setup clouds.yaml
+      include_role:
+        name: openstack_openrc
+        private: yes
 
 - include: test-install-openstack-hosts.yml
 
 - name: Playbook for configuring the LXC host
   hosts: localhost
   become: true
+  vars_files:
+    - test-vars.yml
   roles:
     - role: "lxc_hosts"
       lxc_net_address: 10.100.100.1
@@ -218,6 +226,3 @@
       command: /usr/local/bin/lxc-system-manage iptables-create
       tags:
         - skip_ansible_lint
-
-  vars_files:
-    - test-vars.yml

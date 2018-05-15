@@ -37,10 +37,6 @@
       when:
         - "'oslomsg_rpc_all' in groups"
         - "groups['oslomsg_rpc_all'] | length > 0"
-
-    - include: create-grant-db.yml
-      db_name: "{{  glance_galera_database }}"
-      db_password: "{{ glance_container_mysql_password }}"
   roles:
     - role: "{{ glance_rolename | default('os_glance') }}"
   vars_files:

@@ -20,11 +20,13 @@
   gather_facts: true
   any_errors_fatal: true
   pre_tasks:
-    - include: ensure-rabbitmq.yml
-      vhost_name: "{{ heat_rabbitmq_vhost }}"
-      user_name: "{{ heat_rabbitmq_userid }}"
-      user_password: "{{ heat_rabbitmq_password }}"
-      when: groups['rabbitmq_all'] is defined
+    - include: ensure-oslomsg.yml
+      rpc_vhost: "{{ heat_oslomsg_rpc_vhost }}"
+      rpc_user: "{{ heat_oslomsg_rpc_userid }}"
+      rpc_password: "{{ heat_oslomsg_rpc_password }}"
+      notify_vhost: "{{ heat_oslomsg_notify_vhost }}"
+      notify_user: "{{ heat_oslomsg_notify_userid }}"
+      notify_password: "{{ heat_oslomsg_notify_password }}"
     - include: create-grant-db.yml
       db_name: "{{ heat_galera_database }}"
       db_password: "{{ heat_container_mysql_password }}"

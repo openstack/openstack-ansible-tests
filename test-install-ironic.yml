@@ -20,10 +20,13 @@
   gather_facts: true
   any_errors_fatal: true
   pre_tasks:
-    - include: ensure-rabbitmq.yml
-      vhost_name: "{{ ironic_rabbitmq_vhost }}"
-      user_name: "{{ ironic_rabbitmq_userid }}"
-      user_password: "{{ ironic_rabbitmq_password }}"
+    - include: ensure-oslomsg.yml
+      rpc_vhost: "{{ ironic_oslomsg_rpc_vhost }}"
+      rpc_user: "{{ ironic_oslomsg_rpc_userid }}"
+      rpc_password: "{{ ironic_oslomsg_rpc_password }}"
+      notify_vhost: "{{ ironic_oslomsg_notify_vhost }}"
+      notify_user: "{{ ironic_oslomsg_notify_userid }}"
+      notify_password: "{{ ironic_oslomsg_notify_password }}"
     - include: create-grant-db.yml
       db_name: "{{ ironic_galera_database }}"
       db_password: "{{ ironic_container_mysql_password }}"

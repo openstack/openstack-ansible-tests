@@ -78,6 +78,13 @@
         name: "{{ required_packages[ansible_pkg_mgr] }}"
         state: present
 
+    - include: ensure-rabbitmq.yml
+      vhost_name: "{{ neutron_rabbitmq_vhost }}"
+      user_name: "{{ neutron_rabbitmq_userid }}"
+      user_password: "{{ neutron_rabbitmq_password }}"
+      when:
+        - "'oslomsg_rpc_all' not in groups"
+
     - include: ensure-oslomsg.yml
       rpc_vhost: "{{ neutron_oslomsg_rpc_vhost }}"
       rpc_user: "{{ neutron_oslomsg_rpc_userid }}"
@@ -85,6 +92,9 @@
       notify_vhost: "{{ neutron_oslomsg_notify_vhost }}"
       notify_user: "{{ neutron_oslomsg_notify_userid }}"
       notify_password: "{{ neutron_oslomsg_notify_password }}"
+      when:
+        - "'oslomsg_rpc_all' in groups"
+        - "groups['oslomsg_rpc_all'] | length > 0"
 
     - include: create-grant-db.yml
       db_name: "{{ neutron_galera_database }}"

@@ -23,6 +23,14 @@
     - name: Set keystone_messaging fact
       set_fact:
         keystone_messaging_enabled: "{{ groups['rabbitmq_all'] is defined }}"
+
+    - include: ensure-rabbitmq.yml
+      vhost_name: "{{ keystone_rabbitmq_vhost }}"
+      user_name: "{{ keystone_rabbitmq_userid }}"
+      user_password: "{{ keystone_rabbitmq_password }}"
+      when:
+        - "'oslomsg_rpc_all' not in groups"
+
     - include: ensure-oslomsg.yml
       rpc_vhost: "{{ keystone_oslomsg_rpc_vhost }}"
       rpc_user: "{{ keystone_oslomsg_rpc_userid }}"
@@ -30,6 +38,10 @@
       notify_vhost: "{{ keystone_oslomsg_notify_vhost }}"
       notify_user: "{{ keystone_oslomsg_notify_userid }}"
       notify_password: "{{ keystone_oslomsg_notify_password }}"
+      when:
+        - "'oslomsg_rpc_all' in groups"
+        - "groups['oslomsg_rpc_all'] | length > 0"
+
     - include: create-grant-db.yml
       db_name: "{{ keystone_galera_database }}"
       db_password: "{{ keystone_container_mysql_password }}"

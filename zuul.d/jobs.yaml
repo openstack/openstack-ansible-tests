@@ -34,6 +34,8 @@
       - name: openstack/openstack-ansible-lxc_container_create
       - name: openstack/openstack-ansible-lxc_hosts
       - name: openstack/openstack-ansible-memcached_server
+      - name: openstack/openstack-ansible-nspawn_container_create
+      - name: openstack/openstack-ansible-nspawn_hosts
       - name: openstack/openstack-ansible-openstack_hosts
       - name: openstack/openstack-ansible-openstack_openrc
       - name: openstack/openstack-ansible-ops

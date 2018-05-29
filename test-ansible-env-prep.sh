@@ -95,7 +95,7 @@ function setup_ara {
     pip install \
       --constraint "${COMMON_TESTS_PATH}/test-ansible-deps.txt" \
       --constraint ${UPPER_CONSTRAINTS_FILE:-https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=stable/queens} \
-      ara
+      ara==0.15.0
   fi
 
   # Dynamically figure out the location of ARA (ex: py2 vs py3)

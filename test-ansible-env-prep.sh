@@ -87,9 +87,15 @@ function setup_ara {
   # Install ARA from source if running in ARA gate, otherwise install from PyPi
   ARA_SRC_HOME="${TESTING_HOME}/src/git.openstack.org/openstack/ara"
   if [[ -d "${ARA_SRC_HOME}" ]]; then
-    pip install --constraint "${COMMON_TESTS_PATH}/test-ansible-deps.txt" "${ARA_SRC_HOME}"
+    pip install \
+      --constraint "${COMMON_TESTS_PATH}/test-ansible-deps.txt" \
+      --constraint ${UPPER_CONSTRAINTS_FILE:-https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt} \
+      "${ARA_SRC_HOME}"
   else
-    pip install --constraint "${COMMON_TESTS_PATH}/test-ansible-deps.txt" ara
+    pip install \
+      --constraint "${COMMON_TESTS_PATH}/test-ansible-deps.txt" \
+      --constraint ${UPPER_CONSTRAINTS_FILE:-https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt} \
+      ara
   fi
 
   # Dynamically figure out the location of ARA (ex: py2 vs py3)

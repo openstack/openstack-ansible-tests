@@ -83,6 +83,8 @@
       user_name: "{{ neutron_rabbitmq_userid }}"
       user_password: "{{ neutron_rabbitmq_password }}"
       when:
+        - "'rabbitmq_all' in groups"
+        - "groups['rabbitmq_all'] | length > 0"
         - "'oslomsg_rpc_all' not in groups"
 
     - include: ensure-oslomsg.yml

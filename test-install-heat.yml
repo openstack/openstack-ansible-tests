@@ -25,6 +25,8 @@
       user_name: "{{ heat_rabbitmq_userid }}"
       user_password: "{{ heat_rabbitmq_password }}"
       when:
+        - "'rabbitmq_all' in groups"
+        - "groups['rabbitmq_all'] | length > 0"
         - "'oslomsg_rpc_all' not in groups"
 
     - include: ensure-oslomsg.yml
@@ -45,4 +47,3 @@
     - role: "{{ heat_rolename | default('os_heat') }}"
   vars_files:
     - test-vars.yml
-

@@ -17,6 +17,7 @@
   stat:
     path: /etc/ci/mirror_info.sh
   register: ci_mirror_info
+  delegate_to: localhost
 
 - name: Set nodepool vars
   block:
@@ -53,7 +54,6 @@
         # CentOS mirrors are set to OpenStack's CI mirrors, so fastestmirror is
         # disabled to speed up package downloads.
         openstack_hosts_enable_yum_fastestmirror: no
-        opensuse_mirror_obs: "http://download.opensuse.org"
         pip_links:
           - name: "infra_wheel_mirror"
             link: "{{ pip_wheel_mirror }}"

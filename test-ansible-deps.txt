@@ -8,9 +8,7 @@
 # target configuration in each role.
 
 # The Ansible version used for testing
-# HEAD of stable-2.4 as of 1st of June 2018 (contains a zypper optimization for installing packages)
-# ansible==2.4.4.0
-git+https://github.com/ansible/ansible@eedb78a8ba88d11a8e2d6acf0e42f930912eb9f5
+ansible==2.5.4
 
 # The Ansible lint version used for lint tests
 ansible-lint==3.4.21

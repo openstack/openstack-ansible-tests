@@ -149,8 +149,6 @@ keystone_rabbitmq_servers: "{{ rabbitmq_servers }}"
 keystone_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
 keystone_rabbitmq_userid: keystone
 keystone_rabbitmq_vhost: /keystone
-keystone_galera_database: keystone
-keystone_galera_address: "{{ test_galera_host }}"
 keystone_container_mysql_password: "SuperSecrete"
 keystone_venv_tag: "testing"
 keystone_developer_mode: true

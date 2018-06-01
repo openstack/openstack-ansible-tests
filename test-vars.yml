@@ -492,9 +492,6 @@ sahara_venv_tag: "testing"
 sahara_developer_mode: true
 sahara_git_install_branch: "{{ test_branch }}"
 sahara_service_password: "secrete"
-sahara_galera_address: "{{ test_galera_host }}"
-sahara_galera_database: sahara
-sahara_galera_user: sahara
 sahara_service_port: 8386
 sahara_service_publicuri: "http://{{ test_sahara_host }}:{{ sahara_service_port }}"
 sahara_service_publicurl: "{{ sahara_service_publicuri }}/v1.1/%(tenant_id)s"

@@ -98,10 +98,6 @@
         - "'oslomsg_rpc_all' in groups"
         - "groups['oslomsg_rpc_all'] | length > 0"
 
-    - include: create-grant-db.yml
-      db_name: "{{ neutron_galera_database }}"
-      db_password: "{{ neutron_container_mysql_password }}"
-
 
 
 - name: Deploy neutron server

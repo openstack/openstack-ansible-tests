@@ -409,9 +409,6 @@ heat_service_password: secrete
 heat_stack_domain_admin_password: secrete
 heat_auth_encryption_key: 32characterslongboguskeyvaluefoo
 heat_container_mysql_password: "SuperSecrete"
-heat_galera_address: "{{ test_galera_host }}"
-heat_galera_user: heat
-heat_galera_database: heat
 heat_oslomsg_rpc_password: "{{ oslomsg_rpc_password }}"
 heat_oslomsg_rpc_userid: heat
 heat_oslomsg_rpc_vhost: /heat

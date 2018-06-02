@@ -19,11 +19,7 @@
   become: true
   gather_facts: true
   any_errors_fatal: true
-  pre_tasks:
-    - include: create-grant-db.yml
-      db_name: "{{ gnocchi_database_name }}"
-      db_password: "{{ gnocchi_container_mysql_password }}"
   roles:
-    - role: "{{ gnocchi_rolename | default('os_gnocchi') }}"
+    - role: "os_gnocchi"
   vars_files:
     - test-vars.yml

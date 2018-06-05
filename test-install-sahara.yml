@@ -39,11 +39,7 @@
       when:
         - "'oslomsg_rpc_all' in groups"
         - "groups['oslomsg_rpc_all'] | length > 0"
-
-    - include: create-grant-db.yml
-      db_name: "{{ sahara_galera_database }}"
-      db_password: "{{ sahara_container_mysql_password }}"
   roles:
-    - role: "{{ sahara_rolename | default('os_sahara') }}"
+    - role: "os_sahara"
   vars_files:
     - test-vars.yml

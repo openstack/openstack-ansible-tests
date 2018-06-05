@@ -270,8 +270,6 @@ nova_cell0_database: "nova_cell0"
 # Neutron specific settings
 neutron_container_mysql_password: SuperSecrete
 neutron_developer_mode: true
-neutron_galera_address: "{{ test_galera_host }}"
-neutron_galera_database: neutron
 neutron_git_install_branch: "{{ test_branch }}"
 neutron_ha_vrrp_auth_password: secrete
 neutron_management_address: "{{ test_neutron_server_host }}"

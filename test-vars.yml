@@ -454,9 +454,6 @@ ironic_service_internalurl: "{{ ironic_service_internaluri }}"
 ironic_service_password: "secrete"
 ironic_service_name: ironic
 ironic_service_project_name: "service"
-ironic_galera_address: "{{ test_galera_host }}"
-ironic_galera_database: ironic
-ironic_galera_user: ironic
 ironic_container_mysql_password: "secrete"
 ironic_oslomsg_rpc_password: "{{ oslomsg_rpc_password }}"
 ironic_oslomsg_rpc_userid: ironic

@@ -74,6 +74,7 @@ lxc_kernel_options:
   - { key: 'fs.inotify.max_user_instances', value: 1024 }
 
 # Galera Settings
+galera_address: "{{ test_galera_host }}"
 galera_root_password: secrete
 galera_root_user: root
 galera_innodb_buffer_pool_size: 256M
@@ -169,7 +170,6 @@ glance_service_port: 9292
 glance_service_user_name: glance
 glance_container_mysql_password: "SuperSecrete"
 glance_developer_mode: true
-glance_galera_address: "{{ test_galera_host }}"
 glance_git_install_branch: "{{ test_branch }}"
 glance_profiler_hmac_key: "secrete"
 glance_oslomsg_rpc_password: "{{ oslomsg_rpc_password }}"

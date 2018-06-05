@@ -19,10 +19,10 @@
   become: true
   gather_facts: true
   any_errors_fatal: true
-  pre_tasks:
-    - include: create-grant-db.yml
-      db_name: "{{ horizon_galera_database }}"
-      db_password: "{{ horizon_container_mysql_password }}"
+  vars_files:
+    - test-vars.yml
+  roles:
+    - role: "os_horizon"
   post_tasks:
     - name: Ensure nova service
       keystone:
@@ -63,7 +63,3 @@
       retries: 5
       delay: 10
       no_log: true
-  roles:
-    - role: "{{ horizon_rolename | default('os_horizon') }}"
-  vars_files:
-    - test-vars.yml

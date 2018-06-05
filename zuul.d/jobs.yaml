@@ -193,6 +193,40 @@
     voting: false
 
 - job:
+    name: openstack-ansible-upgrade-opensuse-150
+    parent: openstack-ansible-upgrade
+    nodeset: opensuse-150
+
+- job:
+    name: openstack-ansible-upgrade-opensuse-150-nv
+    parent: openstack-ansible-upgrade-opensuse-150
+    nodeset: opensuse-150
+    voting: false
+
+- job:
+    name: openstack-ansible-functional-opensuse-150
+    parent: openstack-ansible-functional
+    nodeset: opensuse-150
+
+- job:
+    name: openstack-ansible-functional-opensuse-150-nv
+    parent: openstack-ansible-functional-opensuse-150
+    voting: false
+
+- job:
+    name: openstack-ansible-functional-distro_install-opensuse-150
+    parent: openstack-ansible-functional
+    nodeset: opensuse-150
+    vars:
+      tox_env: distro_install
+
+- job:
+    name: openstack-ansible-functional-distro_install-opensuse-150-nv
+    parent: openstack-ansible-functional-distro_install-opensuse-150
+    nodeset: opensuse-150
+    voting: false
+
+- job:
     name: openstack-ansible-functional-centos-7
     parent: openstack-ansible-functional
     nodeset: centos-7

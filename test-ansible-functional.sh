@@ -75,12 +75,11 @@ function execute_ansible_playbook {
 ## Main ----------------------------------------------------------------------
 
 # NOTE(mhayden): CentOS images in the gate have several slow mirrors enabled
-# by default. This step ensures that only the base, epel, and updates
+# by default. This step ensures that only the base and updates
 # repositories are enabled.
 if [[ -x /usr/bin/yum-config-manager ]] && [[ -e /etc/centos-release ]]; then
   sudo yum-config-manager --disable \* > /dev/null
   sudo yum-config-manager --enable base > /dev/null
-  sudo yum-config-manager --enable epel > /dev/null
   sudo yum-config-manager --enable updates > /dev/null
 fi
 

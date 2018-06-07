@@ -68,7 +68,7 @@ case "${ID,,}" in
         pkg_list="ca-certificates-mozilla python-devel python-xml lsb-release ${extra_suse_deps:-}"
         ;;
     amzn|centos|rhel)
-        pkg_list="python-devel redhat-lsb-core epel-release yum-utils"
+        pkg_list="python-devel redhat-lsb-core yum-utils"
         ;;
     fedora)
         pkg_list="python-devel redhat-lsb-core redhat-rpm-config yum-utils"
@@ -96,11 +96,7 @@ fi
 # Install bindep and tox
 sudo pip install 'bindep>=2.4.0' tox
 
-if [[ "${ID,,}" == "centos" ]]; then
-    # epel-release could be installed but not enabled (which is very common
-    # in openstack-ci) so enable it here if needed
-    sudo yum-config-manager --enable epel > /dev/null || true
-elif [[ "${ID,,}" == "fedora" ]]; then
+if [[ "${ID,,}" == "fedora" ]]; then
     sudo dnf -y install redhat-lsb-core yum-utils
 # openSUSE 42.1 does not have python-ndg-httpsclient
 elif [[ "${ID,,}" == *suse* ]] && [[ ${VERSION} == "42.1" ]]; then

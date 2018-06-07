@@ -123,6 +123,7 @@
             repo: "{{ item['src'] }}"
             dest: "{{ lookup('env', 'ANSIBLE_ROLE_DEP_DIR') }}/{{ item['name'] | default(item['src'] | basename) }}"
             version: "{{ item['version'] | default('master') }}"
+            refspec: "{{ item['refspec'] | default(omit) }}"
             depth: "{{ item['depth'] | default('10') }}"
             update: true
             force: true

@@ -81,7 +81,6 @@
       - ^doc/.*
       - ^releasenotes/.*
       - ^setup\.(cfg|py)$
-      - ^tox.ini$
       - ^Vagrantfile
     timeout: 5400 # 90 mins
     vars:

@@ -72,6 +72,7 @@ COMMON_ETC_LOG_NAMES="apt \
                       tempest \
                       trove \
                       yum \
+                      yum.repos.d \
                       zypp"
 
 ## Functions -----------------------------------------------------------------

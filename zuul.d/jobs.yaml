@@ -230,6 +230,8 @@
     name: openstack-ansible-functional-centos-7
     parent: openstack-ansible-functional
     nodeset: centos-7
+    # Temporary nv until https://review.openstack.org/#/c/574382/ gets in
+    voting: false
 
 - job:
     name: openstack-ansible-functional-centos-7-nv

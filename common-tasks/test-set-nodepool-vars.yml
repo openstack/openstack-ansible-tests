@@ -30,6 +30,7 @@
         echo "opensuse_mirror=${NODEPOOL_OPENSUSE_MIRROR}"
         echo "pip_default_index=${NODEPOOL_PYPI_MIRROR}"
         echo "pip_wheel_mirror=${NODEPOOL_WHEEL_MIRROR}"
+        echo "centos_epel_mirror=${NODEPOOL_EPEL_MIRROR}"
         if [[ ${NODEPOOL_PYPI_MIRROR} == *.ovh.* ]]; then
           echo "nova_virt_type=qemu"
         fi

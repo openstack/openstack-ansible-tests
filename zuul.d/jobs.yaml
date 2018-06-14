@@ -112,29 +112,14 @@
     nodeset: ubuntu-bionic
 
 - job:
-    name: openstack-ansible-functional-ubuntu-bionic-nv
-    parent: openstack-ansible-functional-ubuntu-bionic
-    voting: false
-
-- job:
     name: openstack-ansible-upgrade-ubuntu-bionic
     parent: openstack-ansible-upgrade
     nodeset: ubuntu-bionic
 
 - job:
-    name: openstack-ansible-upgrade-ubuntu-bionic-nv
-    parent: openstack-ansible-upgrade-ubuntu-bionic
-    voting: false
-
-- job:
     name: openstack-ansible-functional-ubuntu-xenial
     parent: openstack-ansible-functional
     nodeset: ubuntu-xenial
-
-- job:
-    name: openstack-ansible-functional-ubuntu-xenial-nv
-    parent: openstack-ansible-functional-ubuntu-xenial
-    voting: false
 
 - job:
     name: openstack-ansible-functional-distro_install-ubuntu-xenial
@@ -143,19 +128,9 @@
       tox_env: distro_install
 
 - job:
-    name: openstack-ansible-functional-distro_install-ubuntu-xenial-nv
-    parent: openstack-ansible-functional-distro_install-ubuntu-xenial
-    voting: false
-
-- job:
     name: openstack-ansible-upgrade-ubuntu-xenial
     parent: openstack-ansible-upgrade
     nodeset: ubuntu-xenial
-
-- job:
-    name: openstack-ansible-upgrade-ubuntu-xenial-nv
-    parent: openstack-ansible-upgrade-ubuntu-xenial
-    voting: false
 
 - job:
     name: openstack-ansible-upgrade-opensuse-423
@@ -163,20 +138,9 @@
     nodeset: opensuse-423
 
 - job:
-    name: openstack-ansible-upgrade-opensuse-423-nv
-    parent: openstack-ansible-upgrade-opensuse-423
-    nodeset: opensuse-423
-    voting: false
-
-- job:
     name: openstack-ansible-functional-opensuse-423
     parent: openstack-ansible-functional
     nodeset: opensuse-423
-
-- job:
-    name: openstack-ansible-functional-opensuse-423-nv
-    parent: openstack-ansible-functional-opensuse-423
-    voting: false
 
 - job:
     name: openstack-ansible-functional-distro_install-opensuse-423
@@ -186,31 +150,14 @@
       tox_env: distro_install
 
 - job:
-    name: openstack-ansible-functional-distro_install-opensuse-423-nv
-    parent: openstack-ansible-functional-distro_install-opensuse-423
-    nodeset: opensuse-423
-    voting: false
-
-- job:
     name: openstack-ansible-upgrade-opensuse-150
     parent: openstack-ansible-upgrade
     nodeset: opensuse-150
 
 - job:
-    name: openstack-ansible-upgrade-opensuse-150-nv
-    parent: openstack-ansible-upgrade-opensuse-150
-    nodeset: opensuse-150
-    voting: false
-
-- job:
     name: openstack-ansible-functional-opensuse-150
     parent: openstack-ansible-functional
     nodeset: opensuse-150
-
-- job:
-    name: openstack-ansible-functional-opensuse-150-nv
-    parent: openstack-ansible-functional-opensuse-150
-    voting: false
 
 - job:
     name: openstack-ansible-functional-distro_install-opensuse-150
@@ -220,26 +167,8 @@
       tox_env: distro_install
 
 - job:
-    name: openstack-ansible-functional-distro_install-opensuse-150-nv
-    parent: openstack-ansible-functional-distro_install-opensuse-150
-    nodeset: opensuse-150
-    voting: false
-
-- job:
     name: openstack-ansible-functional-centos-7
     parent: openstack-ansible-functional
-    nodeset: centos-7
-    # Temporary nv until https://review.openstack.org/#/c/574382/ gets in
-    voting: false
-
-- job:
-    name: openstack-ansible-functional-centos-7-nv
-    parent: openstack-ansible-functional-centos-7
-    voting: false
-
-- job:
-    name: openstack-ansible-upgrade-centos-7
-    parent: openstack-ansible-upgrade
     nodeset: centos-7
 
 - job:
@@ -248,12 +177,6 @@
     nodeset: centos-7
     vars:
       tox_env: distro_install
-
-- job:
-    name: openstack-ansible-functional-distro_install-centos-7-nv
-    parent: openstack-ansible-functional-distro_install-centos-7
-    nodeset: centos-7
-    voting: false
 
 - job:
     name: openstack-ansible-cross-repo-functional
@@ -295,8 +218,3 @@
     parent: openstack-ansible-functional-ubuntu-xenial
     vars:
       tox_env: func_py3
-
-- job:
-    name: openstack-ansible-python3-ubuntu-xenial-nv
-    parent: openstack-ansible-python3-ubuntu-xenial
-    voting: false

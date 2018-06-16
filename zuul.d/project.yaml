@@ -13,17 +13,5 @@
 # limitations under the License.
 
 - project:
-    check:
-      jobs:
-        - openstack-ansible-linters
-        - openstack-ansible-functional-centos-7
-        - openstack-ansible-functional-opensuse-423
-        - openstack-ansible-functional-ubuntu-bionic:
-            voting: false
-        - openstack-ansible-functional-ubuntu-xenial
-    gate:
-      jobs:
-        - openstack-ansible-linters
-        - openstack-ansible-functional-centos-7
-        - openstack-ansible-functional-opensuse-423
-        - openstack-ansible-functional-ubuntu-xenial
+    templates:
+      - openstack-ansible-role-jobs

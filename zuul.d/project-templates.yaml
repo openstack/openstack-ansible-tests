@@ -1,0 +1,41 @@
+---
+- project-template:
+    name: openstack-ansible-role-jobs
+    check:
+      jobs:
+        - openstack-ansible-linters
+        - openstack-ansible-functional-centos-7
+        - openstack-ansible-functional-opensuse-150:
+            voting: false
+        - openstack-ansible-functional-opensuse-423
+        - openstack-ansible-functional-ubuntu-bionic:
+            voting: false
+        - openstack-ansible-functional-ubuntu-xenial
+    gate:
+      jobs:
+        - openstack-ansible-linters
+        - openstack-ansible-functional-centos-7
+        - openstack-ansible-functional-opensuse-423
+        - openstack-ansible-functional-ubuntu-xenial
+    experimental:
+      jobs:
+        - openstack-ansible-integrated-deploy-aio
+
+- project-template:
+    name: openstack-ansible-upgrade
+    check:
+      jobs:
+        - openstack-ansible-upgrade-centos-7
+        # TODO(mnaser): Make this voting once we release Rocky
+        - openstack-ansible-upgrade-opensuse-150:
+            voting: false
+        - openstack-ansible-upgrade-opensuse-423
+        # TODO(mnaser): Make this voting once we release Rocky
+        - openstack-ansible-upgrade-ubuntu-bionic:
+            voting: false
+        - openstack-ansible-upgrade-ubuntu-xenial
+    gate:
+      jobs:
+        - openstack-ansible-upgrade-centos-7
+        - openstack-ansible-upgrade-opensuse-423
+        - openstack-ansible-upgrade-ubuntu-xenial

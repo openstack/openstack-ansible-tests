@@ -515,9 +515,10 @@ horizon_secret_key: "SuperSecreteHorizonKey"
 horizon_external_ssl: False
 
 # Tempest specific settings
-# We prefer to use the released versions of tempest
-# for general role testing as it's more stable.
-tempest_developer_mode: False
+tempest_git_repo: https://git.openstack.org/openstack/tempest
+# We prefer to use the released versions of tempest for stable branches, but
+# we deploy the latest for the master branch.
+tempest_developer_mode: "{{ test_branch == 'master' }}"
 tempest_venv_download: False
 # tempest_venv_bin is set to use the same naming convention
 # as the other venvs (with the tag 'testing')

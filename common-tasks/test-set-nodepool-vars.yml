@@ -31,6 +31,7 @@
         echo "pip_default_index=${NODEPOOL_PYPI_MIRROR}"
         echo "pip_wheel_mirror=${NODEPOOL_WHEEL_MIRROR}"
         echo "centos_epel_mirror=${NODEPOOL_EPEL_MIRROR}"
+        echo "galera_percona_xtrabackup_repo_host=${NODEPOOL_PERCONA_PROXY}"
         if [[ ${NODEPOOL_PYPI_MIRROR} == *.ovh.* ]]; then
           echo "nova_virt_type=qemu"
         fi

@@ -29,6 +29,7 @@
         echo "opensuse_mirror=${NODEPOOL_OPENSUSE_MIRROR}"
         echo "pip_default_index=${NODEPOOL_PYPI_MIRROR}"
         echo "pip_wheel_mirror=${NODEPOOL_WHEEL_MIRROR}"
+        echo "galera_repo_host=${NODEPOOL_MIRROR_HOST}:8080"
         if [[ ${NODEPOOL_PYPI_MIRROR} == *.ovh.* ]]; then
           echo "nova_virt_type=qemu"
         fi

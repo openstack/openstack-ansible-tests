@@ -36,6 +36,7 @@
         if [[ ${NODEPOOL_PYPI_MIRROR} == *.ovh.* ]]; then
           echo "nova_virt_type=qemu"
         fi
+        echo "repo_build_pip_default_index=${NODEPOOL_PYPI_MIRROR}"
       args:
         executable: /bin/bash
       register: nodepool_variables

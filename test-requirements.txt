@@ -1,8 +1,27 @@
-# The order of packages is significant, because pip processes them in the order
-# of appearance. Changing the order has an impact on the overall integration
-# process, which may cause wedges in the gate later.
+# These requirements are used across all OSA role tests, and used
+# for all ansible lint/syntax tests too.
+# They need to *only* include the requirements for ansible in the
+# tox venv - nothing more. Anything else *must* be implemented in
+# the applicable role itself as a *_pip_packages list member as
+# those are actually used in production.
+#
+# The global requirements process and its related tests expect there
+# to be a minimum here. A requirement cannot be bare. A good guide
+# for any new packages added here would be to grab the minimum version
+# set out in openstack/requirements/lower-constraints.txt.
+# What's set as a minimum does not matter to OSA, because we always
+# use the version from openstack/requirements/upper-constraints.txt
+#
+# Anything which is not currently accepted in the general OpenStack
+# requirements repo should be added in the test-ansible-deps.txt file
+# instead so that it does not cause a requirements test failure.
+
+# Used for lint tests
 bashate>=0.5.1 # Apache-2.0
 flake8<2.6.0,>=2.5.4 # MIT
+
+# Used to help make SNI connections work from python
+# if python itself does not support it properly (<2.7.9).
 pyasn1!=0.2.3,>=0.1.8 # BSD
 pyOpenSSL>=17.1.0 # Apache-2.0
 requests>=2.14.2 # Apache-2.0

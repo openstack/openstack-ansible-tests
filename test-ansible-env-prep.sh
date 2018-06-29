@@ -66,19 +66,6 @@ export PYTHONUNBUFFERED=1
 
 ## Functions -----------------------------------------------------------------
 
-function create_plugins_clonemap {
-
-# Prepare the clonemap for zuul-cloner to use
-cat > ${TESTING_HOME}/plugins-clonemap.yaml << EOF
-clonemap:
-  - name: openstack/openstack-ansible-plugins
-    dest: ${ANSIBLE_PLUGIN_DIR}
-  - name: openstack/openstack-ansible-ops
-    dest: ${OSA_OPS_DIR}
-EOF
-
-}
-
 function setup_ara {
 
   # Don't do anything if ARA has already been set up
@@ -121,63 +108,28 @@ fi
 # Create the directory which will hold all Ansible logs
 mkdir -p "${ANSIBLE_LOG_DIR}"
 
-# If zuul-cloner is present, use it so that we
-# also include any dependent patches from the
-# plugins repo noted in the commit message.
-# We only want to use zuul-cloner if we detect
-# zuul v2 running, so we check for the presence
-# of the ZUUL_REF environment variable.
-# ref: http://git.openstack.org/cgit/openstack-infra/zuul/tree/zuul/ansible/filter/zuul_filters.py?h=feature/zuulv3#n17
-if [[ -x /usr/zuul-env/bin/zuul-cloner ]] && [[ "${ZUUL_REF:-none}" != "none" ]]; then
+if [[ ! -d "${ANSIBLE_PLUGIN_DIR}" ]]; then
+  # The plugins repo doesn't need a clone, we can just
+  # symlink it.
+  if [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-plugins" ]]; then
+    ln -s ${WORKING_DIR} "${ANSIBLE_PLUGIN_DIR}"
+  else
+    git clone \
+        https://git.openstack.org/openstack/openstack-ansible-plugins \
+        "${ANSIBLE_PLUGIN_DIR}"
+  fi
+fi
 
-    # Prepare the clonemap for zuul-cloner to use
-    create_plugins_clonemap
-
-    # Execute the clone
-    /usr/zuul-env/bin/zuul-cloner \
-        --cache-dir /opt/git \
-        --map ${TESTING_HOME}/plugins-clonemap.yaml \
-        git://git.openstack.org \
-        openstack/openstack-ansible-plugins \
-        openstack/openstack-ansible-ops
-
-    # Clean up the clonemap.
-    rm -f ${TESTING_HOME}/plugins-clonemap.yaml
-
-# Alternatively, use a simple git-clone. We do
-# not re-clone if the directory exists already
-# to prevent overwriting any local changes which
-# may have been made.
-else
-    if [[ ! -d "${ANSIBLE_PLUGIN_DIR}" ]]; then
-        # The plugins repo doesn't need a clone, we can just
-        # symlink it. As zuul v3 clones into a folder called
-        # 'workspace' we have to use one of its environment
-        # variables to determine the project name.
-        if [[ "${ZUUL_SHORT_PROJECT_NAME:-none}" == "openstack-ansible-plugins" ]] ||\
-           [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-plugins" ]]; then
-            ln -s ${WORKING_DIR} "${ANSIBLE_PLUGIN_DIR}"
-        else
-            git clone \
-                https://git.openstack.org/openstack/openstack-ansible-plugins \
-                "${ANSIBLE_PLUGIN_DIR}"
-        fi
-    fi
-
-    if [[ ! -d "${OSA_OPS_DIR}" ]]; then
-        # The ops repo doesn't need a clone, we can just
-        # symlink it. As zuul v3 clones into a folder called
-        # 'workspace' we have to use one of its environment
-        # variables to determine the project name.
-        if [[ "${ZUUL_SHORT_PROJECT_NAME:-none}" == "openstack-ansible-ops" ]] ||\
-           [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-ops" ]]; then
-            ln -s ${WORKING_DIR} "${OSA_OPS_DIR}"
-        else
-            git clone \
-                https://git.openstack.org/openstack/openstack-ansible-ops \
-                "${OSA_OPS_DIR}"
-        fi
-    fi
+if [[ ! -d "${OSA_OPS_DIR}" ]]; then
+  # The ops repo doesn't need a clone, we can just
+  # symlink it.
+  if [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-ops" ]]; then
+    ln -s ${WORKING_DIR} "${OSA_OPS_DIR}"
+  else
+    git clone \
+        https://git.openstack.org/openstack/openstack-ansible-ops \
+        "${OSA_OPS_DIR}"
+  fi
 fi
 
 # Download the Ansible role repositories if they are not present on the host.

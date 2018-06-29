@@ -45,6 +45,10 @@ export ANSIBLE_ROLE_DIR="${TESTING_HOME}/.ansible/testing-role"
 export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
 export OSA_OPS_DIR="${WORKING_DIR}/openstack-ansible-ops"
 
+# Use pip opts to add options to the pip install command.
+# This can be used to tell it which index to use, etc.
+export PIP_OPTS=${PIP_OPTS:-""}
+
 echo "TESTING_HOME: ${TESTING_HOME}"
 echo "WORKING_DIR: ${WORKING_DIR}"
 echo "ROLE_NAME: ${ROLE_NAME}"
@@ -70,20 +74,6 @@ function setup_ara {
 
   # Don't do anything if ARA has already been set up
   [[ -L "${ANSIBLE_PLUGIN_DIR}/callback/ara" ]] && return 0
-
-  # Install ARA from source if running in ARA gate, otherwise install from PyPi
-  ARA_SRC_HOME="${TESTING_HOME}/src/git.openstack.org/openstack/ara"
-  if [[ -d "${ARA_SRC_HOME}" ]]; then
-    pip install \
-      --constraint "${COMMON_TESTS_PATH}/test-ansible-deps.txt" \
-      --constraint ${UPPER_CONSTRAINTS_FILE:-https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt} \
-      "${ARA_SRC_HOME}"
-  else
-    pip install \
-      --constraint "${COMMON_TESTS_PATH}/test-ansible-deps.txt" \
-      --constraint ${UPPER_CONSTRAINTS_FILE:-https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt} \
-      ara
-  fi
 
   # Dynamically figure out the location of ARA (ex: py2 vs py3)
   ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
@@ -131,6 +121,72 @@ if [[ ! -d "${OSA_OPS_DIR}" ]]; then
         "${OSA_OPS_DIR}"
   fi
 fi
+
+# Ensure we use the HTTPS/HTTP proxy with pip if it is specified
+if [ -n "$HTTPS_PROXY" ]; then
+  PIP_OPTS+=" --proxy $HTTPS_PROXY"
+elif [ -n "$HTTP_PROXY" ]; then
+  PIP_OPTS+=" --proxy $HTTP_PROXY"
+fi
+
+# Using tox for requirements management requires in-repo
+# requirements files for all our repositories. Rather than
+# do that, we make use of the tests repo to capture our
+# common requirements and use this to install them.
+# This reduces our review requirement rate and simplifies
+# maintenance for us for the tox config. It also makes it
+# usable with 'Depends-On', which is marvellous!
+
+# If the repo has its own test-requirements file, then use
+# it instead of the common one.
+if [[ -f "${WORKING_DIR}/test-requirements.txt" ]]; then
+  PIP_OPTS+=" --requirement ${WORKING_DIR}/test-requirements.txt"
+else
+  PIP_OPTS+=" --requirement ${COMMON_TESTS_PATH}/test-requirements.txt"
+fi
+
+# If the repo has a doc/requirements.txt file, add it to the
+# requirements list. This is necessary for the linters test
+# to be able to execute doc8.
+if [[ -f "${WORKING_DIR}/doc/requirements.txt" ]]; then
+  PIP_OPTS+=" --requirement ${WORKING_DIR}/doc/requirements.txt"
+fi
+
+# We want to install ansible, but also constrain it.
+# This is necessary due to ARA having ansible as a
+# requirement.
+PIP_OPTS+=" --requirement ${COMMON_TESTS_PATH}/test-ansible-deps.txt"
+PIP_OPTS+=" --constraint ${COMMON_TESTS_PATH}/test-ansible-deps.txt"
+
+# If Depends-On is used, the integrated repo will be cloned. We
+# therefore prefer a local copy over fetching it via a URL.
+OSA_INTEGRATED_REPO_HOME="${TESTING_HOME}/src/git.openstack.org/openstack/openstack-ansible"
+if [[ -d "${OSA_INTEGRATED_REPO_HOME}" ]]; then
+  PIP_OPTS+=" --constraint ${OSA_INTEGRATED_REPO_HOME}/global-requirement-pins.txt"
+else
+  PIP_OPTS+=" --constraint https://git.openstack.org/cgit/openstack/openstack-ansible/plain/global-requirement-pins.txt"
+fi
+
+# We add OpenStack's upper constraints last, as we want all our own
+# constraints to take precedence. If Depends-On is used, the requirements
+# repo will be cloned, so we prefer a local copy.
+REQS_REPO_HOME="${TESTING_HOME}/src/git.openstack.org/openstack/requirements"
+if [[ -d "${REQS_REPO_HOME}" ]]; then
+  PIP_OPTS+=" --constraint ${REQS_REPO_HOME}/upper-constraints.txt"
+else
+  PIP_OPTS+=" --constraint ${UPPER_CONSTRAINTS_FILE:-https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt}"
+fi
+
+# Install ARA from source if running in ARA gate, otherwise install from PyPi
+ARA_SRC_HOME="${TESTING_HOME}/src/git.openstack.org/openstack/ara"
+if [[ -d "${ARA_SRC_HOME}" ]]; then
+  PIP_OPTS+=" ${ARA_SRC_HOME}"
+else
+  PIP_OPTS+=" ara"
+fi
+
+# Install all python packages
+pip install ${PIP_OPTS}
 
 # Download the Ansible role repositories if they are not present on the host.
 # This is ignored if there is no ansible-role-requirements file.
@@ -183,4 +239,5 @@ if [ ! -z "${ANSIBLE_EXTRA_ROLE_DIRS}" ]; then
   fi
 fi
 
+# Setup ARA
 setup_ara

@@ -17,8 +17,13 @@
 
 - name: Playbook for deploying swift
   hosts: "{{ swift_groups | default('swift_all:swift_remote_all') }}"
-  user: root
-  become: true
+  # We explicitly do not use 'remote_user: root' here because the
+  # role totally fails when we do due to not being able to apply sysctl
+  # settings through delegation.
+  # TODO(odyssey4me):
+  # Figure out whether this issue happens for normal (non localhost)
+  # delegation, and how to resolve the issue.
+  become: True
   gather_facts: true
   any_errors_fatal: true
   roles:

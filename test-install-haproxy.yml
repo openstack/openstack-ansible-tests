@@ -15,7 +15,7 @@
 
 - name: Install haproxy
   hosts: localhost
-  become: true
+  remote_user: root
   any_errors_fatal: true
   roles:
     - role: "haproxy_server"

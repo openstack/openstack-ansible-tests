@@ -18,7 +18,7 @@
 # facts before continuing.
 - name: Gather facts
   hosts: "rabbitmq_all"
-  user: root
+  remote_user: root
   gather_facts: true
 
 # The cluster must be stopped when doing major/minor upgrades
@@ -27,7 +27,7 @@
   hosts: "rabbitmq_all[1:]"
   serial: 1
   any_errors_fatal: true
-  user: root
+  remote_user: root
   tasks:
     - name: "Stop RabbitMQ"
       service:
@@ -39,8 +39,7 @@
 - name: Deploy Rabbitmq
   hosts: rabbitmq_all
   serial: 1
-  user: root
-  become: true
+  remote_user: root
   gather_facts: true
   any_errors_fatal: true
   roles:

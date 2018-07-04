@@ -15,7 +15,7 @@
 
 - name: Gather facts for the LXC hosts
   hosts: localhost
-  become: true
+  remote_user: root
   gather_facts: true
   tasks:
     - include: "common-tasks/test-set-nodepool-vars.yml"
@@ -25,6 +25,13 @@
 
 - name: Playbook for creating containers
   hosts: all_containers
+  # We explicitly do not use 'remote_user: root' here because the
+  # role totally fails when we do due to the delegation of various
+  # tasks to localhost for creating the /openstack and /var/lib/lxc
+  # directories.
+  # TODO(odyssey4me):
+  # Figure out whether this issue happens for normal (non localhost)
+  # delegation, and how to resolve the issue.
   become: True
   gather_facts: False
   any_errors_fatal: true
@@ -47,7 +54,7 @@
 # to optimize serialization
 - name: Execute the openstack-host role on containers
   hosts: all_containers
-  become: true
+  remote_user: root
   gather_facts: true
   pre_tasks:
     - include: "common-tasks/test-set-nodepool-vars.yml"

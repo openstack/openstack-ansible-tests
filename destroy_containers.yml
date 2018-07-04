@@ -15,7 +15,7 @@
 
 - name: Playbook for destroying test containers
   hosts: all_containers
-  become: true
+  remote_user: root
   gather_facts: false
   tasks:
     - name: Destroy a container

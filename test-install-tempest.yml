@@ -15,8 +15,14 @@
 
 - name: Playbook for deploying tempest
   hosts: utility_all
-  user: root
-  become: true
+  # We explicitly do not use 'remote_user: root' here because the
+  # role totally fails when we do due to the delegation of the
+  # cirros image download into /opt/cache/files due to that path
+  # not being writable.
+  # TODO(odyssey4me):
+  # Figure out whether this issue happens for normal (non localhost)
+  # delegation, and how to resolve the issue.
+  become: True
   gather_facts: true
   any_errors_fatal: true
   roles:

@@ -54,6 +54,12 @@
       include_role:
         name: openstack_openrc
         private: yes
+      vars:
+        openrc_file_dest: "{{ lookup('env', 'HOME') }}/openrc"
+        openrc_file_owner: "{{ lookup('env', 'USER') }}"
+        openrc_openstack_client_config_dir_dest: "{{ lookup('env', 'HOME') }}/.config/openstack"
+        openrc_openstack_client_config_dir_owner: "{{ lookup('env', 'USER') }}"
+        openrc_clouds_yml_file_owner: "{{ lookup('env', 'USER') }}"
 
 - include: test-install-openstack-hosts.yml
 

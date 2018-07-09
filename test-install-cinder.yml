@@ -15,8 +15,7 @@
 
 - name: Deploy cinder API services
   hosts: cinder_api
-  user: root
-  become: true
+  remote_user: root
   gather_facts: true
   any_errors_fatal: true
   pre_tasks:
@@ -50,8 +49,7 @@
 
 - name: Deploy the rest of cinder
   hosts: "cinder_all:!cinder_api"
-  user: root
-  become: true
+  remote_user: root
   gather_facts: true
   any_errors_fatal: true
   roles:

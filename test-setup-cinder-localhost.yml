@@ -15,7 +15,7 @@
 
 - name: Prepare cinder-volumes volume group
   hosts: localhost
-  become: true
+  remote_user: root
   tasks:
     - name: Install lvm2 package
       package:

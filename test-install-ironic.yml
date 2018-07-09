@@ -16,7 +16,6 @@
 - name: Playbook for installing Ironic
   hosts: ironic_all
   remote_user: root
-  become: true
   gather_facts: true
   any_errors_fatal: true
   pre_tasks:

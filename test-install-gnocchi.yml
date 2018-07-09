@@ -15,8 +15,7 @@
 
 - name: Deploy gnocchi
   hosts: gnocchi_all
-  user: root
-  become: true
+  remote_user: root
   gather_facts: true
   any_errors_fatal: true
   roles:

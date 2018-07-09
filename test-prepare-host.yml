@@ -17,7 +17,7 @@
 
 - name: Playbook for configuring hosts
   hosts: localhost
-  become: true
+  remote_user: root
   vars_files:
     - test-vars.yml
   tasks:
@@ -65,7 +65,7 @@
 
 - name: Playbook for configuring the LXC host
   hosts: localhost
-  become: true
+  remote_user: root
   vars_files:
     - test-vars.yml
   roles:

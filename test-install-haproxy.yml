@@ -15,7 +15,14 @@
 
 - name: Install haproxy
   hosts: localhost
-  remote_user: root
+  # We explicitly do not use 'remote_user: root' here because the
+  # role totally fails when we do due to the delegation of the
+  # hatop package download into /opt/cache/files due to that path
+  # not being writable.
+  # TODO(odyssey4me):
+  # Figure out whether this issue happens for normal (non localhost)
+  # delegation, and how to resolve the issue.
+  become: True
   any_errors_fatal: true
   roles:
     - role: "haproxy_server"

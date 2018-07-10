@@ -58,12 +58,14 @@ COMMON_ETC_LOG_NAMES="apt \
                       nova \
                       octavia \
                       pip.conf \
+                      qpid-dispatch \
                       rabbitmq \
                       rally \
                       repo \
                       resolv.conf \
                       rsyslog \
                       sahara \
+                      sasl2 \
                       swift \
                       sysconfig/network-scripts \
                       sysconfig/network \

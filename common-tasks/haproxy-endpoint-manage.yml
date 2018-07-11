@@ -26,5 +26,11 @@
     weight: "{{ haproxy_weight | default(omit) }}"
   delegate_to: "{{ item }}"
   with_items: "{{ groups['haproxy'] }}"
+  # Due to the use of delegation to localhost
+  # in this task, we also need to set 'become'
+  # otherwise the task does not have access to
+  # the socket because it's executed as the
+  # user running the playbook (zuul).
+  become: yes
   tags:
     - common-haproxy

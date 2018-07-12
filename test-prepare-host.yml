@@ -193,7 +193,7 @@
       command: "ifdown {{ item.name | default('br-mgmt') }}:0"
       when:
         - ansible_pkg_mgr in ['yum', 'dnf']
-        - network_interfaces_rhel | changed
+        - network_interfaces_rhel  is changed
         - item.alias is defined
       with_items: "{{ bridges }}"
 
@@ -208,7 +208,7 @@
       command: "ifup {{ item.name | default('br-mgmt') }}:0"
       when:
         - ansible_pkg_mgr in ['yum', 'dnf']
-        - network_interfaces_rhel | changed
+        - network_interfaces_rhel  is changed
         - item.alias is defined
       with_items: "{{ bridges }}"
 

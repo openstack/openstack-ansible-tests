@@ -19,7 +19,7 @@
   register: _update
   retries: 5
   delay: 2
-  until: _update | succeeded
+  until: _update  is succeeded
   changed_when: false
   when:
     - ansible_pkg_mgr == 'apt'

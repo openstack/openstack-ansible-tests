@@ -22,7 +22,7 @@
   # TODO(odyssey4me):
   # Figure out whether this issue happens for normal (non localhost)
   # delegation, and how to resolve the issue.
-  become: True
+  become: yes
   any_errors_fatal: true
   roles:
     - role: "haproxy_server"

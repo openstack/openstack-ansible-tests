@@ -17,23 +17,32 @@
 
 - name: Playbook for configuring hosts
   hosts: localhost
-  remote_user: root
+  # This set of tasks runs against localhost
+  # and requires root access, but tests run as
+  # the user running the playbook (zuul). As
+  # such, we use a local connection and become.
+  connection: local
+  become: yes
   vars_files:
     - test-vars.yml
   tasks:
     - include: "common-tasks/test-set-nodepool-vars.yml"
+
     - name: Clear iptables rules
       shell: "{{ playbook_dir }}/iptables-clear.sh"
       tags:
         - skip_ansible_lint
+
     - name: Set ssh key fact
       set_fact:
         lxc_container_ssh_key: "{{ hostvars['localhost']['lxc_container_ssh_key'] }}"
+
     - name: Ensure roots new public ssh key is in authorized_keys
       authorized_key:
         user: root
         key: "{{ hostvars['localhost']['lxc_container_ssh_key'] }}"
         manage_dir: no
+
     # This is a very dirty hack due to images.linuxcontainers.org
     # constantly failing to resolve in openstack-infra.
     - name: Implement hard-coded hosts entries for consistently failing name
@@ -44,12 +53,14 @@
       with_items:
         - "91.189.91.21 images.linuxcontainers.org us.images.linuxcontainers.org"
         - "91.189.88.37 images.linuxcontainers.org uk.images.linuxcontainers.org"
+
     # NOTE(mhayden): Using package_state=present on CentOS or openSUSE should allow for
     # more gate jobs to complete properly and expose more problems that can
     # be fixed (instead of timeouts).
     - name: Use present for package_state on CentOS and openSUSE
       set_fact:
         package_state: "{{ (ansible_pkg_mgr in ['dnf', 'yum', 'zypper']) | ternary('present', 'latest') }}"
+
     - name: Setup clouds.yaml
       include_role:
         name: openstack_openrc
@@ -65,7 +76,12 @@
 
 - name: Playbook for configuring the LXC host
   hosts: localhost
-  remote_user: root
+  # This set of tasks runs against localhost
+  # and requires root access, but tests run as
+  # the user running the playbook (zuul). As
+  # such, we use a local connection and become.
+  connection: local
+  become: yes
   vars_files:
     - test-vars.yml
   roles:

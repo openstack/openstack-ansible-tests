@@ -22,7 +22,7 @@
   gather_facts: false
   any_errors_fatal: true
   connection: local
-  become: true
+  become: yes
   tasks:
     - name: Ensure root has a .ssh directory
       file:
@@ -68,7 +68,7 @@
 - name: Playbook for establishing user ssh keys
   hosts: localhost
   connection: local
-  become: false
+  become: no
   any_errors_fatal: true
   tasks:
     # Shell used because facts may not be ready yet

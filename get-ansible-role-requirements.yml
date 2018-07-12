@@ -21,6 +21,7 @@
 - name: Clone the role ansible-role-requirements
   hosts: localhost
   connection: local
+  become: no
   gather_facts: false
   tasks:
 

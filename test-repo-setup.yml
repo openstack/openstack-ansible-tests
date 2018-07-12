@@ -16,6 +16,7 @@
 - name: Playbook for setting facts for git repository
   hosts: localhost
   connection: local
+  become: no
   gather_facts: false
   any_errors_fatal: true
   tasks:

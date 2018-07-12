@@ -26,6 +26,7 @@
 - name: Playbook to add nova service and endpoint (required by Horizon)
   hosts: localhost
   connection: local
+  become: no
   gather_facts: false
   any_errors_fatal: true
   vars:

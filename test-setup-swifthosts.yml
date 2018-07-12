@@ -89,7 +89,7 @@
       - 'swift1'
       - 'swift2'
     register: mount_status
-    until: mount_status  is success
+    until: mount_status is success
     retries: 5
     delay: 2
     delegate_to: "{{ physical_host }}"

@@ -16,6 +16,12 @@
 - name: Playbook for destroying test containers
   hosts: all_containers
   remote_user: root
+  # Due to the use of delegation to localhost
+  # in this task, we also need to set 'become'
+  # otherwise the task does not have access to
+  # the socket because it's executed as the
+  # user running the playbook (zuul).
+  become: yes
   gather_facts: false
   tasks:
     - name: Destroy a container

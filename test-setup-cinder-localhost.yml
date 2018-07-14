@@ -29,16 +29,16 @@
 
     - name: Get a loopback device for cinder file
       command: losetup -f
-      when: cinder_create | changed
+      when: cinder_create  is changed
       register: cinder_losetup
 
     - name: Create the loopback device
       command: "losetup {{ cinder_losetup.stdout }} /openstack/cinder.img"
-      when: cinder_create | changed
+      when: cinder_create  is changed
 
     - name: Make LVM physical volume on the cinder device
       command: "{{ item }}"
-      when: cinder_create | changed
+      when: cinder_create  is changed
       with_items:
         - "pvcreate {{ cinder_losetup.stdout }}"
         - "pvscan"
@@ -47,5 +47,5 @@
       lvg:
         vg: cinder-volumes
         pvs: "{{ cinder_losetup.stdout }}"
-      when: cinder_create | changed
+      when: cinder_create  is changed
 

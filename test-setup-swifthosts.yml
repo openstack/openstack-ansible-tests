@@ -70,7 +70,7 @@
       fstype: xfs
       opts: '-K'
       dev: "/opt/{{ container_name}}_{{ item }}.img"
-    when: swift_create | changed
+    when: swift_create  is changed
     with_items:
       - 'swift1'
       - 'swift2'
@@ -89,7 +89,7 @@
       - 'swift1'
       - 'swift2'
     register: mount_status
-    until: mount_status | success
+    until: mount_status  is success
     retries: 5
     delay: 2
     delegate_to: "{{ physical_host }}"

@@ -10,4 +10,4 @@
         repo: "deb https://example.com/foo/ bar baz"
         update_cache: false
       register: add_repo
-      until: add_repo|success
+      until: add_repo is success

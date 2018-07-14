@@ -13,11 +13,11 @@
       apt_repository:
         repo: "deb https://example.com/foo/ bar baz"
       register: add_repo
-      until: add_repo|success
+      until: add_repo is success
 
     - name: APT cache updates explicitly enabled and retries
       apt_repository:
         repo: "deb https://example.com/foo/ bar baz"
         update_cache: true
       register: add_repo
-      until: add_repo|success
+      until: add_repo is success

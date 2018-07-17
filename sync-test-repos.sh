@@ -23,6 +23,10 @@
 # to get more information on how to use this script. Bugs about this script
 # should be submitted to the openstack-ansible project on launchpad as usual.
 
+# This script has a partner which is executed by the proposal bot here:
+# https://git.openstack.org/cgit/openstack-infra/project-config/tree/playbooks/proposal/sync_openstack_ansible_common_files.sh
+# Changes made to this file should be mirrored there when applicable.
+
 set -eu
 
 usage() {
@@ -85,14 +89,33 @@ copy_files() {
     local osa_project=${1}
 
     # Copy files
-    for f in ${files_to_sync[@]}; do
-        [[ ! -e ${osa_project}/$f ]] && continue
-        cp $f ${osa_project}/$f
+    for src_path in ${files_to_sync[@]}; do
+        # If the source repo does not have the file to copy
+        # then skip to the next file. This covers the situation
+        # where this script runs against old branches which
+        # do not have the same set of files. If the src_path
+        # is 'sync/tasks/*' because the folder does not exist
+        # then it will fail this test too.
+        [[ ! -e ${src_path} ]] && continue
+
+        # For the sync/* files in the array, the destination
+        # path is different to the source path. To work out
+        # the destination path we remove the 'sync/' prefix.
+        dst_path=${src_path#sync/}
+
+        # If the target repo does not have such a file already
+        # then it's probably best to leave it alone.
+        [[ ! -e ${osa_project}/${dst_path} ]] && continue
+
+        # We don't preserve anything from the target repo.
+        # We simply assume that all OSA projects need the same
+        # $files_to_sync
+        cp ${src_path} ${osa_project}/${dst_path}
     done
 }
 
 # Do not change these files unless you know what you are doing
-declare -ra files_to_sync=(run_tests.sh bindep.txt Vagrantfile tests/tests-repo-clone.sh .gitignore)
+declare -ra files_to_sync=(run_tests.sh bindep.txt Vagrantfile tests/tests-repo-clone.sh .gitignore sync/tasks/*)
 declare -r  openstack_git_url="git://git.openstack.org"
 
 excluded_projects=

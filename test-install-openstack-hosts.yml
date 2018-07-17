@@ -23,8 +23,6 @@
   become: yes
   gather_facts: true
   any_errors_fatal: true
-  pre_tasks:
-    - include: "common-tasks/test-force-package-cache-update.yml"
   roles:
     - role: "openstack_hosts"
   vars_files:

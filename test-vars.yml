@@ -40,7 +40,6 @@ test_neutron_server_group: "{{ ((groups['neutron_server'] is defined) and (group
 test_swift_proxy_group: "{{ ((groups['swift_proxy'] is defined) and (groups['swift_proxy'] | length > 0)) | ternary('swift_proxy', 'all_containers') }}"
 test_gnocchi_group: "{{ ((groups['gnocchi_all'] is defined) and (groups['gnocchi_all'] | length > 0)) | ternary('gnocchi_all', 'all_containers') }}"
 test_ironic_api_group: "{{ ((groups['ironic_api'] is defined) and (groups['ironic_api'] | length > 0)) | ternary('ironic_api', 'all_containers') }}"
-test_sahara_group: "{{ ((groups['sahara_all'] is defined) and (groups['sahara_all'] | length > 0)) | ternary('sahara_all', 'all_containers') }}"
 test_cinder_api_group: "{{ ((groups['cinder_api'] is defined) and (groups['cinder_api'] | length > 0)) | ternary('cinder_api', 'all_containers') }}"
 test_galera_host: "{{ hostvars[groups[test_galera_group][0]]['ansible_host'] }}"
 test_rabbitmq_host: "{{ hostvars[groups[test_rabbitmq_group][0]]['ansible_host'] }}"
@@ -55,7 +54,6 @@ test_neutron_server_host: "{{ hostvars[groups[test_neutron_server_group][0]]['an
 test_swift_proxy_host: "{{ hostvars[groups[test_swift_proxy_group][0]]['ansible_host'] }}"
 test_gnocchi_api_host: "{{ hostvars[groups[test_gnocchi_group][0]]['ansible_host'] }}"
 test_ironic_api_host: "{{ hostvars[groups[test_ironic_api_group][0]]['ansible_host'] }}"
-test_sahara_host: "{{ hostvars[groups[test_sahara_group][0]]['ansible_host'] }}"
 test_cinder_api_host: "{{ hostvars[groups[test_cinder_api_group][0]]['ansible_host'] }}"
 
 ## LXC container default bind mounts
@@ -339,23 +337,6 @@ ironic_swift_temp_url_secret_key: secrete
 ironic_keystone_auth_plugin: password
 ironic_glance_api_servers: "http://{{ test_glance_host }}:9292"
 
-# Sahara vars
-sahara_venv_tag: "testing"
-sahara_developer_mode: true
-sahara_git_install_branch: "{{ test_branch }}"
-sahara_service_password: "secrete"
-sahara_service_port: 8386
-sahara_service_publicuri: "http://{{ test_sahara_host }}:{{ sahara_service_port }}"
-sahara_service_publicurl: "{{ sahara_service_publicuri }}/v1.1/%(tenant_id)s"
-sahara_service_internaluri: "http://{{ test_sahara_host }}:{{ sahara_service_port }}"
-sahara_service_internalurl: "{{ sahara_service_internaluri }}/v1.1/%(tenant_id)s"
-sahara_service_adminuri: "http://{{ test_sahara_host }}:{{ sahara_service_port }}"
-sahara_service_adminurl: "{{ sahara_service_adminuri }}/v1.1/%(tenant_id)s"
-sahara_container_mysql_password: "SuperSecrete"
-sahara_oslomsg_rpc_password: "{{ oslomsg_rpc_password }}"
-sahara_oslomsg_notify_password: "{{ oslomsg_notify_password }}"
-sahara_bin: "/openstack/venvs/sahara-{{ sahara_venv_tag }}/bin"
-
 # Horizon Settings
 horizon_developer_mode: true
 horizon_venv_tag: "testing"
@@ -388,7 +369,6 @@ tempest_service_available_neutron: "{{ ((groups['neutron_all'] is defined) and (
 tempest_service_available_nova: "{{ ((groups['nova_all'] is defined) and (groups['nova_all'] | length > 0)) }}"
 tempest_service_available_swift: "{{ ((groups['swift_all'] is defined) and (groups['swift_all'] | length > 0)) }}"
 tempest_service_available_zaqar: "{{ ((groups['zaqar_all'] is defined) and (groups['zaqar_all'] | length > 0)) }}"
-tempest_service_available_sahara: "{{ ((groups['sahara_all'] is defined) and (groups['sahara_all'] | length > 0)) }}"
 
 # openrc settings
 openrc_os_password: "{{ keystone_auth_admin_password }}"
@@ -418,7 +398,6 @@ glance_wsgi_processes: 2
 cinder_wsgi_processes: 2
 neutron_wsgi_processes: 2
 swift_wsgi_processes: 2
-sahara_wsgi_processes: 2
 heat_wsgi_processes: 2
 octavia_wsgi_processes: 2
 ironic_wsgi_processes: 2

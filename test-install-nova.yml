@@ -18,14 +18,6 @@
 - name: Prepare for nova services
   hosts: nova_all
   remote_user: root
-  # Some services run on localhost. For that to work,
-  # we need to sudo. Ideally it should rather be broken
-  # out into its own playbook and use 'connection: local'
-  # but to do that we'd have to know which service it is
-  # and every role's inventory is different. So instead,
-  # we use this rather horrible hack.
-  become: "{{ inventory_hostname == 'localhost' }}"
-  connection: "{{ (inventory_hostname == 'localhost') | ternary('local', 'ssh') }}"
   gather_facts: true
   any_errors_fatal: true
   vars:
@@ -96,14 +88,7 @@
 
 - name: Deploy nova compute
   hosts: "nova_compute"
-  # Some services run on localhost. For that to work,
-  # we need to sudo. Ideally it should rather be broken
-  # out into its own playbook and use 'connection: local'
-  # but to do that we'd have to know which service it is
-  # and every role's inventory is different. So instead,
-  # we use this rather horrible hack.
-  become: "{{ inventory_hostname == 'localhost' }}"
-  connection: "{{ (inventory_hostname == 'localhost') | ternary('local', 'ssh') }}"
+  remote_user: root
   gather_facts: true
   any_errors_fatal: true
   roles:

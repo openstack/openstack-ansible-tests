@@ -338,6 +338,7 @@ cinder_backends:
 cinder_default_volume_type: lvm
 
 # Swift specific settings
+swift_oslomsg_notify_password: "{{ oslomsg_notify_password }}"
 swift_container_mysql_password: "SuperSecrete"
 swift_dispersion_password: "secrete"
 swift_hash_path_prefix: "secrete_prefx"

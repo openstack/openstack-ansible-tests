@@ -18,41 +18,17 @@
   remote_user: root
   gather_facts: true
   any_errors_fatal: true
-  pre_tasks:
-
-    - include: ensure-rabbitmq.yml
-      vhost_name: "{{ cinder_rabbitmq_vhost }}"
-      user_name: "{{ cinder_rabbitmq_userid }}"
-      user_password: "{{ cinder_rabbitmq_password }}"
-      when:
-        - "'rabbitmq_all' in groups"
-        - "groups['rabbitmq_all'] | length > 0"
-        - "'oslomsg_rpc_all' not in groups"
-
-    - include: ensure-oslomsg.yml
-      rpc_vhost: "{{ cinder_oslomsg_rpc_vhost }}"
-      rpc_user: "{{ cinder_oslomsg_rpc_userid }}"
-      rpc_password: "{{ cinder_oslomsg_rpc_password }}"
-      notify_vhost: "{{ cinder_oslomsg_notify_vhost }}"
-      notify_user: "{{ cinder_oslomsg_notify_userid }}"
-      notify_password: "{{ cinder_oslomsg_notify_password }}"
-      when:
-        - "'oslomsg_rpc_all' in groups"
-        - "groups['oslomsg_rpc_all'] | length > 0"
-
-  roles:
-    - role: "os_cinder"
   vars_files:
     - test-vars.yml
-
-
+  roles:
+    - role: "os_cinder"
 
 - name: Deploy the rest of cinder
   hosts: "cinder_all:!cinder_api"
   remote_user: root
   gather_facts: true
   any_errors_fatal: true
-  roles:
-    - role: "os_cinder"
   vars_files:
     - test-vars.yml
+  roles:
+    - role: "os_cinder"

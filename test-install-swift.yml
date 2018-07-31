@@ -26,7 +26,7 @@
   become: True
   gather_facts: true
   any_errors_fatal: true
-  roles:
-    - role: "{{ swift_rolename | default('os_swift') }}"
   vars_files:
     - test-vars.yml
+  roles:
+    - role: "os_swift"

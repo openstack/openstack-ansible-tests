@@ -34,22 +34,31 @@ export RSYNC_CMD="rsync --archive --safe-links --ignore-errors --quiet --no-perm
 #                  wish to search for when storing gate artifacts. When adding
 #                  things to this list please alphabetize the entries so it's
 #                  easy for folks to find and adjust items as needed.
-COMMON_ETC_LOG_NAMES="apt \
+COMMON_ETC_LOG_NAMES="almanach \
+                      apt \
                       aodh \
+                      apache2 \
                       barbican \
+                      blazar \
                       ceilometer \
                       cinder \
+                      cloudkitty \
+                      congress \
                       designate \
                       glance \
                       gnocchi \
                       haproxy \
                       heat \
                       horizon \
+                      httpd \
                       ironic \
+                      karbor \
                       keystone \
                       magnum \
                       memcached \
                       molteniron \
+                      monasca \
+                      mongodb \
                       my.cnf \
                       mysql \
                       network \
@@ -57,6 +66,7 @@ COMMON_ETC_LOG_NAMES="apt \
                       neutron \
                       nova \
                       octavia \
+                      panko \
                       pip.conf \
                       qpid-dispatch \
                       rabbitmq \
@@ -65,6 +75,7 @@ COMMON_ETC_LOG_NAMES="apt \
                       resolv.conf \
                       rsyslog \
                       sahara \
+                      searchlight \
                       sasl2 \
                       swift \
                       sysconfig/network-scripts \
@@ -73,8 +84,11 @@ COMMON_ETC_LOG_NAMES="apt \
                       tacker \
                       tempest \
                       trove \
+                      watcher \
                       yum \
                       yum.repos.d \
+                      zaqar \
+                      zun \
                       zypp"
 
 ## Functions -----------------------------------------------------------------
@@ -111,6 +125,35 @@ function store_artifacts {
     fi
     echo "Running artifact sync for \"${1}\" to \"${2}\""
     sudo ${RSYNC_CMD} ${1} ${2} || true
+  fi
+}
+
+function store_journal_artifacts {
+  # Store lines from a known unit's journal as a plain-text log file.
+  # USAGE: store_journal_artifacts UNIT_TO_MATCH /path/to/store
+  if [ $? == 0 ]; then
+    if [[ ! -d "${2}" ]]; then
+      mkdir -vp "${2}"
+    fi
+    if [[ ${3:-false} != false ]]; then
+      if [[ -f "/var/log/journal/${3}/system.journal" ]]; then
+        SYSTEMD_UNITS=$(sudo journalctl --file="/var/log/journal/${3}/system.journal" \
+                                        --output=json-pretty | grep -w UNIT | sort -u | awk -F'"' '{print $4}' | grep "${1}")
+        for service_unit in $(echo -e "${SYSTEMD_UNITS}"); do
+          echo "Pulling journal for ${service_unit}"
+          sudo journalctl --file="/var/log/journal/${3}/system.journal" \
+                          --since="1 hour ago" \
+                          --unit="${service_unit}" | sudo tee "${2}/${service_unit}.journal.log" &>/dev/null
+        done
+      fi
+    else
+      SYSTEMD_UNITS=$(sudo journalctl --output=json-pretty | grep -w UNIT | sort -u | awk -F'"' '{print $4}' | grep "${1}")
+      for service_unit in $(echo -e "${SYSTEMD_UNITS}"); do
+        echo "Pulling journal for ${service_unit}"
+        sudo journalctl --since="1 hour ago" \
+                        --unit="${service_unit}" | sudo tee "${2}/${service_unit}.journal.log" &>/dev/null
+      done
+    fi
   fi
 }
 
@@ -155,6 +198,7 @@ store_artifacts "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/ara-r
 # Gather host etc artifacts
 for service in ${COMMON_ETC_LOG_NAMES}; do
     store_artifacts "/etc/${service}" "${WORKING_DIR}/logs/etc/host/"
+    store_journal_artifacts "${service}" "${WORKING_DIR}/logs/host"
 done
 
 # Gather container etc artifacts
@@ -162,11 +206,13 @@ if which lxc-ls &> /dev/null; then
  for CONTAINER_NAME in $(sudo lxc-ls -1); do
    CONTAINER_PID=$(sudo lxc-info -p -n ${CONTAINER_NAME} | awk '{print $2}')
    ETC_DIR="/proc/${CONTAINER_PID}/root/etc"
+   MACHINE_ID="$(sudo cat ${ETC_DIR}/machine-id)"
    LOG_DIR="/proc/${CONTAINER_PID}/root/var/log"
    repo_information ${CONTAINER_NAME}
    for service in ${COMMON_ETC_LOG_NAMES}; do
       store_artifacts ${ETC_DIR}/${service} "${WORKING_DIR}/logs/etc/openstack/${CONTAINER_NAME}/"
       store_artifacts ${LOG_DIR}/${service} "${WORKING_DIR}/logs/openstack/${CONTAINER_NAME}/"
+      store_journal_artifacts ${service} "${WORKING_DIR}/logs/openstack/${CONTAINER_NAME}" "${MACHINE_ID}"
    done
  done
 fi
@@ -224,4 +270,3 @@ done
 compress_files
 
 echo "#### END LOG COLLECTION ###"
-

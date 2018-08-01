@@ -61,7 +61,7 @@
       set_fact:
         package_state: "{{ (ansible_pkg_mgr in ['dnf', 'yum', 'zypper']) | ternary('present', 'latest') }}"
 
-    - name: Setup clouds.yaml
+    - name: Setup clouds.yaml for the test user
       include_role:
         name: openstack_openrc
         private: yes
@@ -71,6 +71,17 @@
         openrc_openstack_client_config_dir_dest: "{{ lookup('env', 'HOME') }}/.config/openstack"
         openrc_openstack_client_config_dir_owner: "{{ lookup('env', 'USER') }}"
         openrc_clouds_yml_file_owner: "{{ lookup('env', 'USER') }}"
+
+    - name: Setup clouds.yaml for the root user
+      include_role:
+        name: openstack_openrc
+        private: yes
+      vars:
+        openrc_file_dest: "/root/openrc"
+        openrc_file_owner: "root"
+        openrc_openstack_client_config_dir_dest: "/root/.config/openstack"
+        openrc_openstack_client_config_dir_owner: "root"
+        openrc_clouds_yml_file_owner: "root"
 
 - include: test-install-openstack-hosts.yml
 

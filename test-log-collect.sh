@@ -61,6 +61,7 @@ COMMON_ETC_LOG_NAMES="almanach \
                       mongodb \
                       my.cnf \
                       mysql \
+                      netplan \
                       network \
                       nginx \
                       neutron \

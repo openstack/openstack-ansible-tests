@@ -34,9 +34,6 @@
         echo "galera_percona_xtrabackup_repo_host=${NODEPOOL_PERCONA_PROXY}"
         echo "openstack_hosts_rdo_mirror_url=${NODEPOOL_RDO_PROXY}"
         echo "galera_repo_host=${NODEPOOL_MIRROR_HOST}:8080"
-        if [[ ${NODEPOOL_PYPI_MIRROR} == *.ovh.* ]]; then
-          echo "nova_virt_type=qemu"
-        fi
         echo "repo_build_pip_default_index=${NODEPOOL_PYPI_MIRROR}"
       args:
         executable: /bin/bash

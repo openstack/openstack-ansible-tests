@@ -4,7 +4,10 @@
     check:
       jobs:
         - openstack-ansible-linters
-        - openstack-ansible-functional-centos-7
+        # TODO(odyssey4me):
+        # Revert this to voting once the builds are stable again.
+        - openstack-ansible-functional-centos-7:
+            voting: false
         - openstack-ansible-functional-opensuse-150:
             voting: false
         - openstack-ansible-functional-opensuse-423
@@ -14,7 +17,9 @@
     gate:
       jobs:
         - openstack-ansible-linters
-        - openstack-ansible-functional-centos-7
+        # TODO(odyssey4me):
+        # Revert this to voting once the builds are stable again.
+        #- openstack-ansible-functional-centos-7
         - openstack-ansible-functional-opensuse-423
         - openstack-ansible-functional-ubuntu-xenial
     experimental:

@@ -138,12 +138,14 @@ fi
 # usable with 'Depends-On', which is marvellous!
 
 # If the repo has its own test-requirements file, then use
-# it instead of the common one.
+# it with the common one.
 if [[ -f "${WORKING_DIR}/test-requirements.txt" ]]; then
   PIP_OPTS+=" --requirement ${WORKING_DIR}/test-requirements.txt"
-else
-  PIP_OPTS+=" --requirement ${COMMON_TESTS_PATH}/test-requirements.txt"
 fi
+
+# We add the common requirements after the in-repo requirements
+# so that the in-repo ones take precedence.
+PIP_OPTS+=" --requirement ${COMMON_TESTS_PATH}/test-requirements.txt"
 
 # If the repo has a doc/requirements.txt file, add it to the
 # requirements list. This is necessary for the linters test

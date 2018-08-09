@@ -11,8 +11,7 @@
         - openstack-ansible-functional-opensuse-150:
             voting: false
         - openstack-ansible-functional-opensuse-423
-        - openstack-ansible-functional-ubuntu-bionic:
-            voting: false
+        - openstack-ansible-functional-ubuntu-bionic
         - openstack-ansible-functional-ubuntu-xenial
     gate:
       jobs:
@@ -21,6 +20,7 @@
         # Revert this to voting once the builds are stable again.
         #- openstack-ansible-functional-centos-7
         - openstack-ansible-functional-opensuse-423
+        - openstack-ansible-functional-ubuntu-bionic
         - openstack-ansible-functional-ubuntu-xenial
     experimental:
       jobs:

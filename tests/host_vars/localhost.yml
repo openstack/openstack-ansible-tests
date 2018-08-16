@@ -15,5 +15,10 @@
 
 bridges:
   - "br-mgmt"
+  - name: "br-test1"
+    ip_addr: "10.1.1.1"
+  - name: "br-test2"
+    ip_addr: "10.1.2.1"
+    veth_peer: "veth-test"
 
 ansible_python_interpreter: "/usr/bin/python2"

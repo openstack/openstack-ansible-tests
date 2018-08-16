@@ -98,150 +98,131 @@
     - test-vars.yml
   roles:
     - role: "lxc_hosts"
+
+- name: Playbook for configuring test host networking
+  hosts: localhost
+  # This set of tasks runs against localhost
+  # and requires root access, but tests run as
+  # the user running the playbook (zuul). As
+  # such, we use a local connection and become.
+  connection: local
+  become: yes
+  vars_files:
+    - test-vars.yml
+
+  tasks:
+    - name: Run the systemd-networkd role
+      include_role:
+        name: systemd_networkd
+        private: true
+      vars:
+        systemd_interface_cleanup: true
+        systemd_run_networkd: true
+        systemd_netdevs: |-
+          {% set systemd_network_devices = [] %}
+          {% for interface in (bridges | default([])) %}
+          {%   if interface is string %}
+          {%     set _ = systemd_network_devices.append({'NetDev': {'Name': 'dummy-' + interface, 'Kind': 'dummy'}}) %}
+          {%     set _ = systemd_network_devices.append({'NetDev': {'Name': interface, 'Kind': 'bridge'}}) %}
+          {%   else %}
+          {%     set interface_name = (interface.name | default('br-mgmt')) %}
+          {%     set _ = systemd_network_devices.append({'NetDev': {'Name': 'dummy-' + interface_name, 'Kind': 'dummy'}}) %}
+          {%     set _ = systemd_network_devices.append({'NetDev': {'Name': interface_name, 'Kind': 'bridge'}}) %}
+          {%     if interface.veth_peer is defined %}
+          {%       set _ = systemd_network_devices.append({'NetDev': {'Name': interface_name + '-veth', 'Kind': 'veth'}, 'Peer': {'Name': interface.veth_peer}}) %}
+          {%     endif %}
+          {%   endif %}
+          {% endfor %}
+          {{ systemd_network_devices }}
+        systemd_networks: |-
+          {# If the interface is a string or no ip address is defined and the default address "10.1.0.1/24" will be used #}
+          {% set systemd_network_networks = [] %}
+          {% for interface in (bridges | default([])) %}
+          {%   if interface is string %}
+          {%     set _ = systemd_network_networks.append({'interface': 'dummy-' + interface, 'bridge': interface}) %}
+          {%     set _ = systemd_network_networks.append({'interface': interface, 'address': '10.1.0.1', 'netmask': '255.255.255.0'}) %}
+          {%   else %}
+          {%     set interface_name = (interface.name | default('br-mgmt')) %}
+          {%     if interface.alias is defined %}
+          {%       set _ = systemd_network_networks.append({'interface': 'dummy-' + interface_name, 'bridge': interface_name}) %}
+          {%       set _ = systemd_network_networks.append({'interface': interface_name, 'netmask': (interface.netmask | default('255.255.255.0')), 'config_overrides': {'Network': {'Address': {(interface.ip_addr | default('10.1.0.1')): null, (interface.alias | string): null}}}}) %}
+          {%     else %}
+          {%       set _ = systemd_network_networks.append({'interface': 'dummy-' + interface_name, 'bridge': interface_name}) %}
+          {%       set _ = systemd_network_networks.append({'interface': interface_name, 'address': (interface.ip_addr | default('10.1.0.1')), 'netmask': (interface.netmask | default('255.255.255.0'))}) %}
+          {%     endif %}
+          {%     if interface.veth_peer is defined %}
+          {%       set _ = systemd_network_networks.append({'interface': interface.veth_peer + '-veth', 'bridge': interface_name}) %}
+          {%     endif %}
+          {%   endif %}
+          {% endfor %}
+          {{ systemd_network_networks }}
+
+    - name: Run the systemd service role
+      include_role:
+        name: systemd_service
+        private: true
+      vars:
+        systemd_services:
+          - service_name: "networking-post-up"
+            config_overrides:
+              Unit:
+                Description: networking-post-up
+                After: network-online.target
+                Wants: network-online.target
+              Service:
+                RemainAfterExit: yes
+            service_type: oneshot
+            execstarts: |-
+              {% set veths = ['-/sbin/ethtool -K ' + (bootstrap_host_public_interface | default(ansible_default_ipv4['alias'])) + ' gso off sg off tso off tx off'] %}
+              {% for interface in (bridges | default([])) %}
+              {%   if interface is string %}
+              {%     set _ = veths.append('-/usr/sbin/ip link set ' + interface + ' up') %}
+              {%     set _ = veths.append('-/sbin/ethtool -K ' + interface + ' gso off sg off tso off tx off') %}
+              {%   else %}
+              {%     set interface_name = (interface.name | default('br-mgmt')) %}
+              {%     set _ = veths.append('-/usr/sbin/ip link set ' + interface_name + ' up') %}
+              {%     set _ = veths.append('-/sbin/ethtool -K ' + interface_name + ' gso off sg off tso off tx off') %}
+              {%     if interface.veth_peer is defined %}
+              {%       set _ = veths.append('-/usr/sbin/ip link set ' + interface_name + '-veth up') %}
+              {%       set _ = veths.append('-/usr/sbin/ip link set ' + interface.veth_peer + ' up') %}
+              {%       set _ = veths.append('-/sbin/ethtool -K ' + interface.veth_peer + ' gso off sg off tso off tx off') %}
+              {%     endif %}
+              {%   endif %}
+              {% endfor %}
+              {{ veths }}
+            enabled: yes
+            state: started
+        systemd_tempd_prefix: openstack
+      tags:
+        - network-config
+
   post_tasks:
-    - name: Ensure that /etc/network/interfaces.d/ exists (Debian)
-      file:
-        path: /etc/network/interfaces.d/
-        state: directory
-      tags:
-        - networking-dir-create
-      when:
-        - ansible_pkg_mgr == 'apt'
-
-    - name: Copy network configuration (Debian)
-      template:
-        src: "network_interfaces/debian_interface_{{ item.type | default('default') }}.cfg.j2"
-        dest: "/etc/network/interfaces.d/{{ item.name | default('br-mgmt') }}.cfg"
-      with_items: "{{ bridges }}"
-      register: network_interfaces_deb
-      when:
-        - ansible_pkg_mgr == 'apt'
-
-    - name: Copy network configuration (RedHat)
-      template:
-        src: "network_interfaces/redhat_interface_{{ item.type | default('default') }}.cfg.j2"
-        dest: "/etc/sysconfig/network-scripts/ifcfg-{{ item.name | default('br-mgmt') }}"
-      with_items: "{{ bridges }}"
-      register: network_interfaces_rhel
-      when:
-        - ansible_pkg_mgr in ['yum', 'dnf']
-
-    - name: Copy network configuration (SUSE)
-      template:
-        src: "network_interfaces/suse_interface_{{ item.type | default('default') }}.cfg.j2"
-        dest: "/etc/sysconfig/network/ifcfg-{{ item.name | default('br-mgmt') }}"
-      with_items: "{{ bridges }}"
-      register: network_interfaces_suse
-      when:
-        - ansible_pkg_mgr == 'zypper'
-
-    - name: Create alias file when required
-      template:
-        src: "network_interfaces/redhat_interface_alias.cfg.j2"
-        dest: "/etc/sysconfig/network-scripts/ifcfg-{{ item.name | default('br-mgmt')}}:0"
-      with_items: "{{ bridges }}"
-      when:
-        - ansible_pkg_mgr in ['yum', 'dnf']
-        - item.alias is defined
-
-    - name: Put down post-up script for veth-peer interfaces (RedHat)
-      template:
-        src: "network_interfaces/rpm_interface_{{ item[0] }}.cfg.j2"
-        dest: "/etc/sysconfig/network-scripts/{{ item[0] }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}"
-        mode: "0755"
-      with_nested:
-        - [ "ifup-post", "ifdown-post" ]
-        - "{{ bridges }}"
-      when:
-        - item[1].veth_peer is defined
-        - ansible_pkg_mgr in ['yum', 'dnf']
-
-    # NOTE(hworang): Nested loops do not work on blocks. See
-    # https://github.com/ansible/ansible/issues/13262
-    # As such we need to do that on a per-task basis.
-    - block:
-      - name: Put down post-up script for veth-peer interfaces (SUSE)
-        template:
-          src: "network_interfaces/rpm_interface_{{ item[0] }}.cfg.j2"
-          dest: "/etc/sysconfig/network/scripts/{{ item[0] }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}"
-          mode: "0755"
-        with_nested:
-          - [ "ifup-post", "ifdown-post" ]
-          - "{{ bridges }}"
-      - name: Configure ifcfg files to use the post-up script (SUSE)
-        lineinfile:
-          dest: "/etc/sysconfig/network/ifcfg-{{ item[1].name | default('br-mgmt') }}"
-          line: "POST_UP_SCRIPT=\"compat:suse:{{ item[0] }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}\""
-        with_nested:
-          - ['ifup-post']
-          - "{{ bridges }}"
-      - name: Configure ifcfg files to use the post-down script (SUSE)
-        lineinfile:
-          dest: "/etc/sysconfig/network/ifcfg-{{ item[1].name | default('br-mgmt') }}"
-          line: "POST_DOWN_SCRIPT=\"compat:suse:{{ item[0] }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}\""
-        with_nested:
-          - ['ifdown-post']
-          - "{{ bridges }}"
-      when:
-        - item[1].veth_peer is defined
-        - ansible_pkg_mgr == 'zypper'
-
-    - name: Ensure our interfaces.d configuration files are loaded automatically
-      lineinfile:
-        dest: /etc/network/interfaces
-        line: "source /etc/network/interfaces.d/*.cfg"
-      when:
-        - ansible_pkg_mgr == 'apt'
-      tags:
-        - networking-interfaces-load
-
-    - name: Ensure the postup/postdown scripts are loaded (RedHat)
-      lineinfile:
-        dest: "/etc/sysconfig/network-scripts/{{ item[0] }}"
-        line: ". /etc/sysconfig/network-scripts/{{ item[0] }}-veth-{{ item[1].name | default('br-mgmt') }}-2-{{ item[1].veth_peer | default('eth1') }}"
-        insertbefore: "^exit 0"
-      with_nested:
-        - [ "ifup-post", "ifdown-post" ]
-        - "{{ bridges }}"
-      when:
-        - item[1].veth_peer is defined
-        - ansible_pkg_mgr in ['yum', 'dnf']
-
-    - name: Shut down the network interfaces
-      command: "ifdown {{ item.name | default('br-mgmt') }}"
-      when:
-        - (network_interfaces_rhel | changed) or (network_interfaces_deb | changed) or
-          (network_interfaces_suse | changed)
-      with_items: "{{ bridges }}"
-
-    - name: Shut down the alias interface (RedHat)
-      command: "ifdown {{ item.name | default('br-mgmt') }}:0"
-      when:
-        - ansible_pkg_mgr in ['yum', 'dnf']
-        - network_interfaces_rhel  is changed
-        - item.alias is defined
-      with_items: "{{ bridges }}"
-
-    - name: Start the network interfaces
-      command: "ifup {{ item.name | default('br-mgmt') }}"
-      when:
-        - (network_interfaces_rhel | changed) or (network_interfaces_deb | changed) or
-          (network_interfaces_suse | changed)
-      with_items: "{{ bridges }}"
-
-    - name: Start the alias interface (RedHat)
-      command: "ifup {{ item.name | default('br-mgmt') }}:0"
-      when:
-        - ansible_pkg_mgr in ['yum', 'dnf']
-        - network_interfaces_rhel  is changed
-        - item.alias is defined
-      with_items: "{{ bridges }}"
+    - name: (RE)Gather facts post setup
+      setup:
+        gather_subset: "network,hardware,virtual"
 
     - name: Trigger dnsmasq restart
       command: /bin/true
       changed_when:
-        - lxc_net_manage_iptables | bool
-        - iptables_clear is defined
-        - iptables_clear is changed
+        - (lxc_net_manage_iptables is defined) and (lxc_net_manage_iptables | bool)
+        - (iptables_clear is defined) and (iptables_clear is changed)
       notify:
         - Restart dnsmasq
+
+    - name: Set interfaces fact
+      set_fact:
+        active_interfaces: |-
+          {% set interfaces = [] %}
+          {% for interface in (bridges | default([])) %}
+          {%   if interface is string %}
+          {%     set interface_name = interface %}
+          {%   else %}
+          {%     set interface_name = (interface.name | default('br-mgmt')) %}
+          {%   endif %}
+          {%   set _ = interfaces.append(hostvars[inventory_hostname][('ansible_' + (interface_name | replace('-', '_')))]['active'] == true) %}
+          {% endfor %}
+          {{ interfaces }}
+
+    - name: Check that new network interfaces are up
+      assert:
+        that: "{{ active_interfaces }}"

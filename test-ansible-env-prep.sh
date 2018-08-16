@@ -32,6 +32,7 @@ set -e
 export TESTING_HOME=${TESTING_HOME:-$HOME}
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 export ROLE_NAME=${ROLE_NAME:-''}
+export OSA_PROJECT_NAME="$(sed -n 's|^project=openstack/\(.*\).git$|\1|p' $(pwd)/.gitreview)"
 export ANSIBLE_INVENTORY=${ANSIBLE_INVENTORY:-$WORKING_DIR/tests/inventory}
 export ANSIBLE_ROLE_REQUIREMENTS_PATH=${ANSIBLE_ROLE_REQUIREMENTS_PATH:-$WORKING_DIR/tests/ansible-role-requirements.yml}
 export ANSIBLE_EXTRA_ROLE_DIRS=${ANSIBLE_EXTRA_ROLE_DIRS:-''}
@@ -101,7 +102,7 @@ mkdir -p "${ANSIBLE_LOG_DIR}"
 if [[ ! -d "${ANSIBLE_PLUGIN_DIR}" ]]; then
   # The plugins repo doesn't need a clone, we can just
   # symlink it.
-  if [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-plugins" ]]; then
+  if [[ "${OSA_PROJECT_NAME}" == "openstack-ansible-plugins" ]]; then
     ln -s ${WORKING_DIR} "${ANSIBLE_PLUGIN_DIR}"
   else
     git clone \
@@ -113,7 +114,7 @@ fi
 if [[ ! -d "${OSA_OPS_DIR}" ]]; then
   # The ops repo doesn't need a clone, we can just
   # symlink it.
-  if [[ "$(basename ${WORKING_DIR})" == "openstack-ansible-ops" ]]; then
+  if [[ "${OSA_PROJECT_DIR}" == "openstack-ansible-ops" ]]; then
     ln -s ${WORKING_DIR} "${OSA_OPS_DIR}"
   else
     git clone \

@@ -256,6 +256,10 @@ env > "${WORKING_DIR}/logs/environment.txt"  || true
 # output ram usage
 free -m > "${WORKING_DIR}/logs/memory-available.txt" || true
 
+# iptables
+sudo iptables -nvL > "${WORKING_DIR}/logs/iptables.txt" || true
+sudo iptables -t nat -nvL > "${WORKING_DIR}/logs/iptables-nat.txt" || true
+
 repo_information host
 
 # Record the active interface configs

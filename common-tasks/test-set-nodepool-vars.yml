@@ -33,6 +33,9 @@
         echo "centos_epel_mirror=${NODEPOOL_EPEL_MIRROR}"
         echo "galera_percona_xtrabackup_repo_host=${NODEPOOL_PERCONA_PROXY}"
         echo "galera_repo_host=${NODEPOOL_MIRROR_HOST}:8080"
+        if [[ ${NODEPOOL_PYPI_MIRROR} == *.ovh.* ]]; then
+          echo "nova_virt_type=qemu"
+        fi
         echo "repo_build_pip_default_index=${NODEPOOL_PYPI_MIRROR}"
         echo "nspawn_hosts_container_image_repo=${NODEPOOL_LXC_IMAGE_PROXY}"
 

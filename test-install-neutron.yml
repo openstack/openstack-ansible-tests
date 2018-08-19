@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include: setting-nodepool-variables.yml
+- import_playbook: setting-nodepool-variables.yml
 
 - name: Make /lib/modules accessible on neutron_agent containers
   hosts: neutron_agent

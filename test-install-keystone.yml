@@ -35,7 +35,7 @@
     # config file changes which causes a container/service
     # restart do not cause an unexpected outage, we drain
     # the load balancer back end for this container.
-    - include: common-tasks/haproxy-endpoint-manage.yml
+    - include_tasks: common-tasks/haproxy-endpoint-manage.yml
       vars:
         haproxy_state: disabled
       when:
@@ -46,7 +46,7 @@
     # Now that container changes are done, we can set
     # the load balancer back end for this container
     # to available again.
-    - include: common-tasks/haproxy-endpoint-manage.yml
+    - include_tasks: common-tasks/haproxy-endpoint-manage.yml
       vars:
         haproxy_state: enabled
       when:

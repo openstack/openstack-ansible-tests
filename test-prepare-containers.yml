@@ -23,9 +23,9 @@
   become: yes
   gather_facts: true
   tasks:
-    - include: "common-tasks/test-set-nodepool-vars.yml"
+    - include_tasks: "common-tasks/test-set-nodepool-vars.yml"
 
-- include: destroy_containers.yml
+- import_playbook: destroy_containers.yml
   when: destroy_first | default(True) | bool
 
 - name: Playbook for creating containers
@@ -62,7 +62,7 @@
   remote_user: root
   gather_facts: true
   pre_tasks:
-    - include: "common-tasks/test-set-nodepool-vars.yml"
+    - include_tasks: "common-tasks/test-set-nodepool-vars.yml"
   roles:
     - role: "openstack_hosts"
   vars_files:

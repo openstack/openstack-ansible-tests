@@ -13,6 +13,10 @@
 # limitations under the License.
 
 - project:
+    templates:
+      - check-requirements
+      - publish-openstack-sphinx-docs
+      - release-notes-jobs
     check:
       jobs:
         - openstack-ansible-linters
@@ -25,3 +29,9 @@
         - openstack-ansible-functional-centos-7
         - openstack-ansible-functional-opensuse-423
         - openstack-ansible-functional-ubuntu-xenial
+    post:
+      jobs:
+        - propose-updates:
+            vars:
+              update_target: openstack-ansible-tests
+

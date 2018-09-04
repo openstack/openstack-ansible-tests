@@ -2,20 +2,20 @@
 - name: openstack_openrc
   scm: git
   src: https://git.openstack.org/openstack/openstack-ansible-openstack_openrc
-  version: master
+  version: stable/rocky
 - name: python_venv_build
   src: https://git.openstack.org/openstack/ansible-role-python_venv_build
   scm: git
-  version: master
+  version: stable/rocky
 - name: systemd_mount
   src: https://git.openstack.org/openstack/ansible-role-systemd_mount
   scm: git
-  version: master
+  version: stable/rocky
 - name: systemd_networkd
   src: https://git.openstack.org/openstack/ansible-role-systemd_networkd
   scm: git
-  version: master
+  version: stable/rocky
 - name: systemd_service
   src: https://git.openstack.org/openstack/ansible-role-systemd_service
   scm: git
-  version: master
+  version: stable/rocky

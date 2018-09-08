@@ -276,3 +276,4 @@ done
 compress_files
 
 echo "#### END LOG COLLECTION ###"
+

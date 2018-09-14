@@ -166,7 +166,7 @@ OSA_INTEGRATED_REPO_HOME="${TESTING_HOME}/src/git.openstack.org/openstack/openst
 if [[ -d "${OSA_INTEGRATED_REPO_HOME}" ]]; then
   PIP_OPTS+=" --constraint ${OSA_INTEGRATED_REPO_HOME}/global-requirement-pins.txt"
 else
-  PIP_OPTS+=" --constraint https://git.openstack.org/cgit/openstack/openstack-ansible/plain/global-requirement-pins.txt"
+  PIP_OPTS+=" --constraint https://git.openstack.org/cgit/openstack/openstack-ansible/plain/global-requirement-pins.txt?h=stable/rocky"
 fi
 
 # We add OpenStack's upper constraints last, as we want all our own
@@ -176,7 +176,7 @@ REQS_REPO_HOME="${TESTING_HOME}/src/git.openstack.org/openstack/requirements"
 if [[ -d "${REQS_REPO_HOME}" ]]; then
   PIP_OPTS+=" --constraint ${REQS_REPO_HOME}/upper-constraints.txt"
 else
-  PIP_OPTS+=" --constraint ${UPPER_CONSTRAINTS_FILE:-https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt}"
+  PIP_OPTS+=" --constraint ${UPPER_CONSTRAINTS_FILE:-https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=stable/rocky}"
 fi
 
 # Install ARA from source if running in ARA gate, otherwise install from PyPi

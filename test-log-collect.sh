@@ -163,6 +163,7 @@ function find_files {
     ! -name "*.gz" \
     ! -name '*.html' \
     ! -name '*.subunit' \
+    ! -name "*.journal" \
     ! -name 'ansible.sqlite'
 }
 

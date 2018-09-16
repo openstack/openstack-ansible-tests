@@ -14,10 +14,10 @@
 # limitations under the License.
 
 # Prepare the user ssh keys
-- include: test-prepare-keys.yml
+- import_playbook: test-prepare-keys.yml
 
 # Prepare the host
-- include: test-prepare-host.yml
+- import_playbook: test-prepare-host.yml
 
 # Prepare the containers
-- include: test-prepare-containers.yml
+- import_playbook: test-prepare-containers.yml

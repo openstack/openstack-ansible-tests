@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include: test-setup-swifthosts.yml
+- import_playbook: test-setup-swifthosts.yml
 
 - name: Playbook for deploying swift
   hosts: "{{ swift_groups | default('swift_all:swift_remote_all') }}"

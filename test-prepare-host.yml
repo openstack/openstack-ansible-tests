@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include: test-repo-setup.yml
+- import_playbook: test-repo-setup.yml
 
 - name: Playbook for configuring hosts
   hosts: localhost
@@ -26,7 +26,7 @@
   vars_files:
     - test-vars.yml
   tasks:
-    - include: "common-tasks/test-set-nodepool-vars.yml"
+    - include_tasks: "common-tasks/test-set-nodepool-vars.yml"
 
     - name: Clear iptables rules
       shell: "{{ playbook_dir }}/iptables-clear.sh"
@@ -83,7 +83,7 @@
         openrc_openstack_client_config_dir_owner: "root"
         openrc_clouds_yml_file_owner: "root"
 
-- include: test-install-openstack-hosts.yml
+- import_playbook: test-install-openstack-hosts.yml
 
 - name: Playbook for configuring the LXC host
   hosts: localhost

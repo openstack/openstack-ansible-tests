@@ -225,7 +225,6 @@ neutron_provider_networks:
   network_types: "vxlan"
   network_vxlan_ranges: "1:1000"
 neutron_plugin_type: ml2.lxb
-neutron_metadata_checksum_fix: yes
 
 # Cinder specific settings
 cinder_backends_rbd_inuse: false

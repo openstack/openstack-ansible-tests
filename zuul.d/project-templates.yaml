@@ -39,3 +39,18 @@
         - openstack-ansible-upgrade-centos-7
         - openstack-ansible-upgrade-opensuse-423
         - openstack-ansible-upgrade-ubuntu-xenial
+
+- project-template:
+    name: openstack-ansible-role-distro_install-jobs
+    check:
+      jobs:
+        - openstack-ansible-functional-distro_install-centos-7
+        - openstack-ansible-functional-distro_install-opensuse-150
+        - openstack-ansible-functional-distro_install-opensuse-423
+        - openstack-ansible-functional-distro_install-ubuntu-bionic
+    gate:
+      jobs:
+        - openstack-ansible-functional-distro_install-centos-7
+        - openstack-ansible-functional-distro_install-opensuse-150
+        - openstack-ansible-functional-distro_install-opensuse-423
+        - openstack-ansible-functional-distro_install-ubuntu-bionic

@@ -164,7 +164,7 @@ function find_files {
     ! -name '*.html' \
     ! -name '*.subunit' \
     ! -name "*.journal" \
-    ! -name 'ansible.sqlite'
+    ! -name 'ansible.sqlite' | grep -v 'stackviz'
 }
 
 function rename_files {

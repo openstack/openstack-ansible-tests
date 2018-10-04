@@ -113,7 +113,15 @@ function repo_information {
     elif eval sudo ${lxc_cmd} which apt-get &> /dev/null; then
         eval sudo ${lxc_cmd} apt-cache policy | grep http | awk '{print $1" "$2" "$3}' | sort -u > "${WORKING_DIR}/logs/ubuntu-apt-repolist-${1}.txt" || true
         eval sudo ${lxc_cmd} apt list --installed > "${WORKING_DIR}/logs/ubuntu-apt-list-installed-${1}.txt" || true
+
+    # Gentoo package debugging
+    elif eval sudo ${lxc_cmd} which emerge &> /dev/null; then
+        # list installed packages
+        eval sudo ${lxc_cmd} equery list "*" > "${WORKING_DIR}/logs/gentoo-portage-list-installed-${1}.txt" || true
+        # list only packages called for install (not dependancies)
+        eval sudo ${lxc_cmd} cat /var/lib/portage/world > "${WORKING_DIR}/logs/gentoo-portage-list-manual-installed-${1}.txt" || true
     fi
+
 }
 
 function store_artifacts {

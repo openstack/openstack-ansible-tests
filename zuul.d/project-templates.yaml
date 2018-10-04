@@ -9,12 +9,16 @@
             voting: false
         - openstack-ansible-functional-opensuse-423:
             voting: false
+        - openstack-ansible-functional-gentoo-17-0-systemd:
+            voting: false
         - openstack-ansible-functional-ubuntu-bionic
     gate:
       jobs:
         - openstack-ansible-linters
         - openstack-ansible-functional-centos-7
         # - openstack-ansible-functional-opensuse-423
+        - openstack-ansible-functional-gentoo-17-0-systemd:
+            voting: false
         - openstack-ansible-functional-ubuntu-bionic
     experimental:
       jobs:
@@ -29,6 +33,8 @@
         - openstack-ansible-upgrade-opensuse-150:
             voting: false
         - openstack-ansible-upgrade-opensuse-423
+        - openstack-ansible-upgrade-gentoo-17-0-systemd:
+            voting: false
         # TODO(mnaser): Make this voting once we release Rocky
         - openstack-ansible-upgrade-ubuntu-bionic:
             voting: false
@@ -37,6 +43,8 @@
       jobs:
         - openstack-ansible-upgrade-centos-7
         # - openstack-ansible-upgrade-opensuse-423
+        - openstack-ansible-upgrade-gentoo-17-0-systemd:
+            voting: false
         - openstack-ansible-upgrade-ubuntu-xenial
 
 - project-template:
@@ -51,8 +59,12 @@
             voting: false
         - openstack-ansible-functional-distro_install-opensuse-423:
             voting: false
+        - openstack-ansible-functional-distro_install-gentoo-17-0-systemd:
+            voting: false
         - openstack-ansible-functional-distro_install-ubuntu-bionic:
             voting: false
     gate:
       jobs:
         - openstack-ansible-functional-distro_install-centos-7
+        - openstack-ansible-functional-distro_install-gentoo-17-0-systemd:
+            voting: false

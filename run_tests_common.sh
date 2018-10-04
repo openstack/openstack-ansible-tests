@@ -61,7 +61,8 @@ case "${ID,,}" in
         sudo apt-get update
         ;;
     gentoo)
-        sudo emaint-sync -A
+        pkg_list="app-misc/ca-certificates sys-apps/lsb-release dev-python/pyopenssl"
+        sudo emerge-webrsync
         ;;
     *)
         echo "Unsupported distribution: ${ID,,}"

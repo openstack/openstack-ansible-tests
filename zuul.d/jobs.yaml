@@ -185,6 +185,23 @@
       tox_env: distro_install
 
 - job:
+    name: openstack-ansible-upgrade-gentoo-17-0-systemd
+    parent: openstack-ansible-upgrade
+    nodeset: gentoo-17-0-systemd
+
+- job:
+    name: openstack-ansible-functional-gentoo-17-0-systemd
+    parent: openstack-ansible-functional
+    nodeset: gentoo-17-0-systemd
+
+- job:
+    name: openstack-ansible-functional-distro_install-gentoo-17-0-systemd
+    parent: openstack-ansible-functional
+    nodeset: gentoo-17-0-systemd
+    vars:
+      tox_env: distro_install
+
+- job:
     name: openstack-ansible-functional-centos-7
     parent: openstack-ansible-functional
     nodeset: centos-7

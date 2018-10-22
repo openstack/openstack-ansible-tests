@@ -30,6 +30,7 @@
 
     - name: Clear iptables rules
       shell: "{{ playbook_dir }}/iptables-clear.sh"
+      register: iptables_clear
       tags:
         - skip_ansible_lint
 
@@ -235,3 +236,12 @@
         - network_interfaces_rhel  is changed
         - item.alias is defined
       with_items: "{{ bridges }}"
+
+    - name: Trigger dnsmasq restart
+      command: /bin/true
+      changed_when:
+        - lxc_net_manage_iptables | bool
+        - iptables_clear is defined
+        - iptables_clear is changed
+      notify:
+        - Restart dnsmasq

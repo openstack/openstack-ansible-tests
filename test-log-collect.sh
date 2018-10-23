@@ -107,7 +107,7 @@ function repo_information {
     # SUSE package debugging
     elif eval sudo ${lxc_cmd} which zypper &>/dev/null; then
         eval sudo ${lxc_cmd} zypper lr -d > "${WORKING_DIR}/logs/suse-zypper-repolist-${1}.txt" || true
-        eval sudo ${lxc_cmd} zypper pa -i > "${WORKING_DIR}/logs/suse-zypper-list-installed-${1}.txt" || true
+        eval sudo ${lxc_cmd} zypper --disable-repositories pa -i > "${WORKING_DIR}/logs/suse-zypper-list-installed-${1}.txt" || true
 
     # Ubuntu package debugging
     elif eval sudo ${lxc_cmd} which apt-get &> /dev/null; then

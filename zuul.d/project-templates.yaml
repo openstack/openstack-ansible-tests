@@ -43,12 +43,15 @@
     check:
       jobs:
         - openstack-ansible-functional-distro_install-centos-7
+          # NOTE(hwoarang) SUSE and Ubuntu distro jobs remain non-voting
+          # on master branches. See
+          # http://eavesdrop.openstack.org/meetings/openstack_ansible_meeting/2018/openstack_ansible_meeting.2018-10-23-16.01.log.html#l-188
         - openstack-ansible-functional-distro_install-opensuse-150:
             voting: false
-        - openstack-ansible-functional-distro_install-opensuse-423
-        - openstack-ansible-functional-distro_install-ubuntu-bionic
+        - openstack-ansible-functional-distro_install-opensuse-423:
+            voting: false
+        - openstack-ansible-functional-distro_install-ubuntu-bionic:
+            voting: false
     gate:
       jobs:
         - openstack-ansible-functional-distro_install-centos-7
-        - openstack-ansible-functional-distro_install-opensuse-423
-        - openstack-ansible-functional-distro_install-ubuntu-bionic

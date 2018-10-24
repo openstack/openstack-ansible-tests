@@ -18,7 +18,7 @@
 external_lb_vip_address: 127.0.0.1
 internal_lb_vip_address: 127.0.0.1
 debug: true
-test_branch: "{{ lookup('env', 'TESTING_BRANCH') | default('master', true) }}"
+test_branch: "{{ lookup('env', 'TESTING_BRANCH') | default('stable/rocky', true) }}"
 
 ## Container destruction when testing repeatedly
 force_containers_destroy: True

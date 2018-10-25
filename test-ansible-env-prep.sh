@@ -44,7 +44,6 @@ export ANSIBLE_PLUGIN_DIR="${TESTING_HOME}/.ansible/plugins"
 export ANSIBLE_ROLE_DEP_DIR="${TESTING_HOME}/.ansible/roles"
 export ANSIBLE_ROLE_DIR="${TESTING_HOME}/.ansible/testing-role"
 export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
-export OSA_OPS_DIR="${WORKING_DIR}/openstack-ansible-ops"
 
 # Use pip opts to add options to the pip install command.
 # This can be used to tell it which index to use, etc.
@@ -108,18 +107,6 @@ if [[ ! -d "${ANSIBLE_PLUGIN_DIR}" ]]; then
     git clone \
         https://git.openstack.org/openstack/openstack-ansible-plugins \
         "${ANSIBLE_PLUGIN_DIR}"
-  fi
-fi
-
-if [[ ! -d "${OSA_OPS_DIR}" ]]; then
-  # The ops repo doesn't need a clone, we can just
-  # symlink it.
-  if [[ "${OSA_PROJECT_DIR}" == "openstack-ansible-ops" ]]; then
-    ln -s ${WORKING_DIR} "${OSA_OPS_DIR}"
-  else
-    git clone \
-        https://git.openstack.org/openstack/openstack-ansible-ops \
-        "${OSA_OPS_DIR}"
   fi
 fi
 

@@ -94,7 +94,7 @@
       Run lint tests for an OpenStack-Ansible project.
       Uses tox with the ``linters`` environment.
     timeout: 900 # 15 mins
-    nodeset: ubuntu-xenial
+    nodeset: ubuntu-bionic
     vars:
       tox_env: linters
 
@@ -205,11 +205,12 @@
       of the ``tox_env`` variable. The OpenStack-Ansible repo
       to execute the tests from must be specified in the
       ``osa_test_repo`` variable.
-    nodeset: ubuntu-xenial
+    nodeset: ubuntu-bionic
 
 - job:
     name: openstack-ansible-integrated-deploy-aio
     parent: openstack-ansible-deploy-aio
+    nodeset: ubuntu-bionic
     voting: false
     required-projects:
       - openstack/openstack-ansible
@@ -229,6 +230,12 @@
     voting: false
     vars:
       scenario: ceph
+
+- job:
+    name: openstack-ansible-python3-ubuntu-bionic
+    parent: openstack-ansible-functional-ubuntu-bionic
+    vars:
+      tox_env: func_py3
 
 - job:
     name: openstack-ansible-python3-ubuntu-xenial

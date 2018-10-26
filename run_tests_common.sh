@@ -35,28 +35,11 @@ fi
 
 ## Vars ----------------------------------------------------------------------
 
-# Set the source branch for upgrade tests
-# Be sure to change this whenever a new stable branch
-# is created. The checkout must always be N-1.
-UPGRADE_SOURCE_BRANCH=${UPGRADE_SOURCE_BRANCH:-'stable/queens'}
-
 # The bindep file contains the basic distribution packages
 # required in order to install pip, and ansible via pip.
 BINDEP_FILE=${BINDEP_FILE:-bindep.txt}
 
 ## Main ----------------------------------------------------------------------
-
-# If this test set includes an upgrade test, the
-# previous stable release tests repo must also be
-# cloned.
-# Note:
-# Dependent patches to the previous stable release
-# tests repo are not supported.
-if [[ ! -d "${COMMON_TESTS_PATH}/previous" ]]; then
-  git clone -b ${UPGRADE_SOURCE_BRANCH} \
-      https://git.openstack.org/openstack/openstack-ansible-tests \
-      ${COMMON_TESTS_PATH}/previous
-fi
 
 # Perform the initial distribution package install
 # to allow pip and bindep to work.

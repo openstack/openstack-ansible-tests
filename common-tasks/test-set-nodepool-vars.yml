@@ -42,7 +42,7 @@
         #               which is hashed to avoid cache going stale during CI.
         # TODO(mnaser): Share this with Puppet
         #               https://github.com/openstack/puppet-openstack-integration/blob/master/configure_facts.sh#L66-L71
-        export DLRN_BASE=${DLRN_BASE:-centos7-master/puppet-passed-ci}
+        export DLRN_BASE=${DLRN_BASE:-centos7-rocky/current-passed-ci}
         rdo_dlrn=`curl --silent ${NODEPOOL_RDO_PROXY}/${DLRN_BASE}/delorean.repo | grep baseurl | cut -d= -f2`
         if [[ -z "$rdo_dlrn" ]]; then
             echo "Failed to parse dlrn hash"

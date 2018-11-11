@@ -197,6 +197,10 @@ store_artifacts /var/log/ "${WORKING_DIR}/logs/host"
 # Store the ara sqlite database in the openstack-ci expected path
 store_artifacts "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/ara-report/"
 
+# Verify the integrity of the journal files but do not fail if one of them is not usable
+echo "Verifying journal files consistency..."
+find /var/log/journal/ -type f -name "*.journal" -exec bash -c 'sudo journalctl --file={} --verify || true' \;
+
 # Gather host etc artifacts
 for service in ${COMMON_ETC_LOG_NAMES}; do
     store_artifacts "/etc/${service}" "${WORKING_DIR}/logs/etc/host/"

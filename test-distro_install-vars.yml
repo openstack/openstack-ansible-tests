@@ -13,12 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Note(odyssey4me):
+# Ubuntu does not publish tempest plugin packages. They do
+# all their testing using the source-based installation of
+# tempest. As such, for all ubuntu distribution tests we
+# force the use of the source install for tempest.
+tempest_install_method: "{{ (ansible_distribution | lower == 'ubuntu') | ternary('source', 'distro') }}"
+
 #
 # Use $role_install_method=distro so we can test the combined
 # result. We add all the os_* roles here even though some of them
 # may not have been converted to support the dual installation method.
 # This is effectively the result of the following command
-# ./gen-projects-list.sh | grep -o 'os_.*' | cut -d "_" -f 2  | xargs -I {} echo {}_install_method: distro
+# ./gen-projects-list.sh | grep -o 'os_.*' | grep -v 'os_tempest' | cut -d "_" -f 2  | xargs -I {} echo {}_install_method: distro
 #
 almanach_install_method: distro
 aodh_install_method: distro
@@ -51,7 +58,6 @@ sahara_install_method: distro
 searchlight_install_method: distro
 swift_install_method: distro
 tacker_install_method: distro
-tempest_install_method: distro
 trove_install_method: distro
 watcher_install_method: distro
 zaqar_install_method: distro

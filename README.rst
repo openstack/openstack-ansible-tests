@@ -79,3 +79,11 @@ For example, a Nova setup may look like this:
         veth_peer: "eth12"
         alias: "10.1.2.1"
 
+Documentation for the project can be found at:
+  https://docs.openstack.org/openstack-ansible-tests/latest/
+
+Release notes for the project can be found at:
+  https://docs.openstack.org/releasenotes/openstack-ansible-tests/
+
+The project home is at:
+  https://launchpad.net/openstack-ansible

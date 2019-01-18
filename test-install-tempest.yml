@@ -25,7 +25,20 @@
   become: True
   gather_facts: true
   any_errors_fatal: true
-  roles:
-    - role: "{{ tempest_rolename | default('os_tempest') }}"
   vars_files:
     - test-vars.yml
+  tasks:
+    - name: Setup clouds.yaml for the root user
+      include_role:
+        name: openstack_openrc
+        private: yes
+      vars:
+        openrc_file_dest: "/root/openrc"
+        openrc_file_owner: "root"
+        openrc_openstack_client_config_dir_dest: "/root/.config/openstack"
+        openrc_openstack_client_config_dir_owner: "root"
+        openrc_clouds_yml_file_owner: "root"
+
+    - name: Include Tempest role
+      include_role:
+        name: "{{ tempest_rolename | default('os_tempest') }}"

@@ -199,7 +199,7 @@
   post_tasks:
     - name: (RE)Gather facts post setup
       setup:
-        gather_subset: "network,hardware,virtual"
+        gather_subset: "all"
 
     - name: Trigger dnsmasq restart
       command: /bin/true

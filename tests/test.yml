@@ -30,3 +30,6 @@
 
 # Install Tempest
 - import_playbook: common/test-install-tempest.yml
+
+# Gather port status
+- import_playbook: common/listening-port-report.yml

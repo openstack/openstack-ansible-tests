@@ -356,6 +356,7 @@ tempest_venv_download: False
 # as the other venvs (with the tag 'testing')
 tempest_venv_bin: "/opt/tempest-testing/bin"
 tempest_public_subnet_cidr: 10.1.3.0/24
+tempest_public_subnet_allocation_pools: "10.1.3.150-10.1.3.200"
 tempest_log_dir: "/var/log/"
 tempest_main_group: utility_all
 tempest_run: yes

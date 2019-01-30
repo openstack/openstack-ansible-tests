@@ -107,9 +107,14 @@
   # such, we use a local connection and become.
   connection: local
   become: yes
+  vars:
+    iptool_path:
+      debian: "/sbin/ip"
+      gentoo: "/bin/ip"
+      redhat: "/usr/sbin/ip"
+      suse: "/bin/ip"
   vars_files:
     - test-vars.yml
-
   tasks:
     - name: Run the systemd-networkd role
       include_role:
@@ -176,15 +181,15 @@
               {% set veths = ['-/sbin/ethtool -K ' + (bootstrap_host_public_interface | default(ansible_default_ipv4['alias'])) + ' gso off sg off tso off tx off'] %}
               {% for interface in (bridges | default([])) %}
               {%   if interface is string %}
-              {%     set _ = veths.append('-/usr/sbin/ip link set ' + interface + ' up') %}
+              {%     set _ = veths.append('-' + iptool_path[ansible_os_family | lower] + ' link set ' + interface + ' up') %}
               {%     set _ = veths.append('-/sbin/ethtool -K ' + interface + ' gso off sg off tso off tx off') %}
               {%   else %}
               {%     set interface_name = (interface.name | default('br-mgmt')) %}
-              {%     set _ = veths.append('-/usr/sbin/ip link set ' + interface_name + ' up') %}
+              {%     set _ = veths.append('-' + iptool_path[ansible_os_family | lower] + ' link set ' + interface_name + ' up') %}
               {%     set _ = veths.append('-/sbin/ethtool -K ' + interface_name + ' gso off sg off tso off tx off') %}
               {%     if interface.veth_peer is defined %}
-              {%       set _ = veths.append('-/usr/sbin/ip link set ' + interface_name + '-veth up') %}
-              {%       set _ = veths.append('-/usr/sbin/ip link set ' + interface.veth_peer + ' up') %}
+              {%       set _ = veths.append('-' + iptool_path[ansible_os_family | lower] + ' link set ' + interface_name + '-veth up') %}
+              {%       set _ = veths.append('-' + iptool_path[ansible_os_family | lower] + ' link set ' + interface.veth_peer + ' up') %}
               {%       set _ = veths.append('-/sbin/ethtool -K ' + interface.veth_peer + ' gso off sg off tso off tx off') %}
               {%     endif %}
               {%   endif %}

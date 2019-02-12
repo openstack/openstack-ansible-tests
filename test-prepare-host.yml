@@ -99,6 +99,15 @@
   roles:
     - role: "lxc_hosts"
 
+  post_tasks:
+    - name: Trigger dnsmasq restart
+      command: /bin/true
+      changed_when:
+        - (lxc_net_manage_iptables is defined) and (lxc_net_manage_iptables | bool)
+        - (iptables_clear is defined) and (iptables_clear is changed)
+      notify:
+      - Restart dnsmasq
+
 - name: Playbook for configuring test host networking
   hosts: localhost
   # This set of tasks runs against localhost
@@ -205,14 +214,6 @@
     - name: (RE)Gather facts post setup
       setup:
         gather_subset: "all"
-
-    - name: Trigger dnsmasq restart
-      command: /bin/true
-      changed_when:
-        - (lxc_net_manage_iptables is defined) and (lxc_net_manage_iptables | bool)
-        - (iptables_clear is defined) and (iptables_clear is changed)
-      notify:
-        - Restart dnsmasq
 
     - name: Set interfaces fact
       set_fact:

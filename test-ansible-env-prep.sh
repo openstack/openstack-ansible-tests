@@ -45,6 +45,16 @@ export ANSIBLE_ROLE_DEP_DIR="${TESTING_HOME}/.ansible/roles"
 export ANSIBLE_ROLE_DIR="${TESTING_HOME}/.ansible/testing-role"
 export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
 
+# The place where zuul clones dependent repositories to
+ZUUL_PLUGINS_CLONE_LOCATION="/home/zuul/src/git.openstack.org/openstack/openstack-ansible-plugins"
+
+# Use .gitreview as the key to determine the appropriate
+# branch to clone for tests.
+TESTING_BRANCH=$(awk -F'=' '/defaultbranch/ {print $2}' "${WORKING_DIR}/.gitreview")
+if [[ "${TESTING_BRANCH}" == "" ]]; then
+  TESTING_BRANCH="master"
+fi
+
 # Use pip opts to add options to the pip install command.
 # This can be used to tell it which index to use, etc.
 export PIP_OPTS=${PIP_OPTS:-""}
@@ -103,8 +113,18 @@ if [[ ! -d "${ANSIBLE_PLUGIN_DIR}" ]]; then
   # symlink it.
   if [[ "${OSA_PROJECT_NAME}" == "openstack-ansible-plugins" ]]; then
     ln -s ${WORKING_DIR} "${ANSIBLE_PLUGIN_DIR}"
+
+  # In zuul v3 any dependent repository is placed into
+  # /home/zuul/src/git.openstack.org, so we check to see
+  # if there is a tests checkout there already. If so, we
+  # symlink that and use it.
+  elif [[ -d "${ZUUL_PLUGINS_CLONE_LOCATION}" ]]; then
+    ln -s "${ZUUL_PLUGINS_CLONE_LOCATION}" "${ANSIBLE_PLUGIN_DIR}"
+
+  # Otherwise we're clearly not in zuul or using a previously setup
+  # repo in some way, so just clone it from upstream.
   else
-    git clone \
+    git clone -b "${TESTING_BRANCH}" \
         https://git.openstack.org/openstack/openstack-ansible-plugins \
         "${ANSIBLE_PLUGIN_DIR}"
   fi

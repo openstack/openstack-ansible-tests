@@ -153,7 +153,7 @@
           {%       set _ = systemd_network_networks.append({'interface': interface_name, 'netmask': (interface.netmask | default('255.255.255.0')), 'config_overrides': {'Network': {'Address': {(interface.ip_addr | default('10.1.0.1')): null, (interface.alias | string): null}}}}) %}
           {%     else %}
           {%       set _ = systemd_network_networks.append({'interface': 'dummy-' + interface_name, 'bridge': interface_name}) %}
-          {%       set _ = systemd_network_networks.append({'interface': interface_name, 'address': (interface.ip_addr | default('10.1.0.1')), 'netmask': (interface.netmask | default('255.255.255.0'))}) %}
+          {%       set _ = systemd_network_networks.append({'interface': interface_name, 'address': (interface.ip_addr | default('10.1.0.1')), 'netmask': (interface.netmask | default('255.255.255.0')), 'ipforward': true}) %}
           {%     endif %}
           {%     if interface.veth_peer is defined %}
           {%       set _ = systemd_network_networks.append({'interface': interface.veth_peer + '-veth', 'bridge': interface_name}) %}

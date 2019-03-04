@@ -55,6 +55,7 @@ COMMON_ETC_LOG_NAMES="almanach \
                       karbor \
                       keystone \
                       magnum \
+                      manila \
                       memcached \
                       molteniron \
                       monasca \

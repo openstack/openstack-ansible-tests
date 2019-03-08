@@ -5,24 +5,18 @@
       jobs:
         - openstack-ansible-linters
         - openstack-ansible-functional-centos-7
-        - openstack-ansible-functional-opensuse-150:
-            voting: false
-        - openstack-ansible-functional-opensuse-423:
-            voting: false
-        - openstack-ansible-functional-gentoo-17-0-systemd:
-            voting: false
         - openstack-ansible-functional-ubuntu-bionic
     gate:
       jobs:
         - openstack-ansible-linters
         - openstack-ansible-functional-centos-7
-        # - openstack-ansible-functional-opensuse-423
-        - openstack-ansible-functional-gentoo-17-0-systemd:
-            voting: false
         - openstack-ansible-functional-ubuntu-bionic
     experimental:
       jobs:
         - openstack-ansible-integrated-deploy-aio
+        - openstack-ansible-functional-opensuse-150
+        - openstack-ansible-functional-opensuse-423
+        - openstack-ansible-functional-gentoo-17-0-systemd
 
 - project-template:
     name: openstack-ansible-upgrade
@@ -30,41 +24,33 @@
       jobs:
         - openstack-ansible-upgrade-centos-7
         # TODO(mnaser): Make this voting once we release Rocky
-        - openstack-ansible-upgrade-opensuse-150:
-            voting: false
-        - openstack-ansible-upgrade-opensuse-423
-        - openstack-ansible-upgrade-gentoo-17-0-systemd:
-            voting: false
-        # TODO(mnaser): Make this voting once we release Rocky
         - openstack-ansible-upgrade-ubuntu-bionic:
             voting: false
         - openstack-ansible-upgrade-ubuntu-xenial
     gate:
       jobs:
         - openstack-ansible-upgrade-centos-7
-        # - openstack-ansible-upgrade-opensuse-423
-        - openstack-ansible-upgrade-gentoo-17-0-systemd:
-            voting: false
         - openstack-ansible-upgrade-ubuntu-xenial
+    experimental:
+      jobs:
+        - openstack-ansible-upgrade-opensuse-150
+        - openstack-ansible-upgrade-opensuse-423
+        - openstack-ansible-upgrade-gentoo-17-0-systemd
 
 - project-template:
     name: openstack-ansible-role-distro_install-jobs
     check:
       jobs:
         - openstack-ansible-functional-distro_install-centos-7
-          # NOTE(hwoarang) SUSE and Ubuntu distro jobs remain non-voting
-          # on master branches. See
-          # http://eavesdrop.openstack.org/meetings/openstack_ansible_meeting/2018/openstack_ansible_meeting.2018-10-23-16.01.log.html#l-188
-        - openstack-ansible-functional-distro_install-opensuse-150:
-            voting: false
-        - openstack-ansible-functional-distro_install-opensuse-423:
-            voting: false
-        - openstack-ansible-functional-distro_install-gentoo-17-0-systemd:
-            voting: false
-        - openstack-ansible-functional-distro_install-ubuntu-bionic:
-            voting: false
     gate:
       jobs:
         - openstack-ansible-functional-distro_install-centos-7
-        - openstack-ansible-functional-distro_install-gentoo-17-0-systemd:
-            voting: false
+    experimental:
+      jobs:
+        # NOTE(hwoarang) SUSE and Ubuntu distro jobs remain non-voting
+        # on master branches. See
+        # http://eavesdrop.openstack.org/meetings/openstack_ansible_meeting/2018/openstack_ansible_meeting.2018-10-23-16.01.log.html#l-188
+        - openstack-ansible-functional-distro_install-opensuse-150
+        - openstack-ansible-functional-distro_install-opensuse-423
+        - openstack-ansible-functional-distro_install-gentoo-17-0-systemd
+        - openstack-ansible-functional-distro_install-ubuntu-bionic

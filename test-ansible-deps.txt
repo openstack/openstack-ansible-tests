@@ -15,3 +15,6 @@ ansible-lint==3.4.21
 
 # Used for the ip filter within ansible
 netaddr
+
+# Used for the ansible openssl_* modules
+pyOpenSSL

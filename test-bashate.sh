@@ -49,4 +49,4 @@ grep --recursive --binary-files=without-match \
      --files-with-match '^.!.*\(ba\)\?sh$' \
      --exclude-dir .tox \
      --exclude-dir .git \
-     "${WORKING_DIR}" | xargs bashate --error . --verbose --ignore=E003,E006,E040
+     "${WORKING_DIR}" | xargs -n1 bashate --error . --verbose --ignore=E003,E006,E040

@@ -145,26 +145,6 @@
     nodeset: ubuntu-xenial
 
 - job:
-    name: openstack-ansible-upgrade-opensuse-423
-    parent: openstack-ansible-upgrade
-    nodeset: opensuse-423
-    voting: false
-
-- job:
-    name: openstack-ansible-functional-opensuse-423
-    parent: openstack-ansible-functional
-    nodeset: opensuse-423
-    voting: false
-
-- job:
-    name: openstack-ansible-functional-distro_install-opensuse-423
-    parent: openstack-ansible-functional
-    nodeset: opensuse-423
-    voting: false
-    vars:
-      tox_env: distro_install
-
-- job:
     name: openstack-ansible-upgrade-opensuse-150
     parent: openstack-ansible-upgrade
     nodeset: opensuse-150

@@ -1,5 +1,14 @@
 ---
 - project-template:
+    name: openstack-ansible-linters
+    check:
+      jobs:
+        - openstack-ansible-linters
+    gate:
+      jobs:
+        - openstack-ansible-linters
+
+- project-template:
     name: openstack-ansible-role-jobs
     check:
       jobs:

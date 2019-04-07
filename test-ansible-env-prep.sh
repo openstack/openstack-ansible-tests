@@ -255,8 +255,14 @@ setup_ara
 # Ensure that SElinux bindings are linked into the venv
 source /etc/os-release || source /usr/lib/os-release
 if [[ ${ID,,} =~ (centos|rhel|fedora) ]]; then
+  if [ "${ID}" == "fedora" ]; then
+    SELINUX_PKG="python2-libselinux"
+  else
+    SELINUX_PKG="libselinux-python"
+  fi
+
   PYTHON_FOLDER=$(find ${VIRTUAL_ENV}/lib -maxdepth 1 -type d -name "python*")
-  SELINUX_FOLDER=$(rpm -ql libselinux-python | egrep '^.*python2.7.*/(site|dist)-packages/selinux$')
+  SELINUX_FOLDER=$(rpm -ql ${SELINUX_PKG} | egrep '^.*python2.7.*/(site|dist)-packages/selinux$')
   echo "RHEL variant found. Linking ${PYTHON_FOLDER}/site-packages/selinux to ${SELINUX_FOLDER}..."
   ln -sfn ${SELINUX_FOLDER} ${PYTHON_FOLDER}/site-packages/selinux
 fi

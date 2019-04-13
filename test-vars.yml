@@ -98,6 +98,11 @@ oslomsg_rpc_servers: "{{ rabbitmq_servers }}"
 oslomsg_rpc_use_ssl: "{{ rabbitmq_use_ssl }}"
 oslomsg_rpc_host_group: "{{ test_rabbitmq_group }}"
 oslomsg_rpc_password: "{{ rabbitmq_password }}"
+oslomsg_rpc_policies:
+  - name: "HA"
+    pattern: '^(?!(amq\.)|(.*_fanout_)|(reply_)).*'
+    priority: 0
+    tags: "ha-mode=all"
 
 # Oslo Messaging Notify Settings
 oslomsg_notify_transport: rabbit
@@ -106,6 +111,11 @@ oslomsg_notify_servers: "{{ rabbitmq_servers }}"
 oslomsg_notify_use_ssl: "{{ rabbitmq_use_ssl }}"
 oslomsg_notify_host_group: "{{ test_rabbitmq_group }}"
 oslomsg_notify_password: "{{ rabbitmq_password }}"
+oslomsg_notify_policies:
+  - name: "HA"
+    pattern: '^(?!(amq\.)|(.*_fanout_)|(reply_)).*'
+    priority: 0
+    tags: "ha-mode=all"
 
 # Memcache Settings
 memcached_listen: "{{ test_memcached_host }}"

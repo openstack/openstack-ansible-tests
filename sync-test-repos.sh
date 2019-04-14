@@ -116,7 +116,7 @@ copy_files() {
 
 # Do not change these files unless you know what you are doing
 declare -ra files_to_sync=(run_tests.sh bindep.txt Vagrantfile tests/tests-repo-clone.sh .gitignore sync/tasks/*)
-declare -r  openstack_git_url="git://git.openstack.org"
+declare -r  openstack_git_url="https://git.openstack.org"
 
 excluded_projects=
 dry_run=false

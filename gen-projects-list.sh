@@ -70,8 +70,7 @@ excluded_projects="$(echo ${excluded_projects} | tr ' ' '\n')"
 # The output should only contain a list of projects or an empty string.
 # Anything else will probably make the CI bots to fail.
 
-curl --retry 10 -s --fail http://git.openstack.org/cgit | grep -o \
-    "openstack/openstack-ansible-[[:alnum:]_-]*" | \
+ssh -p 29418 proposal-bot@review.opendev.org gerrit ls-projects --prefix openstack/openstack-ansible- | \
     grep -v -F "${excluded_projects}" | uniq | sort -n
 
 for x in ${extra_included_projects[@]}; do

@@ -139,4 +139,4 @@
     homedir: "{{ lookup('env', 'TESTING_HOME') }}"
     role_file: "{{ lookup('env', 'ANSIBLE_ROLE_REQUIREMENTS_PATH') }}"
     osa_roles: "{{ lookup('file', role_file) | from_yaml }}"
-    zuul_git_src_dir: "/home/zuul/src/git.openstack.org"
+    zuul_git_src_dir: "/home/zuul/src/opendev.org"

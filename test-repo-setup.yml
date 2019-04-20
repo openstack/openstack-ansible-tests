@@ -31,7 +31,7 @@
     #
     # <user home directory>/src/<git organisation>/<repo>
     #
-    # eg: /home/zuul/src/git.openstack.org/keystone
+    # eg: /home/zuul/src/opendev.org/keystone
     #     /home/zuul/src/github.com/projectcalico/felix
     #
     - name: Check for repositories that are cloned in the repos directory

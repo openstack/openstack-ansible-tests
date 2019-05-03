@@ -105,7 +105,7 @@
               {%- for role in osa_roles %}
               {%-   if (role['name'] | match('os_previous_.*')) or
                        (role['name'] | match('previous_.*')) or
-                       (role['src'] | regex_replace('https://git.openstack.org/', '') not in zuul_src_repo_list) %}
+                       (role['src'] | regex_replace('https://(?:git.openstack.org|opendev.org)/', '') not in zuul_src_repo_list) %}
               {%-       set _ = filtered_role_list.append(role) %}
               {%-   endif %}
               {%- endfor %}
@@ -139,4 +139,4 @@
     homedir: "{{ lookup('env', 'TESTING_HOME') }}"
     role_file: "{{ lookup('env', 'ANSIBLE_ROLE_REQUIREMENTS_PATH') }}"
     osa_roles: "{{ lookup('file', role_file) | from_yaml }}"
-    zuul_git_src_dir: "/home/zuul/src/git.openstack.org"
+    zuul_git_src_dir: "/home/zuul/src/opendev.org"

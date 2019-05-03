@@ -104,7 +104,7 @@
               {%- for role in osa_roles %}
               {%-   if (role['name'] | match('os_previous_.*')) or
                        (role['name'] | match('previous_.*')) or
-                       (role['src'] | regex_replace('https://git.openstack.org/', '') not in zuul_src_repo_list) %}
+                       (role['src'] | regex_replace('https://(?:git.openstack.org|opendev.org)/', '') not in zuul_src_repo_list) %}
               {%-       set _ = filtered_role_list.append(role) %}
               {%-   endif %}
               {%- endfor %}

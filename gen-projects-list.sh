@@ -17,7 +17,7 @@
 # Get list of all the maintained OpenStack Ansible projects
 
 # 'exclude_projects' variable should contain all the OSA projects
-# listed in https://git.openstack.org/cgit/ but should be excluded
+# listed in https://opendev.org/ but should be excluded
 # from the generated list for various reasons (ie unmaintained,
 # not applicable etc)
 

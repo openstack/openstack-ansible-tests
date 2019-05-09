@@ -170,8 +170,7 @@ nova_api_container_mysql_password: "SuperSecrete"
 nova_glance_api_servers: "http://{{ test_glance_host }}:9292"
 nova_container_mysql_password: "SuperSecrete"
 nova_developer_mode: true
-# pinned to before the placement API removal
-nova_git_install_branch: e4857b98573bb5b50797298886399c5c37ab3eba # HEAD as of 29.03.2019
+nova_git_install_branch: "{{ test_branch }}"
 nova_keystone_auth_plugin: password
 nova_management_address: "{{ ansible_host }}"
 nova_metadata_port: 8775

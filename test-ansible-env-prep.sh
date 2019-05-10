@@ -50,9 +50,9 @@ ZUUL_PLUGINS_CLONE_LOCATION="/home/zuul/src/git.openstack.org/openstack/openstac
 
 # Use .gitreview as the key to determine the appropriate
 # branch to clone for tests.
-TESTING_BRANCH=$(awk -F'=' '/defaultbranch/ {print $2}' "${WORKING_DIR}/.gitreview")
+export TESTING_BRANCH=$(awk -F'=' '/defaultbranch/ {print $2}' "${WORKING_DIR}/.gitreview")
 if [[ "${TESTING_BRANCH}" == "" ]]; then
-  TESTING_BRANCH="master"
+  export TESTING_BRANCH="master"
 fi
 
 # Use pip opts to add options to the pip install command.
@@ -60,6 +60,7 @@ fi
 export PIP_OPTS=${PIP_OPTS:-""}
 
 echo "TESTING_HOME: ${TESTING_HOME}"
+echo "TESTING_BRANCH: ${TESTING_BRANCH}"
 echo "WORKING_DIR: ${WORKING_DIR}"
 echo "ROLE_NAME: ${ROLE_NAME}"
 echo "ANSIBLE_INVENTORY: ${ANSIBLE_INVENTORY}"

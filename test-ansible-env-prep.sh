@@ -46,7 +46,7 @@ export ANSIBLE_ROLE_DIR="${TESTING_HOME}/.ansible/testing-role"
 export COMMON_TESTS_PATH="${WORKING_DIR}/tests/common"
 
 # The place where zuul clones dependent repositories to
-ZUUL_PLUGINS_CLONE_LOCATION="/home/zuul/src/git.openstack.org/openstack/openstack-ansible-plugins"
+ZUUL_PLUGINS_CLONE_LOCATION="/home/zuul/src/opendev.org/openstack/openstack-ansible-plugins"
 
 # Use .gitreview as the key to determine the appropriate
 # branch to clone for tests.
@@ -116,7 +116,7 @@ if [[ ! -d "${ANSIBLE_PLUGIN_DIR}" ]]; then
     ln -s ${WORKING_DIR} "${ANSIBLE_PLUGIN_DIR}"
 
   # In zuul v3 any dependent repository is placed into
-  # /home/zuul/src/git.openstack.org, so we check to see
+  # /home/zuul/src/opendev.org, so we check to see
   # if there is a tests checkout there already. If so, we
   # symlink that and use it.
   elif [[ -d "${ZUUL_PLUGINS_CLONE_LOCATION}" ]]; then
@@ -126,7 +126,7 @@ if [[ ! -d "${ANSIBLE_PLUGIN_DIR}" ]]; then
   # repo in some way, so just clone it from upstream.
   else
     git clone -b "${TESTING_BRANCH}" \
-        https://git.openstack.org/openstack/openstack-ansible-plugins \
+        https://opendev.org/openstack/openstack-ansible-plugins \
         "${ANSIBLE_PLUGIN_DIR}"
   fi
 fi
@@ -171,25 +171,25 @@ PIP_OPTS+=" --constraint ${COMMON_TESTS_PATH}/test-ansible-deps.txt"
 
 # If Depends-On is used, the integrated repo will be cloned. We
 # therefore prefer a local copy over fetching it via a URL.
-OSA_INTEGRATED_REPO_HOME="${TESTING_HOME}/src/git.openstack.org/openstack/openstack-ansible"
+OSA_INTEGRATED_REPO_HOME="${TESTING_HOME}/src/opendev.org/openstack/openstack-ansible"
 if [[ -d "${OSA_INTEGRATED_REPO_HOME}" ]]; then
   PIP_OPTS+=" --constraint ${OSA_INTEGRATED_REPO_HOME}/global-requirement-pins.txt"
 else
-  PIP_OPTS+=" --constraint https://git.openstack.org/cgit/openstack/openstack-ansible/plain/global-requirement-pins.txt"
+  PIP_OPTS+=" --constraint https://opendev.org/openstack/openstack-ansible/raw/${TESTING_BRANCH}/global-requirement-pins.txt"
 fi
 
 # We add OpenStack's upper constraints last, as we want all our own
 # constraints to take precedence. If Depends-On is used, the requirements
 # repo will be cloned, so we prefer a local copy.
-REQS_REPO_HOME="${TESTING_HOME}/src/git.openstack.org/openstack/requirements"
+REQS_REPO_HOME="${TESTING_HOME}/src/opendev.org/openstack/requirements"
 if [[ -d "${REQS_REPO_HOME}" ]]; then
   PIP_OPTS+=" --constraint ${REQS_REPO_HOME}/upper-constraints.txt"
 else
-  PIP_OPTS+=" --constraint ${UPPER_CONSTRAINTS_FILE:-https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt}"
+  PIP_OPTS+=" --constraint ${UPPER_CONSTRAINTS_FILE:-https://opendev.org/openstack/requirements/raw/${TESTING_BRANCH}/upper-constraints.txt}"
 fi
 
 # Install ARA from source if running in ARA gate, otherwise install from PyPi
-ARA_SRC_HOME="${TESTING_HOME}/src/git.openstack.org/openstack/ara"
+ARA_SRC_HOME="${TESTING_HOME}/src/opendev.org/recordsansible/ara"
 if [[ -d "${ARA_SRC_HOME}" ]]; then
   PIP_OPTS+=" ${ARA_SRC_HOME}"
 else

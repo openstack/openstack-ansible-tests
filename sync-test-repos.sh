@@ -24,7 +24,7 @@
 # should be submitted to the openstack-ansible project on launchpad as usual.
 
 # This script has a partner which is executed by the proposal bot here:
-# https://git.openstack.org/cgit/openstack-infra/project-config/tree/playbooks/proposal/sync_openstack_ansible_common_files.sh
+# https://opendev.org/openstack/project-config/src/playbooks/proposal/sync_openstack_ansible_common_files.sh
 # Changes made to this file should be mirrored there when applicable.
 
 set -eu
@@ -116,7 +116,7 @@ copy_files() {
 
 # Do not change these files unless you know what you are doing
 declare -ra files_to_sync=(run_tests.sh bindep.txt Vagrantfile tests/tests-repo-clone.sh .gitignore sync/tasks/*)
-declare -r  openstack_git_url="git://git.openstack.org"
+declare -r  openstack_git_url="https://opendev.org"
 
 excluded_projects=
 dry_run=false

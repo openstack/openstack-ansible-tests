@@ -65,7 +65,6 @@
     - name: Setup clouds.yaml for the test user
       include_role:
         name: openstack_openrc
-        private: yes
       vars:
         openrc_file_dest: "{{ lookup('env', 'HOME') }}/openrc"
         openrc_file_owner: "{{ lookup('env', 'USER') }}"
@@ -76,7 +75,6 @@
     - name: Setup clouds.yaml for the root user
       include_role:
         name: openstack_openrc
-        private: yes
       vars:
         openrc_file_dest: "/root/openrc"
         openrc_file_owner: "root"
@@ -128,7 +126,6 @@
     - name: Run the systemd-networkd role
       include_role:
         name: systemd_networkd
-        private: true
       vars:
         systemd_interface_cleanup: true
         systemd_run_networkd: true
@@ -174,7 +171,6 @@
     - name: Run the systemd service role
       include_role:
         name: systemd_service
-        private: true
       vars:
         systemd_services:
           - service_name: "networking-post-up"

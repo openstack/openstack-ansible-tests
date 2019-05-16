@@ -31,7 +31,6 @@
     - name: Setup clouds.yaml for the root user
       include_role:
         name: openstack_openrc
-        private: yes
       vars:
         openrc_file_dest: "/root/openrc"
         openrc_file_owner: "root"

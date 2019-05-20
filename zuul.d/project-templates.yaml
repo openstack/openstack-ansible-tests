@@ -25,7 +25,7 @@
     experimental:
       jobs:
         - openstack-ansible-integrated-deploy-aio
-        - openstack-ansible-functional-opensuse-150
+        - openstack-ansible-functional-opensuse-15
         - openstack-ansible-functional-gentoo-17-0-systemd
 
 - project-template:
@@ -43,7 +43,7 @@
         - openstack-ansible-upgrade-ubuntu-xenial
     experimental:
       jobs:
-        - openstack-ansible-upgrade-opensuse-150
+        - openstack-ansible-upgrade-opensuse-15
         - openstack-ansible-upgrade-gentoo-17-0-systemd
 
 - project-template:
@@ -59,6 +59,6 @@
         # NOTE(hwoarang) SUSE and Ubuntu distro jobs remain non-voting
         # on master branches. See
         # http://eavesdrop.openstack.org/meetings/openstack_ansible_meeting/2018/openstack_ansible_meeting.2018-10-23-16.01.log.html#l-188
-        - openstack-ansible-functional-distro_install-opensuse-150
+        - openstack-ansible-functional-distro_install-opensuse-15
         - openstack-ansible-functional-distro_install-gentoo-17-0-systemd
         - openstack-ansible-functional-distro_install-ubuntu-bionic

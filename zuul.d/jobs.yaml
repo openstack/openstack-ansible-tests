@@ -150,19 +150,19 @@
     nodeset: ubuntu-xenial
 
 - job:
-    name: openstack-ansible-upgrade-opensuse-150
+    name: openstack-ansible-upgrade-opensuse-15
     parent: openstack-ansible-upgrade
     nodeset: opensuse-150
     voting: false
 
 - job:
-    name: openstack-ansible-functional-opensuse-150
+    name: openstack-ansible-functional-opensuse-15
     parent: openstack-ansible-functional
     nodeset: opensuse-150
     voting: false
 
 - job:
-    name: openstack-ansible-functional-distro_install-opensuse-150
+    name: openstack-ansible-functional-distro_install-opensuse-15
     parent: openstack-ansible-functional
     nodeset: opensuse-150
     voting: false

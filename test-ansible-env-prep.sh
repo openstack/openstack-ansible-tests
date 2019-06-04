@@ -193,7 +193,7 @@ ARA_SRC_HOME="${TESTING_HOME}/src/opendev.org/recordsansible/ara"
 if [[ -d "${ARA_SRC_HOME}" ]]; then
   PIP_OPTS+=" ${ARA_SRC_HOME}"
 else
-  PIP_OPTS+=" ara"
+  PIP_OPTS+=" ara<1.0.0"
 fi
 
 # Install all python packages

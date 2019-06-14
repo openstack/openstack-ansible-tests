@@ -103,8 +103,8 @@ if [[ ${#BINDEP_PKGS} > 0 ]]; then
             ;;
         ubuntu|debian)
             sudo apt-get update
-            DEBIAN_FRONTEND=noninteractive \
-                sudo apt-get -q --option "Dpkg::Options::=--force-confold" \
+            sudo DEBIAN_FRONTEND=noninteractive \
+                apt-get -q --option "Dpkg::Options::=--force-confold" \
                 --assume-yes install ${BINDEP_PKGS}
             ;;
         gentoo)

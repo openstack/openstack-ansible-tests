@@ -23,4 +23,3 @@ container_networks:
 physical_host: localhost
 properties:
   service_name: "{{ inventory_hostname }}"
-tempest_install_method: source

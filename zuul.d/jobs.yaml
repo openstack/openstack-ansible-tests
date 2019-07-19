@@ -128,27 +128,10 @@
     nodeset: ubuntu-bionic
 
 - job:
-    name: openstack-ansible-functional-ubuntu-xenial
-    parent: openstack-ansible-functional
-    nodeset: ubuntu-xenial
-
-- job:
-    name: openstack-ansible-functional-distro_install-ubuntu-xenial
-    parent: openstack-ansible-functional-ubuntu-xenial
-    vars:
-      tox_env: distro_install
-
-- job:
     name: openstack-ansible-functional-distro_install-ubuntu-bionic
     parent: openstack-ansible-functional-ubuntu-bionic
     vars:
       tox_env: distro_install
-
-- job:
-    name: openstack-ansible-upgrade-ubuntu-xenial
-    parent: openstack-ansible-upgrade
-    nodeset: ubuntu-xenial
-
 - job:
     name: openstack-ansible-upgrade-opensuse-15
     parent: openstack-ansible-upgrade
@@ -225,7 +208,7 @@
     description: |
       Run AIO tests for an OpenStack-Ansible project.
       This uses the integrated repository openstack-ansible
-      on Ubuntu Xenial with the scenario ``deploy`` ``aio``.
+      on Ubuntu Bionic with the scenario ``deploy`` ``aio``.
       Any project can then use
       the ``openstack-ansible-integrated-deploy-aio`` job in
       whatever pipeline is appropriate.
@@ -242,11 +225,5 @@
 - job:
     name: openstack-ansible-python3-ubuntu-bionic
     parent: openstack-ansible-functional-ubuntu-bionic
-    vars:
-      tox_env: func_py3
-
-- job:
-    name: openstack-ansible-python3-ubuntu-xenial
-    parent: openstack-ansible-functional-ubuntu-xenial
     vars:
       tox_env: func_py3

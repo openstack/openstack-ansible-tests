@@ -33,14 +33,11 @@
     check:
       jobs:
         - openstack-ansible-upgrade-centos-7
-        # TODO(mnaser): Make this voting once we release Rocky
-        - openstack-ansible-upgrade-ubuntu-bionic:
-            voting: false
-        - openstack-ansible-upgrade-ubuntu-xenial
+        - openstack-ansible-upgrade-ubuntu-bionic
     gate:
       jobs:
         - openstack-ansible-upgrade-centos-7
-        - openstack-ansible-upgrade-ubuntu-xenial
+          openstack-ansible-upgrade-ubuntu-bionic
     experimental:
       jobs:
         - openstack-ansible-upgrade-opensuse-15

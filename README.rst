@@ -85,6 +85,9 @@ Documentation for the project can be found at:
 Release notes for the project can be found at:
   https://docs.openstack.org/releasenotes/openstack-ansible-tests/
 
+The project source code repository is located at:
+  https://opendev.org/openstack/openstack-ansible-tests
+
 The project home is at:
   https://launchpad.net/openstack-ansible
 

@@ -5,7 +5,6 @@
       jobs:
         - openstack-ansible-linters
         - openstack-ansible-functional-centos-7
-        - openstack-ansible-functional-opensuse-423
         - openstack-ansible-functional-opensuse-150:
             voting: false
         - openstack-ansible-functional-ubuntu-bionic
@@ -14,7 +13,6 @@
       jobs:
         - openstack-ansible-linters
         - openstack-ansible-functional-centos-7
-        - openstack-ansible-functional-opensuse-423
         - openstack-ansible-functional-ubuntu-bionic
         - openstack-ansible-functional-ubuntu-xenial
     experimental:
@@ -29,7 +27,6 @@
         # TODO(mnaser): Make this voting once we release Rocky
         - openstack-ansible-upgrade-opensuse-150:
             voting: false
-        - openstack-ansible-upgrade-opensuse-423
         # TODO(mnaser): Make this voting once we release Rocky
         - openstack-ansible-upgrade-ubuntu-bionic:
             voting: false
@@ -37,5 +34,4 @@
     gate:
       jobs:
         - openstack-ansible-upgrade-centos-7
-        - openstack-ansible-upgrade-opensuse-423
         - openstack-ansible-upgrade-ubuntu-xenial

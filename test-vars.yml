@@ -201,6 +201,7 @@ nova_venv_bin: "/openstack/venvs/nova-{{ nova_venv_tag }}/bin"
 nova_venv_tag: "testing"
 nova_discover_hosts_in_cells_interval: '-1'
 # lxd specific vars
+nova_lxd_git_install_branch: "{{ test_branch }}"
 lxd_trust_password: "SuperSecrete"
 # nova placement vars
 nova_placement_service_password: "secrete"

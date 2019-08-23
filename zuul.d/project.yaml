@@ -19,9 +19,3 @@
       - check-requirements
       - publish-openstack-docs-pti
       - release-notes-jobs-python3
-    post:
-      jobs:
-        - propose-updates:
-            vars:
-              update_target: openstack-ansible-tests
-

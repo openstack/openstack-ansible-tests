@@ -370,6 +370,7 @@ tempest_service_available_neutron: "{{ ((groups['neutron_all'] is defined) and (
 tempest_service_available_nova: "{{ ((groups['nova_all'] is defined) and (groups['nova_all'] | length > 0)) }}"
 tempest_service_available_swift: "{{ ((groups['swift_all'] is defined) and (groups['swift_all'] | length > 0)) }}"
 tempest_service_available_zaqar: "{{ ((groups['zaqar_all'] is defined) and (groups['zaqar_all'] | length > 0)) }}"
+tempest_use_tempestconf: false
 
 # openrc settings
 openrc_os_password: "{{ keystone_auth_admin_password }}"

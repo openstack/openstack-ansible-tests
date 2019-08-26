@@ -280,13 +280,14 @@ sudo iptables -t nat -nvL > "${WORKING_DIR}/logs/iptables-nat.txt" || true
 repo_information host
 
 # Record the active interface configs
-for interface in $(ip -o link | awk -F':' '{print $2}'); do
-    if which ethtool &> /dev/null; then
-        ethtool -k ${interface} > "${WORKING_DIR}/logs/ethtool-${interface}-cfg.txt" || true
-    else
-        echo "No ethtool available" | tee -a "${WORKING_DIR}/logs/ethtool-${interface}-cfg.txt"
-    fi
-done
+if which ethtool &> /dev/null && which ip &> /dev/null; then
+    for interface in $(ip -o link | awk -F':' '{print $2}' | sed 's/@.*//g'); do
+        echo "ethtool -k ${interface}"
+        ethtool -k ${interface} > "${WORKING_DIR}/logs/ethtool-${interface}-${TS}-cfg.txt" || true
+    done
+else
+    echo "No ethtool or iproute2 available" | tee -a "${WORKING_DIR}/logs/ethtool-${TS}-${interface}-cfg.txt"
+fi
 
 # Compress the files gathered so that they do not take up too much space.
 compress_files

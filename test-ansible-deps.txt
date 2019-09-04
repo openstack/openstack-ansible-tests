@@ -10,9 +10,6 @@
 # The Ansible version used for testing
 ansible==2.7.10
 
-# The Ansible lint version used for lint tests
-ansible-lint==3.4.21
-
 # Used for the ip filter within ansible
 netaddr
 

@@ -68,7 +68,7 @@ lxc_net_dhcp_range: 10.100.100.2,10.100.100.99
 lxc_net_bridge: lxcbr0
 lxc_kernel_options:
   - { key: 'fs.inotify.max_user_instances', value: 1024 }
-lxc_config_key_apparmor: "{{ lookup('pipe', 'lxc-info --version || echo 2.0.0') is version_compare('3.0.0', 'lt') | ternary('aa_profile', 'apparmor.profile') }}"
+lxc_config_key_apparmor: "{{ lookup('pipe', 'lxc-info --version || echo 2.0.0') is version('3.0.0', 'lt') | ternary('aa_profile', 'apparmor.profile') }}"
 
 # Galera Settings
 galera_address: "{{ test_galera_host }}"

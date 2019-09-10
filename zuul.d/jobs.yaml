@@ -152,19 +152,19 @@
 - job:
     name: openstack-ansible-upgrade-opensuse-150
     parent: openstack-ansible-upgrade
-    nodeset: opensuse-150
+    nodeset: opensuse-15
     voting: false
 
 - job:
     name: openstack-ansible-functional-opensuse-150
     parent: openstack-ansible-functional
-    nodeset: opensuse-150
+    nodeset: opensuse-15
     voting: false
 
 - job:
     name: openstack-ansible-functional-distro_install-opensuse-150
     parent: openstack-ansible-functional
-    nodeset: opensuse-150
+    nodeset: opensuse-15
     voting: false
     vars:
       tox_env: distro_install

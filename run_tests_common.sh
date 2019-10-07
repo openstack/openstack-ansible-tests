@@ -57,6 +57,10 @@ case "${ID,,}" in
         pkg_list="python-devel redhat-lsb-core redhat-rpm-config yum-utils"
         ;;
     ubuntu|debian)
+        # NOTE(jrosser) remove this once infra debian images point to the upstream security repo
+        if `/bin/grep -q "stretch" /etc/os-release` && [ -f "/etc/apt/sources.list.d/security.list" ]; then
+          echo 'deb http://security.debian.org stretch/updates main contrib' | sudo tee /etc/apt/sources.list.d/security.list > /dev/null
+        fi
         pkg_list="python-dev lsb-release"
         sudo apt-get update
         ;;

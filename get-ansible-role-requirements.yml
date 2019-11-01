@@ -90,7 +90,7 @@
             zuul_src_repo_list: >
               {%- set filtered_repo_list = [] %}
               {%- for folder_path in zuul_src_folder['stdout_lines'] %}
-              {%-   if folder_path | match("^" ~ zuul_git_src_dir ~ "/openstack/(openstack-ansible-|ansible-role-){1}(?!tests).*") %}
+              {%-   if folder_path is match("^" ~ zuul_git_src_dir ~ "/openstack/(openstack-ansible-|ansible-role-){1}(?!tests).*") %}
               {%-     set repo_cleaned = folder_path | regex_replace('^' ~ zuul_git_src_dir ~ '/', '') %}
               {%-     set _ = filtered_repo_list.append(repo_cleaned) %}
               {%-   endif %}
@@ -102,8 +102,8 @@
             git_roles: >
               {%- set filtered_role_list = [] %}
               {%- for role in osa_roles %}
-              {%-   if (role['name'] | match('os_previous_.*')) or
-                       (role['name'] | match('previous_.*')) or
+              {%-   if (role['name'] is match('os_previous_.*')) or
+                       (role['name'] is match('previous_.*')) or
                        (role['src'] | regex_replace('https://(?:git.openstack.org|opendev.org)/', '') not in zuul_src_repo_list) %}
               {%-       set _ = filtered_role_list.append(role) %}
               {%-   endif %}
@@ -118,7 +118,7 @@
             force: yes
           with_items: "{{ zuul_src_repo_list }}"
           # Do not link the role we are testing
-          when: role_name == '' or not item | search(role_name)
+          when: role_name == '' or not item is search(role_name)
 
         - name: Clone the remaining git repos
           git:

@@ -465,3 +465,8 @@ haproxy_ssl: no
 openstack_user_kernel_options:
   - key: 'kernel.printk'
     value: '4 1 7 4'
+
+#python3
+## OpenStack service python version
+openstack_venv_python_executable: "{{ (ansible_distribution == 'CentOS') | ternary('python2', 'python3') }}"
+uwsgi_python_executable: "{{ openstack_venv_python_executable }}"

@@ -173,7 +173,7 @@ function find_files {
     ! -name '*.html' \
     ! -name '*.subunit' \
     ! -name "*.journal" \
-    ! -name 'ansible.sqlite' | grep -v 'stackviz'
+    ! -name 'ansible.sqlite' | egrep -v 'stackviz|ara-report'
 }
 
 function rename_files {
@@ -202,6 +202,18 @@ mkdir -vp "${WORKING_DIR}/logs"
 store_artifacts /openstack/log/ansible-logging/ "${WORKING_DIR}/logs/ansible"
 store_artifacts /openstack/log/ "${WORKING_DIR}/logs/openstack"
 store_artifacts /var/log/ "${WORKING_DIR}/logs/host"
+
+
+# Figure out the correct path for ARA
+# As this script is not run through tox, and the tox envs are all
+# different names, we need to try and find the right path to execute
+# ARA from.
+ARA_CMD="$(find ${WORKING_DIR}/.tox -path "*/bin/ara" -type f | head -n 1)"
+
+if [[ "${ARA_CMD}" != "" ]]; then
+  echo "Generating ARA static html report."
+  ${ARA_CMD} generate html "${WORKING_DIR}/logs/ara-report"
+fi
 
 # Store the ara sqlite database in the openstack-ci expected path
 store_artifacts "${TESTING_HOME}/.ara/ansible.sqlite" "${WORKING_DIR}/logs/ara-report/"
@@ -247,12 +259,6 @@ sudo chown -R $(whoami) "${WORKING_DIR}/logs/"
 # Rename all files gathered to have a .txt suffix so that the compressed
 # files are viewable via a web browser in OpenStack-CI.
 rename_files
-
-# Figure out the correct path for ARA
-# As this script is not run through tox, and the tox envs are all
-# different names, we need to try and find the right path to execute
-# ARA from.
-ARA_CMD="$(find ${WORKING_DIR}/.tox -path "*/bin/ara" -type f | head -n 1)"
 
 # If we could not find ARA, assume it was not installed
 # and skip all the related activities.

@@ -40,20 +40,22 @@
         ssh_key_file: /root/.ssh/id_rsa
 
     - name: Get root private key
-      command: cat /root/.ssh/id_rsa
+      slurp:
+        src: /root/.ssh/id_rsa
       register: private_key_get
       changed_when: false
 
     - name: Get root public key
-      command: cat /root/.ssh/id_rsa.pub
+      slurp:
+        src: /root/.ssh/id_rsa.pub
       register: public_key_get
       changed_when: false
 
     - name: Set key facts
       set_fact:
-        root_public_key: "{{ public_key_get.stdout }}"
-        root_private_key: "{{ private_key_get.stdout }}"
-        lxc_container_ssh_key: "{{ public_key_get.stdout }}"
+        root_public_key: "{{ public_key_get.content | b64decode }}"
+        root_private_key: "{{ private_key_get.content | b64decode }}"
+        lxc_container_ssh_key: "{{ public_key_get.content | b64decode }}"
 
     - name: Ensure root can ssh to localhost
       authorized_key:

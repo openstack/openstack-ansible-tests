@@ -159,7 +159,7 @@ PIP_OPTS+=" --requirement ${COMMON_TESTS_PATH}/test-requirements.txt"
 # If the repo has a doc/requirements.txt file, add it to the
 # requirements list. This is necessary for the linters test
 # to be able to execute doc8.
-if [[ -f "${WORKING_DIR}/doc/requirements.txt" ]]; then
+if [[ -f "${WORKING_DIR}/doc/requirements.txt" && "${TOX_ENV_NAME}" != "functional"* ]]; then
   PIP_OPTS+=" --requirement ${WORKING_DIR}/doc/requirements.txt"
 fi
 

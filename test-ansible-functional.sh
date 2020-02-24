@@ -88,7 +88,8 @@ function execute_ansible_playbook {
 # on an as-needed basis in the roles where they are required using includepkgs.
 # See the example here:
 # https://opendev.org/openstack/openstack-ansible-lxc_hosts/src/commit/a6cae27fa3e6d03b48ba34468df4af90c77f4880/tasks/lxc_install_yum.yml#L46-L58
-if [[ -x /usr/bin/yum-config-manager ]] && [[ -e /etc/centos-release ]]; then
+source /etc/os-release
+if [[ -x /usr/bin/yum-config-manager ]] && [[ -e /etc/centos-release ]] && [[ ${VERSION_ID} == '7' ]] ; then
   sudo yum-config-manager --disable \* > /dev/null
   sudo yum-config-manager --enable base > /dev/null
   sudo yum-config-manager --enable updates > /dev/null

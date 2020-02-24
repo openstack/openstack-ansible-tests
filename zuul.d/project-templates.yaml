@@ -15,6 +15,7 @@
         - openstack-ansible-linters
         - openstack-ansible-functional-debian-buster
         - openstack-ansible-functional-centos-7
+        - openstack-ansible-functional-centos-8
         - openstack-ansible-functional-ubuntu-bionic
     gate:
       jobs:

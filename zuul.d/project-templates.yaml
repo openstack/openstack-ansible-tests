@@ -20,6 +20,7 @@
       jobs:
         - openstack-ansible-linters
         - openstack-ansible-functional-debian-stable
+        - openstack-ansible-functional-centos-7
         - openstack-ansible-functional-ubuntu-bionic
     experimental:
       jobs:

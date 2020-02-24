@@ -469,5 +469,5 @@ openstack_user_kernel_options:
 
 #python3
 ## OpenStack service python version
-openstack_venv_python_executable: "{{ (ansible_distribution == 'CentOS') | ternary('python2', 'python3') }}"
+openstack_venv_python_executable: "python3"
 uwsgi_python_executable: "{{ openstack_venv_python_executable }}"

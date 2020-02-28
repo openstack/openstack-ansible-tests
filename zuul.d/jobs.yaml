@@ -64,6 +64,7 @@
       - name: openstack/openstack-ansible-rsyslog_server
       - name: openstack/openstack-ansible-tests
       - name: openstack/requirements
+    pre-run: zuul.d/playbooks/pre-gate-cleanup.yml
     run: zuul.d/playbooks/run.yml
     post-run: zuul.d/playbooks/post.yml
 

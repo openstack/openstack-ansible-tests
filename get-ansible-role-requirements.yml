@@ -136,6 +136,7 @@
             - item['scm'] == "git" or item['scm'] is undefined
 
   vars:
+    ansible_python_interpreter: "/usr/bin/python3"
     homedir: "{{ lookup('env', 'TESTING_HOME') }}"
     role_file: "{{ lookup('env', 'ANSIBLE_ROLE_REQUIREMENTS_PATH') }}"
     osa_roles: "{{ lookup('file', role_file) | from_yaml }}"

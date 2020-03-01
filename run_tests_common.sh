@@ -55,17 +55,17 @@ case "${ID,,}" in
         # tox later installing virtualenv as a dependancy with pip, and breaking later tests with
         # openstack_hosts which correctly install the python-virtualenv distro package
         [[ "${VERSION_ID}" == "7" ]] && extra_redhat_deps="python-virtualenv"
-        pkg_list="python-devel redhat-lsb-core yum-utils ${extra_redhat_deps:-}"
+        pkg_list="python3-devel redhat-lsb-core yum-utils ${extra_redhat_deps:-}"
         ;;
     fedora)
-        pkg_list="python-devel redhat-lsb-core redhat-rpm-config yum-utils"
+        pkg_list="python3-devel redhat-lsb-core redhat-rpm-config yum-utils"
         ;;
     ubuntu|debian)
         # NOTE(jrosser) remove this once infra debian images point to the upstream security repo
         if `/bin/grep -q "stretch" /etc/os-release` && [ -f "/etc/apt/sources.list.d/security.list" ]; then
           echo 'deb http://security.debian.org stretch/updates main contrib' | sudo tee /etc/apt/sources.list.d/security.list > /dev/null
         fi
-        pkg_list="python-dev lsb-release"
+        pkg_list="python3-dev lsb-release"
         sudo apt-get update
         ;;
     gentoo)
@@ -80,16 +80,16 @@ esac
 eval sudo ${pkg_mgr_cmd} ${pkg_list}
 
 # Install pip
-if ! which pip &>/dev/null; then
+if ! which pip3 &>/dev/null; then
     curl --silent --show-error --retry 5 \
-        https://bootstrap.pypa.io/3.3/get-pip.py | sudo python2.7
+        https://bootstrap.pypa.io/3.3/get-pip.py | sudo python3
 fi
 
 # Install bindep and tox
 if [[ "${ID,,}" == "centos" ]] && [[ ${VERSION_ID} == "7" ]]; then
-    sudo pip install 'bindep>=2.4.0' 'tox<=3.14.0'
+    sudo pip3 install 'bindep>=2.4.0' 'tox<=3.14.0'
 else
-    sudo pip install 'bindep>=2.4.0' tox
+    sudo pip3 install 'bindep>=2.4.0' tox
 fi
 
 if [[ "${ID,,}" == "fedora" ]]; then

@@ -47,6 +47,3 @@ python2-dnf       [platform:fedora]
 # For SELinux
 libselinux-python [platform:redhat]
 libsemanage-python [platform:redhat]
-
-# Required for compressing collected log files in CI
-gzip

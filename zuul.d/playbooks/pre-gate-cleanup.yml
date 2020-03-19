@@ -26,8 +26,21 @@
         name: "{{ gate_packages_remove }}"
         state: absent
 
+    - name: Check if pip2 is installed
+      command: 'which pip2'
+      register: pip2_installed
+      changed_when: false
+      failed_when: pip2_installed.rc > 1
+
+    - name: Check if pip3 is installed
+      command: 'which pip3'
+      register: pip3_installed
+      changed_when: false
+      failed_when: pip3_installed.rc > 1
+
     - name: Remove known problem pip packages
       pip:
+        executable: "{{ item }}"
         name:
           - virtualenv
           - tox
@@ -41,6 +54,11 @@
           - six
           - zipp
         state: absent
+      register: pip_remove
+      when: (pip2_installed.rc == 0) or (pip3_installed.rc == 0)
+      with_items:
+        - "{{ (pip2_installed.rc == 0) | ternary('pip2', []) }}"
+        - "{{ (pip3_installed.rc == 0) | ternary('pip3', []) }}"
 
     - name: Remove package blacklist for yum/dnf
       lineinfile:

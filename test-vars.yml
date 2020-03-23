@@ -123,6 +123,12 @@ memcached_servers: "{{ test_memcached_host }}"
 memcached_encryption_key: "secrete"
 memcached_disable_privatedevices: true
 
+# Requirements Settings
+requirements_git_url: "{{ 'https://opendev.org/openstack/requirements/raw/branch/' ~ test_branch ~ '/upper-constraints.txt' }}"
+
+# NOTE(jrosser) use this form after the way the requirements URL is formed is uniform across all roles
+# requirements_git_install_branch: "{{ test_branch }}"
+
 # Keystone Settings
 keystone_ssl: True
 keystone_admin_user_name: admin

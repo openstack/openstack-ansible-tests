@@ -211,6 +211,9 @@ fi
 # Install all python packages
 python -m pip install ${PIP_OPTS}
 
+# Install all ansible collections
+ansible-galaxy collection install -r ${COMMON_TESTS_PATH}/test-ansible-collection-requirements.yml
+
 # Download the Ansible role repositories if they are not present on the host.
 # This is ignored if there is no ansible-role-requirements file.
 if [[ ! -d "${ANSIBLE_ROLE_DEP_DIR}" ]]; then

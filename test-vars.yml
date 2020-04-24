@@ -444,6 +444,8 @@ pip_install_options: "--no-binary libvirt-python"
 # The URL/path of a constraints file to use when installing the additional pip packages.
 pip_install_upper_constraints: "https://opendev.org/openstack/openstack-ansible/raw/{{ test_branch }}/global-requirement-pins.txt --constraint https://opendev.org/openstack/requirements/raw/{{ test_branch }}/upper-constraints.txt"
 
+requirements_git_install_branch: "{{ test_branch }}"
+
 # Overriding the developer_constraints allows us to install from local disk as a precedence
 # if the repo is present.
 pip_install_developer_constraints: "--constraint {{ development_repo_directory }}/local-package-constraints-{{ test_branch | replace('/','_') }}.txt --constraint /opt/developer-pip-constraints.txt"

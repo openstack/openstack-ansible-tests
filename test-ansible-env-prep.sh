@@ -197,7 +197,7 @@ else
 fi
 
 # Install all python packages
-pip install ${PIP_OPTS}
+python -m pip install ${PIP_OPTS}
 
 # Download the Ansible role repositories if they are not present on the host.
 # This is ignored if there is no ansible-role-requirements file.

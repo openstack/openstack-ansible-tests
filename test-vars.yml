@@ -70,7 +70,7 @@ lxc_kernel_options:
   - { key: 'fs.inotify.max_user_instances', value: 1024 }
 lxc_config_key_apparmor: "{{ lookup('pipe', 'lxc-info --version || echo 2.0.0') is version('3.0.0', 'lt') | ternary('aa_profile', 'apparmor.profile') }}"
 lxc_container_config_list:
-  - "{{ (hostvars[physical_host]['ansible_distribution'] == 'Debian' and hostvars[physical_host]['ansible_distribution_major_version'] == '10' ) | ternary('lxc.aa_profile=unconfined', 'lxc.aa_profile=lxc-openstack') }}"
+  - "{{ (hostvars[physical_host]['ansible_distribution'] == 'Debian') | ternary('lxc.' ~ lxc_config_key_apparmor~'=unconfined', 'lxc.' ~ lxc_config_key_apparmor ~ '=lxc-openstack') }}"
 
 # Galera Settings
 galera_address: "{{ test_galera_host }}"

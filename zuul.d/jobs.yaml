@@ -92,7 +92,7 @@
     description: |
       Run lint tests for an OpenStack-Ansible project.
       Uses tox with the ``linters`` environment.
-    timeout: 900 # 15 mins
+    timeout: 1800 # 30 mins
     nodeset: ubuntu-bionic
     vars:
       tox_env: linters

@@ -87,11 +87,13 @@ function setup_ara {
   [[ -L "${ANSIBLE_PLUGIN_DIR}/callback/ara" ]] && return 0
 
   # Dynamically figure out the location of ARA (ex: py2 vs py3)
-  ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
+  ara_location=$(python -m ara.setup.callback_plugins 2>/dev/null)
 
-  echo "Linking ${ANSIBLE_PLUGIN_DIR}/callback/ara to ${ara_location}/plugins/callbacks/"
+  echo "Linking ${ara_location} to ${ANSIBLE_PLUGIN_DIR}/callback/ara"
   mkdir -p "${ANSIBLE_PLUGIN_DIR}/callback/ara"
-  ln -sf "${ara_location}/plugins/callbacks" "${ANSIBLE_PLUGIN_DIR}/callback/ara/"
+  if [ -d ${ara_location} ]; then
+    ln -sf "${ara_location}" "${ANSIBLE_PLUGIN_DIR}/callback/ara/"
+  fi
 
 }
 
@@ -188,12 +190,22 @@ else
   PIP_OPTS+=" --constraint ${UPPER_CONSTRAINTS_FILE:-https://opendev.org/openstack/requirements/raw/${TESTING_BRANCH}/upper-constraints.txt}"
 fi
 
+source /etc/os-release || source /usr/lib/os-release
+# Install selinux into venv
+if [[ ${ID,,} =~ (centos|rhel|fedora) ]]; then
+    PIP_OPTS+=" selinux"
+fi
+
 # Install ARA from source if running in ARA gate, otherwise install from PyPi
 ARA_SRC_HOME="${TESTING_HOME}/src/opendev.org/recordsansible/ara"
 if [[ -d "${ARA_SRC_HOME}" ]]; then
   PIP_OPTS+=" ${ARA_SRC_HOME}"
 else
-  PIP_OPTS+=" ara<1.0.0"
+  if [[ ${VERSION_ID} == "8" && ${ID} == "centos" ]]; then
+    PIP_OPTS+=" ara<1.0.0;python_version<'3.0' ara[server];python_version>='3.0'"
+  else
+    PIP_OPTS+=" ara<1.0.0"
+  fi
 fi
 
 # Install all python packages
@@ -252,18 +264,3 @@ fi
 
 # Setup ARA
 setup_ara
-
-# Ensure that SElinux bindings are linked into the venv
-source /etc/os-release || source /usr/lib/os-release
-if [[ ${ID,,} =~ (centos|rhel|fedora) ]]; then
-  if [ "${ID}" == "fedora" ]; then
-    SELINUX_PKG="python2-libselinux"
-  else
-    SELINUX_PKG="libselinux-python"
-  fi
-
-  PYTHON_FOLDER=$(find ${VIRTUAL_ENV}/lib -maxdepth 1 -type d -name "python*")
-  SELINUX_FOLDER=$(rpm -ql ${SELINUX_PKG} | egrep '^.*python2.7.*/(site|dist)-packages/selinux$')
-  echo "RHEL variant found. Linking ${PYTHON_FOLDER}/site-packages/selinux to ${SELINUX_FOLDER}..."
-  ln -sfn ${SELINUX_FOLDER} ${PYTHON_FOLDER}/site-packages/selinux
-fi

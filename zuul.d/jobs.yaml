@@ -122,6 +122,12 @@
     nodeset: ubuntu-bionic
 
 - job:
+    name: openstack-ansible-functional-ubuntu-focal
+    parent: openstack-ansible-functional
+    nodeset: ubuntu-focal
+    voting: false
+
+- job:
     name: openstack-ansible-upgrade-ubuntu-bionic
     parent: openstack-ansible-upgrade
     nodeset: ubuntu-bionic

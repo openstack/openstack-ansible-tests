@@ -212,6 +212,17 @@ nova_cell0_database: "nova_cell0"
 neutron_container_mysql_password: SuperSecrete
 neutron_developer_mode: true
 neutron_git_install_branch: "{{ test_branch }}"
+neutron_fwaas_git_install_branch: "{{ test_branch }}"
+neutron_vpnaas_git_install_branch: "{{ test_branch }}"
+neutron_dynamic_routing_git_install_branch: "{{ test_branch }}"
+# networking-calico is branchless
+networking_calico_git_install_branch: "3.12.0"
+networking_odl_git_install_branch: "{{ test_branch }}"
+networking_sfc_git_install_branch: "{{ test_branch }}"
+networking_bgpvpn_git_install_branch: "{{ test_branch }}"
+# merged into neutron beyond train
+networking_ovn_git_install_branch: "{{ test_branch }}"
+
 neutron_ha_vrrp_auth_password: secrete
 neutron_management_address: "{{ test_neutron_server_host }}"
 neutron_oslomsg_rpc_password: "{{ oslomsg_rpc_password }}"

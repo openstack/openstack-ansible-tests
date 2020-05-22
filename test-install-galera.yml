@@ -20,5 +20,8 @@
   any_errors_fatal: true
   roles:
     - role: "galera_server"
+      vars:
+        galera_install_client: true
+        galera_install_server: true
   vars_files:
     - test-vars.yml

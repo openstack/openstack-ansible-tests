@@ -200,11 +200,20 @@ store_artifacts /var/log/ "${WORKING_DIR}/logs/host"
 # As this script is not run through tox, and the tox envs are all
 # different names, we need to try and find the right path to execute
 # ARA from.
-ARA_CMD="$(find ${WORKING_DIR}/.tox -path "*/bin/ara" -type f | head -n 1)"
+source /etc/os-release || source /usr/lib/os-release
+
+if [[ ${VERSION_ID} == "8" && ${ID} == "centos" ]]; then
+  #centos-8 is pinned to ara>=1.0
+  ARA_CMD="$(find ${WORKING_DIR}/.tox -path "*/bin/ara-manage" -type f | head -n 1)"
+  ARA_OPTIONS="generate ${WORKING_DIR}/logs/ara-report"
+else
+  ARA_CMD="$(find ${WORKING_DIR}/.tox -path "*/bin/ara" -type f | head -n 1)"
+  ARA_OPTIONS="generate html ${WORKING_DIR}/logs/ara-report"
+fi
 
 if [[ "${ARA_CMD}" != "" ]]; then
-  echo "Generating ARA static html report."
-  ${ARA_CMD} generate html "${WORKING_DIR}/logs/ara-report"
+    echo "Generating ARA static html report."
+    ${ARA_CMD} ${ARA_OPTIONS}
 fi
 
 # Store the ara sqlite database in the openstack-ci expected path
@@ -254,7 +263,7 @@ rename_files
 
 # If we could not find ARA, assume it was not installed
 # and skip all the related activities.
-if [[ "${ARA_CMD}" != "" ]]; then
+if [[ "${ARA_CMD}" != "" && ! (${VERSION_ID} == "8" && ${ID} == "centos") ]]; then
     # Generate the ARA subunit report so that the
     # results reflect in OpenStack-Health
     mkdir -vp "${WORKING_DIR}/logs/ara-data"

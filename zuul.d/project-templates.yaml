@@ -17,6 +17,7 @@
         - openstack-ansible-functional-centos-7
         - openstack-ansible-functional-centos-8
         - openstack-ansible-functional-ubuntu-bionic
+        - openstack-ansible-functional-ubuntu-focal
     gate:
       jobs:
         - openstack-ansible-linters

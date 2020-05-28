@@ -55,7 +55,6 @@ case "${ID,,}" in
         # tox later installing virtualenv as a dependancy with pip, and breaking later tests with
         # openstack_hosts which correctly install the python-virtualenv distro package
         [[ "${VERSION_ID}" == "7" ]] && extra_redhat_deps="python-virtualenv"
-        [[ "${VERSION_ID}" == "8" ]] && sudo alternatives --set python /usr/bin/python3
         pkg_list="python3-devel redhat-lsb-core yum-utils ${extra_redhat_deps:-}"
         ;;
     fedora)
@@ -85,6 +84,9 @@ fi
 # Install bindep and tox
 if [[ "${ID,,}" == "centos" ]] && [[ ${VERSION_ID} == "7" ]]; then
     sudo pip3 install 'bindep>=2.4.0' 'tox<=3.14.0'
+elif [[ "${ID,,}" == "centos" ]] && [[ ${VERSION_ID} == "8" ]]; then
+    sudo alternatives --set python /usr/bin/python3
+    sudo pip3 install 'bindep>=2.4.0' tox
 else
     sudo pip3 install 'bindep>=2.4.0' tox
 fi

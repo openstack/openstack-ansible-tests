@@ -21,4 +21,3 @@ bridges:
     ip_addr: "10.1.2.1"
     veth_peer: "veth-test"
 
-ansible_python_interpreter: "/usr/bin/python"

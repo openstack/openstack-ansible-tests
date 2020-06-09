@@ -29,8 +29,6 @@
   become: no
   gather_facts: false
   any_errors_fatal: true
-  vars:
-    ansible_python_interpreter: "{{ ansible_playbook_python }}"
   vars_files:
     - test-vars.yml
   tasks:

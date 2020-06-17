@@ -29,6 +29,15 @@
 set -e
 
 ## Vars ----------------------------------------------------------------------
+# Source distribution information
+source /etc/os-release || source /usr/lib/os-release
+
+#TODO: cleanup on ansible 2.10 if debian is in config/base.yml
+if [ "${ID}" == "debian" ] && [ "${VERSION_ID}" == "10" ]; then
+  ANSIBLE_PYTHON_INTERPRETER="/usr/bin/python3"
+fi
+
+export ANSIBLE_PYTHON_INTERPRETER=${ANSIBLE_PYTHON_INTERPRETER:-auto}
 
 export TESTING_HOME=${TESTING_HOME:-$HOME}
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
@@ -48,6 +57,7 @@ echo "ANSIBLE_PARAMETERS: ${ANSIBLE_PARAMETERS}"
 echo "TEST_PLAYBOOK: ${TEST_PLAYBOOK}"
 echo "TEST_CHECK_MODE: ${TEST_CHECK_MODE}"
 echo "TEST_IDEMPOTENCE: ${TEST_IDEMPOTENCE}"
+echo "ANSIBLE_PYTHON_INTERPRETER: ${ANSIBLE_PYTHON_INTERPRETER}"
 
 ## Functions -----------------------------------------------------------------
 

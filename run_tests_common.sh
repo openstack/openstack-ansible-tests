@@ -51,11 +51,7 @@ case "${ID,,}" in
         pkg_list="ca-certificates-mozilla python-devel python-xml lsb-release ${extra_suse_deps:-}"
         ;;
     amzn|centos|rhel)
-        # NOTE(jrosser) on centos7 we ensure that the distro version of virtualenv is present to avoid
-        # tox later installing virtualenv as a dependancy with pip, and breaking later tests with
-        # openstack_hosts which correctly install the python-virtualenv distro package
-        [[ "${VERSION_ID}" == "7" ]] && extra_redhat_deps="python-virtualenv"
-        pkg_list="python3-devel redhat-lsb-core yum-utils ${extra_redhat_deps:-}"
+        pkg_list="python3-devel redhat-lsb-core"
         ;;
     fedora)
         pkg_list="python3-devel redhat-lsb-core redhat-rpm-config yum-utils"
@@ -82,9 +78,7 @@ if ! which pip3 &>/dev/null; then
 fi
 
 # Install bindep and tox
-if [[ "${ID,,}" == "centos" ]] && [[ ${VERSION_ID} == "7" ]]; then
-    sudo pip3 install 'bindep>=2.4.0' 'tox<=3.14.0'
-elif [[ "${ID,,}" == "centos" ]] && [[ ${VERSION_ID} == "8" ]]; then
+if [[ "${ID,,}" == "centos" ]] && [[ ${VERSION_ID} == "8" ]]; then
     sudo alternatives --set python /usr/bin/python3
     sudo pip3 install 'bindep>=2.4.0' tox
 else
@@ -110,7 +104,7 @@ if [[ ${#BINDEP_PKGS} > 0 ]]; then
             sudo zypper -n in ${BINDEP_PKGS}
             ;;
         centos|fedora)
-            sudo "${RHT_PKG_MGR}" install -y ${BINDEP_PKGS}
+            sudo dnf install -y ${BINDEP_PKGS}
             ;;
         ubuntu|debian)
             sudo apt-get update

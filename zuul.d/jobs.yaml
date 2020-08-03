@@ -232,9 +232,3 @@
     voting: false
     vars:
       scenario: ceph
-
-- job:
-    name: openstack-ansible-python3-ubuntu-bionic
-    parent: openstack-ansible-functional-ubuntu-bionic
-    vars:
-      tox_env: func_py3

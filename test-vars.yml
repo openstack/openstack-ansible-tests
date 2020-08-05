@@ -484,3 +484,6 @@ openstack_user_kernel_options:
 ## OpenStack service python version
 openstack_venv_python_executable: "python3"
 uwsgi_python_executable: "{{ openstack_venv_python_executable }}"
+
+## OpenStack db setup host
+openstack_db_setup_host: infra1

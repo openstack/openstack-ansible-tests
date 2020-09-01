@@ -125,7 +125,6 @@
     name: openstack-ansible-functional-ubuntu-focal
     parent: openstack-ansible-functional
     nodeset: ubuntu-focal
-    voting: false
 
 - job:
     name: openstack-ansible-upgrade-ubuntu-bionic
@@ -183,7 +182,6 @@
     name: openstack-ansible-functional-centos-8
     parent: openstack-ansible-functional
     nodeset: centos-8
-    voting: false
 
 - job:
     name: openstack-ansible-upgrade-centos-7

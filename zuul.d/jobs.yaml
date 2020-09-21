@@ -52,6 +52,7 @@
       - name: openstack/openstack-ansible-os_neutron
       - name: openstack/openstack-ansible-os_nova
       - name: openstack/openstack-ansible-os_octavia
+      - name: openstack/openstack-ansible-os_senlin
       - name: openstack/openstack-ansible-os_swift
       - name: openstack/openstack-ansible-os_tempest
       - name: openstack/openstack-ansible-os_trove

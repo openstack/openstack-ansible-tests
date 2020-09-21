@@ -137,25 +137,6 @@
     parent: openstack-ansible-functional-ubuntu-bionic
     vars:
       tox_env: distro_install
-- job:
-    name: openstack-ansible-upgrade-opensuse-15
-    parent: openstack-ansible-upgrade
-    nodeset: opensuse-15
-    voting: false
-
-- job:
-    name: openstack-ansible-functional-opensuse-15
-    parent: openstack-ansible-functional
-    nodeset: opensuse-15
-    voting: false
-
-- job:
-    name: openstack-ansible-functional-distro_install-opensuse-15
-    parent: openstack-ansible-functional
-    nodeset: opensuse-15
-    voting: false
-    vars:
-      tox_env: distro_install
 
 - job:
     name: openstack-ansible-upgrade-gentoo-17-0-systemd

@@ -84,26 +84,7 @@ function execute_ansible_playbook {
 }
 
 ## Main ----------------------------------------------------------------------
-
-# NOTE(mhayden): CentOS images in the gate have several slow mirrors enabled
-# by default. This step ensures that only the base and updates
-# repositories are enabled.
-#
-# NOTE(logan): Due to the way Ansible's yum module works, we should leave all
-# except these two repos globally disabled. See the link below for more info:
-# https://github.com/ansible/ansible/issues/26995#issuecomment-392288700
-#
-# Rather than enabling repos globally, we can use the yum repository module to
-# selectively pull in packages from other repos (ie. extras, EPEL, RDO, etc.)
-# on an as-needed basis in the roles where they are required using includepkgs.
-# See the example here:
-# https://opendev.org/openstack/openstack-ansible-lxc_hosts/src/commit/a6cae27fa3e6d03b48ba34468df4af90c77f4880/tasks/lxc_install_yum.yml#L46-L58
 source /etc/os-release
-if [[ -x /usr/bin/yum-config-manager ]] && [[ -e /etc/centos-release ]] && [[ ${VERSION_ID} == '7' ]] ; then
-  sudo yum-config-manager --disable \* > /dev/null
-  sudo yum-config-manager --enable base > /dev/null
-  sudo yum-config-manager --enable updates > /dev/null
-fi
 
 # Check if SELinux is present and which mode is currently set.
 if [[ -x /usr/sbin/getenforce ]]; then
@@ -113,10 +94,10 @@ else
 fi
 echo "Current SELinux status: ${SELINUX_STATUS}"
 
-# NOTE(mhayden): SELinux policies for CentOS 7 are still incomplete. Ensure
+# NOTE(mhayden): SELinux policies for CentOS are still incomplete. Ensure
 # SELinux is not in enforcing mode during tests.
 if [ "${SELINUX_STATUS}" == "Enforcing" ]; then
-  echo "NOTE: CentOS 7 SELinux policies are incomplete."
+  echo "NOTE: CentOS SELinux policies are incomplete."
   echo "Switching SELinux mode from Enforcing to Permissive."
   sudo /usr/sbin/setenforce 0
 fi

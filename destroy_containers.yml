@@ -41,7 +41,7 @@
         - "/openstack/log/{{ container_name }}"
         - "/var/lib/lxc/{{ container_name }}"
         - "{{ lxc_container_directory|default('/var/lib/lxc') }}/{{ container_name }}"
-        - "/var/log/lxc/lxc-{{container_name}}"
+        - "/var/log/lxc/lxc-{{ container_name }}"
       delegate_to: "{{ physical_host }}"
       tags:
         - container-directories-service

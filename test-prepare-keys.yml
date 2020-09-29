@@ -75,7 +75,11 @@
   tasks:
     # Shell used because facts may not be ready yet
     - name: Get user home directory
-      shell: "getent passwd '{{ ansible_user_id }}' | cut -d':' -f6"
+      shell: |
+        set -o pipefail
+        getent passwd '{{ ansible_user_id }}' | cut -d':' -f6
+      args:
+        executable: /bin/bash
       register: user_home
       changed_when: false
 

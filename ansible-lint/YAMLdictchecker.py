@@ -29,7 +29,7 @@ class YAMLdictchecker(ansiblelint.AnsibleLintRule):
     tags = ['task']
 
     def match(self, file, line):
-        for l in line.split(" "):
-            if "=" in l:
+        for item in line.split(" "):
+            if "=" in item:
                 return True
             return False

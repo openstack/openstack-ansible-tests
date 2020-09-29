@@ -24,6 +24,7 @@
       file:
         state: directory
         path: "{{ development_repo_directory }}"
+        mode: 0755
 
     # Git clones for developer testing are expected to be in the
     # following structure, which mirrors how zuul v3 implements
@@ -50,6 +51,7 @@
           {% for folder_path in projects_directory_find.stdout_lines %}
           file://{{ folder_path }}#egg={{ folder_path.split("/")[-1] }}
           {% endfor %}
+        mode: 0755
 
   vars_files:
     - test-vars.yml

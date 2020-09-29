@@ -39,5 +39,6 @@
 
           {% endfor %}
         dest: /tmp/listening_port_report.txt
+        mode: 0644
       delegate_to: localhost
       run_once: true

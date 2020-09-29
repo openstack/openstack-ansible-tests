@@ -1,6 +1,7 @@
 import unittest
 
-from ansiblelint import RulesCollection, Runner
+from ansiblelint.rules import RulesCollection
+from ansiblelint.runner import Runner
 from NoLogPasswordsRule import NoLogPasswordsRule
 
 

@@ -140,7 +140,8 @@
           {%     set _ = systemd_network_devices.append({'NetDev': {'Name': 'dummy-' + interface_name, 'Kind': 'dummy'}}) %}
           {%     set _ = systemd_network_devices.append({'NetDev': {'Name': interface_name, 'Kind': 'bridge'}}) %}
           {%     if interface.veth_peer is defined %}
-          {%       set _ = systemd_network_devices.append({'NetDev': {'Name': interface_name + '-veth', 'Kind': 'veth'}, 'Peer': {'Name': interface.veth_peer}}) %}
+          {%       set _ = systemd_network_devices.append({'NetDev': {'Name': interface_name + '-veth', 'Kind': 'veth'},
+                                                                      'Peer': {'Name': interface.veth_peer}}) %}
           {%     endif %}
           {%   endif %}
           {% endfor %}
@@ -156,10 +157,16 @@
           {%     set interface_name = (interface.name | default('br-mgmt')) %}
           {%     if interface.alias is defined %}
           {%       set _ = systemd_network_networks.append({'interface': 'dummy-' + interface_name, 'bridge': interface_name}) %}
-          {%       set _ = systemd_network_networks.append({'interface': interface_name, 'netmask': (interface.netmask | default('255.255.255.0')), 'config_overrides': {'Network': {'Address': {(interface.ip_addr | default('10.1.0.1')): null, (interface.alias | string): null}}}}) %}
+          {%       set _ = systemd_network_networks.append({'interface': interface_name,
+                                                            'netmask': (interface.netmask | default('255.255.255.0')),
+                                                            'config_overrides': {'Network': {'Address': {(interface.ip_addr | default('10.1.0.1')): null,
+                                                                                                         (interface.alias | string): null}}}}) %}
           {%     else %}
           {%       set _ = systemd_network_networks.append({'interface': 'dummy-' + interface_name, 'bridge': interface_name}) %}
-          {%       set _ = systemd_network_networks.append({'interface': interface_name, 'address': (interface.ip_addr | default('10.1.0.1')), 'netmask': (interface.netmask | default('255.255.255.0')), 'ipforward': true}) %}
+          {%       set _ = systemd_network_networks.append({'interface': interface_name,
+                                                            'address': (interface.ip_addr | default('10.1.0.1')),
+                                                            'netmask': (interface.netmask | default('255.255.255.0')),
+                                                            'ipforward': true}) %}
           {%     endif %}
           {%     if interface.veth_peer is defined %}
           {%       set _ = systemd_network_networks.append({'interface': interface.veth_peer + '-veth', 'bridge': interface_name}) %}
@@ -183,7 +190,9 @@
                 RemainAfterExit: yes
             service_type: oneshot
             execstarts: |-
-              {% set veths = ['-/sbin/ethtool -K ' + (bootstrap_host_public_interface | default(ansible_default_ipv4['alias'])) + ' gso off sg off tso off tx off'] %}
+              {% set veths = ['-/sbin/ethtool -K ' +
+                              (bootstrap_host_public_interface | default(ansible_default_ipv4['alias'])) +
+                              ' gso off sg off tso off tx off'] %}
               {% for interface in (bridges | default([])) %}
               {%   if interface is string %}
               {%     set _ = veths.append('-' + iptool_path[ansible_os_family | lower] + ' link set ' + interface + ' up') %}
@@ -221,7 +230,7 @@
           {%   else %}
           {%     set interface_name = (interface.name | default('br-mgmt')) %}
           {%   endif %}
-          {%   set _ = interfaces.append(hostvars[inventory_hostname][('ansible_' + (interface_name | replace('-', '_')))]['active'] == true) %}
+          {%   set _ = interfaces.append(hostvars[inventory_hostname][('ansible_' + (interface_name | replace('-', '_')))]['active'] | bool ) %}
           {% endfor %}
           {{ interfaces }}
 

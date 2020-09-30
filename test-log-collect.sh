@@ -202,14 +202,8 @@ store_artifacts /var/log/ "${WORKING_DIR}/logs/host"
 # ARA from.
 source /etc/os-release || source /usr/lib/os-release
 
-if [[ ${VERSION_ID} == "8" && ${ID} == "centos" ]]; then
-  #centos-8 is pinned to ara>=1.0
-  ARA_CMD="$(find ${WORKING_DIR}/.tox -path "*/bin/ara-manage" -type f | head -n 1)"
-  ARA_OPTIONS="generate ${WORKING_DIR}/logs/ara-report"
-else
-  ARA_CMD="$(find ${WORKING_DIR}/.tox -path "*/bin/ara" -type f | head -n 1)"
-  ARA_OPTIONS="generate html ${WORKING_DIR}/logs/ara-report"
-fi
+ARA_CMD="$(find ${WORKING_DIR}/.tox -path "*/bin/ara-manage" -type f | head -n 1)"
+ARA_OPTIONS="generate ${WORKING_DIR}/logs/ara-report"
 
 if [[ "${ARA_CMD}" != "" ]]; then
     echo "Generating ARA static html report."

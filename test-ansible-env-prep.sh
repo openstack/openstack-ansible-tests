@@ -201,11 +201,7 @@ ARA_SRC_HOME="${TESTING_HOME}/src/opendev.org/recordsansible/ara"
 if [[ -d "${ARA_SRC_HOME}" ]]; then
   PIP_OPTS+=" ${ARA_SRC_HOME}"
 else
-  if [[ ${VERSION_ID} == "8" && ${ID} == "centos" ]]; then
-    PIP_OPTS+=" ara<1.0.0;python_version<'3.0' ara[server];python_version>='3.0'"
-  else
-    PIP_OPTS+=" ara<1.0.0"
-  fi
+    PIP_OPTS+=" ara[server]"
 fi
 
 # Install all python packages

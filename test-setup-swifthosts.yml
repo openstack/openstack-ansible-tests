@@ -56,9 +56,9 @@
       - 'swift2'
 
   - name: Create sparse Swift files
-    command: "truncate -s 1024G /opt/{{container_name}}_{{ item }}.img"
+    command: "truncate -s 1024G /opt/{{ container_name }}_{{ item }}.img"
     args:
-      creates: "/opt/{{ container_name}}_{{ item }}.img"
+      creates: "/opt/{{ container_name }}_{{ item }}.img"
     with_items:
       - 'swift1'
       - 'swift2'
@@ -69,7 +69,7 @@
     filesystem:
       fstype: xfs
       opts: '-K'
-      dev: "/opt/{{ container_name}}_{{ item }}.img"
+      dev: "/opt/{{ container_name }}_{{ item }}.img"
     when: swift_create  is changed
     with_items:
       - 'swift1'

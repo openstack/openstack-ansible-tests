@@ -51,13 +51,13 @@ case "${ID,,}" in
         pkg_list="ca-certificates-mozilla python-devel python-xml lsb-release ${extra_suse_deps:-}"
         ;;
     amzn|centos|rhel)
-        pkg_list="python3-devel redhat-lsb-core"
+        pkg_list="python3-devel python3-virtualenv redhat-lsb-core"
         ;;
     fedora)
-        pkg_list="python3-devel redhat-lsb-core redhat-rpm-config yum-utils"
+        pkg_list="python3-devel python3-virtualenv redhat-lsb-core redhat-rpm-config yum-utils"
         ;;
     ubuntu|debian)
-        pkg_list="python3-dev lsb-release curl"
+        pkg_list="python3-dev python3-pip virtualenv lsb-release curl"
         sudo apt-get update
         ;;
     gentoo)
@@ -71,18 +71,14 @@ case "${ID,,}" in
 esac
 eval sudo ${pkg_mgr_cmd} ${pkg_list}
 
-# Install pip
-if ! which pip3 &>/dev/null; then
-    curl --silent --show-error --retry 5 \
-        https://bootstrap.pypa.io/3.3/get-pip.py | sudo python3
-fi
+PIP_EXEC_PATH=$(which pip3 || which pip)
 
 # Install bindep and tox
 if [[ "${ID,,}" == "centos" ]] && [[ ${VERSION_ID} == "8" ]]; then
     sudo alternatives --set python /usr/bin/python3
-    sudo pip3 install 'bindep>=2.4.0' tox
+    sudo "${PIP_EXEC_PATH}" install 'bindep>=2.4.0' tox
 else
-    sudo pip3 install 'bindep>=2.4.0' tox
+    sudo "${PIP_EXEC_PATH}" install 'bindep>=2.4.0' tox
 fi
 
 if [[ "${ID,,}" == "fedora" ]]; then

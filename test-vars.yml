@@ -68,9 +68,8 @@ lxc_net_dhcp_range: 10.100.100.2,10.100.100.99
 lxc_net_bridge: lxcbr0
 lxc_kernel_options:
   - { key: 'fs.inotify.max_user_instances', value: 1024 }
-lxc_config_key_apparmor: "{{ lookup('pipe', 'lxc-info --version || echo 2.0.0') is version('3.0.0', 'lt') | ternary('aa_profile', 'apparmor.profile') }}"
 lxc_container_config_list:
-  - "{{ (hostvars[physical_host]['ansible_distribution'] == 'Debian') | ternary('lxc.' ~ lxc_config_key_apparmor~'=unconfined', 'lxc.' ~ lxc_config_key_apparmor ~ '=lxc-openstack') }}"
+  - "lxc.apparmor.profile={{ (hostvars[physical_host]['ansible_distribution'] == 'Debian') | ternary('unconfined', 'lxc-openstack') }}"
 
 # Galera Settings
 galera_address: "{{ test_galera_host }}"

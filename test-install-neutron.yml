@@ -39,7 +39,7 @@
         container_command: |
           [[ ! -d "/{{ kernel_module_path[ansible_pkg_mgr] }}" ]] && mkdir -p "/{{ kernel_module_path[ansible_pkg_mgr] }}"
         container_config:
-          - "lxc.{{ lxc_config_key_apparmor }}=unconfined"
+          - "lxc.apparmor.profile=unconfined"
           - "lxc.cgroup.devices.allow=a *:* rmw"
           - "lxc.mount.entry=/{{ kernel_module_path[ansible_pkg_mgr] }} {{ kernel_module_path[ansible_pkg_mgr] }} none bind 0 0"
       delegate_to: "{{ physical_host }}"

@@ -23,12 +23,3 @@
         - propose-updates:
             vars:
               update_target: openstack-ansible-tests
-
-    check:
-      jobs:
-        - openstack-ansible-functional-ubuntu-bionic:
-            voting: false
-    gate:
-      jobs:
-        - openstack-ansible-functional-ubuntu-bionic:
-            voting: false

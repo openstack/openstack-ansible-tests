@@ -187,7 +187,7 @@ REQS_REPO_HOME="${TESTING_HOME}/src/opendev.org/openstack/requirements"
 if [[ -d "${REQS_REPO_HOME}" ]]; then
   PIP_OPTS+=" --constraint ${REQS_REPO_HOME}/upper-constraints.txt"
 else
-  PIP_OPTS+=" --constraint ${UPPER_CONSTRAINTS_FILE:-https://opendev.org/openstack/requirements/raw/${TESTING_BRANCH}/upper-constraints.txt}"
+  PIP_OPTS+=" --constraint ${TOX_CONSTRAINTS_FILE:-https://opendev.org/openstack/requirements/raw/${TESTING_BRANCH}/upper-constraints.txt}"
 fi
 
 source /etc/os-release || source /usr/lib/os-release

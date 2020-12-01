@@ -448,6 +448,12 @@ pip_install_upper_constraints: "https://opendev.org/openstack/openstack-ansible/
 
 requirements_git_install_branch: "{{ test_branch }}"
 
+# apply openstack-ansible global constraints for python_venv_build
+_global_pins_file_url: "https://opendev.org/openstack/openstack-ansible/raw/{{ test_branch }}/global-requirement-pins.txt"
+
+venv_build_global_constraints: >-
+  {{ lookup('url', _global_pins_file_url, wantlist=True) | reject('match','^#.*$') | reject('equalto', '') | list }}
+
 # Overriding the developer_constraints allows us to install from local disk as a precedence
 # if the repo is present.
 pip_install_developer_constraints: "--constraint {{ development_repo_directory }}/local-package-constraints-{{ test_branch | replace('/','_') }}.txt --constraint /opt/developer-pip-constraints.txt"

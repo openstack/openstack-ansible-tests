@@ -83,12 +83,12 @@ fi
 
 # Install bindep and tox
 if [[ "${ID,,}" == "centos" ]] && [[ ${VERSION_ID} == "7" ]]; then
-    sudo pip3 install 'bindep>=2.4.0' 'tox<=3.14.0'
+    sudo pip3 install 'bindep>=2.4.0' 'tox<=3.14.0' 'virtualenv<20.2.2'
 elif [[ "${ID,,}" == "centos" ]] && [[ ${VERSION_ID} == "8" ]]; then
     sudo alternatives --set python /usr/bin/python3
-    sudo pip3 install 'bindep>=2.4.0' tox
+    sudo pip3 install 'bindep>=2.4.0' tox 'virtualenv<20.2.2'
 else
-    sudo pip3 install 'bindep>=2.4.0' tox
+    sudo pip3 install 'bindep>=2.4.0' tox 'virtualenv<20.2.2'
 fi
 
 if [[ "${ID,,}" == "fedora" ]]; then

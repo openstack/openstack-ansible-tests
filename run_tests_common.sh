@@ -73,13 +73,12 @@ eval sudo ${pkg_mgr_cmd} ${pkg_list}
 
 PIP_EXEC_PATH=$(which pip3 || which pip)
 
-# Install bindep and tox
 if [[ "${ID,,}" == "centos" ]] && [[ ${VERSION_ID} == "8" ]]; then
     sudo alternatives --set python /usr/bin/python3
-    sudo "${PIP_EXEC_PATH}" install 'bindep>=2.4.0' tox
-else
-    sudo "${PIP_EXEC_PATH}" install 'bindep>=2.4.0' tox
 fi
+
+# Install bindep and tox
+sudo "${PIP_EXEC_PATH}" install 'bindep>=2.4.0' tox 'virtualenv<20.2.2'
 
 if [[ "${ID,,}" == "fedora" ]]; then
     sudo dnf -y install redhat-lsb-core yum-utils

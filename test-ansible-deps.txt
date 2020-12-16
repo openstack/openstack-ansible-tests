@@ -8,7 +8,7 @@
 # target configuration in each role.
 
 # The Ansible version used for testing
-ansible-base==2.10.3
+ansible-base==2.10.4
 
 # Used for the ip filter within ansible
 netaddr

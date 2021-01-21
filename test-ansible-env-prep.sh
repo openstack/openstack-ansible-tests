@@ -169,26 +169,25 @@ fi
 # This is necessary due to ARA having ansible as a
 # requirement.
 PIP_OPTS+=" --requirement ${COMMON_TESTS_PATH}/test-ansible-deps.txt"
-PIP_OPTS+=" --constraint ${COMMON_TESTS_PATH}/test-ansible-deps.txt"
 
-# If Depends-On is used, the integrated repo will be cloned. We
-# therefore prefer a local copy over fetching it via a URL.
-OSA_INTEGRATED_REPO_HOME="${TESTING_HOME}/src/opendev.org/openstack/openstack-ansible"
-if [[ -d "${OSA_INTEGRATED_REPO_HOME}" ]]; then
-  PIP_OPTS+=" --constraint ${OSA_INTEGRATED_REPO_HOME}/global-requirement-pins.txt"
-else
-  PIP_OPTS+=" --constraint https://opendev.org/openstack/openstack-ansible/raw/${TESTING_BRANCH}/global-requirement-pins.txt"
-fi
-
-# We add OpenStack's upper constraints last, as we want all our own
-# constraints to take precedence. If Depends-On is used, the requirements
-# repo will be cloned, so we prefer a local copy.
+# Retrieve a copy of OpenStack's upper constraints If Depends-On is
+# used, the requirements repo will be cloned, so we prefer
+# local copy from zuul.
 REQS_REPO_HOME="${TESTING_HOME}/src/opendev.org/openstack/requirements"
 if [[ -d "${REQS_REPO_HOME}" ]]; then
-  PIP_OPTS+=" --constraint ${REQS_REPO_HOME}/upper-constraints.txt"
+  cp "${REQS_REPO_HOME}/upper-constraints.txt" /tmp/upper-constraints.txt
 else
-  PIP_OPTS+=" --constraint ${TOX_CONSTRAINTS_FILE:-https://opendev.org/openstack/requirements/raw/${TESTING_BRANCH}/upper-constraints.txt}"
+  wget "${TOX_CONSTRAINTS_FILE:-https://opendev.org/openstack/requirements/raw/${TESTING_BRANCH}/upper-constraints.txt}" -O /tmp/upper-constraints.txt
 fi
+
+# Filter out setuptools/pip/wheel from OpenStack upper constraints
+# These are already constrained in OSA global-requirement-pins.txt
+cp /tmp/upper-constraints.txt /tmp/upper-constraints-filtered.txt
+sed -i '/setuptools=/d' /tmp/upper-constraints-filtered.txt
+sed -i '/pip=/d' /tmp/upper-constraints-filtered.txt
+sed -i '/wheel=/d' /tmp/upper-constraints-filtered.txt
+
+PIP_OPTS+=" --constraint /tmp/upper-constraints-filtered.txt"
 
 source /etc/os-release || source /usr/lib/os-release
 # Install selinux into venv

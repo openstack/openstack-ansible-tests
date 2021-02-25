@@ -195,13 +195,8 @@ if [[ ${ID,,} =~ (centos|rhel|fedora) ]]; then
     PIP_OPTS+=" selinux"
 fi
 
-# Install ARA from source if running in ARA gate, otherwise install from PyPi
-ARA_SRC_HOME="${TESTING_HOME}/src/opendev.org/recordsansible/ara"
-if [[ -d "${ARA_SRC_HOME}" ]]; then
-  PIP_OPTS+=" ${ARA_SRC_HOME}"
-else
-    PIP_OPTS+=" ara[server]"
-fi
+# Install ARA from PyPi
+PIP_OPTS+=" ara[server]"
 
 # Install all python packages
 python -m pip install ${PIP_OPTS}

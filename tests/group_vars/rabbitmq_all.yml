@@ -1,0 +1,14 @@
+---
+_rabbitmq_package_overrides:
+  debian:
+    rabbitmq_package_url: "https://packagecloud.io/rabbitmq/rabbitmq-server/packages/{{ ansible_distribution | lower }}/{{ ansible_distribution_release | lower }}/rabbitmq-server_3.6.14-1_all.deb/download.deb"
+    rabbitmq_package_version: "3.6.14-1"
+    rabbitmq_package_sha256: "68073956a6de8ba7c5224ef5bd7f35394e5b21371ff653bf98c6c32b1f93a748"
+  redhat:
+    rabbitmq_package_url: "https://packagecloud.io/rabbitmq/rabbitmq-server/packages/el/7/rabbitmq-server-3.6.14-1.el7.noarch.rpm/download.rpm"
+    rabbitmq_package_version: "rabbitmq-server-3.6.14-1.el7.noarch"
+    rabbitmq_package_sha256: "31eddc5e4e7609930ebf44ccfa71ef18a87426148b14203138515413c8f33fed"
+
+rabbitmq_package_url: "{{ _rabbitmq_package_overrides[ansible_os_family | lower].rabbitmq_package_url }}"
+rabbitmq_package_version: "{{ _rabbitmq_package_overrides[ansible_os_family | lower].rabbitmq_package_version }}"
+rabbitmq_package_sha256: "{{ _rabbitmq_package_overrides[ansible_os_family | lower].rabbitmq_package_sha256 }}"

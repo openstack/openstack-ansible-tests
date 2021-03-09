@@ -1,0 +1,13 @@
+---
+- name: Cleanup gate images
+  hosts: all
+  become: yes
+  become_user: root
+  tasks:
+    - name: Switch apt source from https to http
+      replace:
+        path: /etc/apt/sources.list
+        regexp: 'https'
+        replace: "http"
+      when:
+        - ansible_distribution_release in ['xenial', 'bionic']

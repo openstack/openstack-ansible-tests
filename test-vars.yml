@@ -361,7 +361,13 @@ tempest_git_repo: https://git.openstack.org/openstack/tempest
 tempest_git_install_branch: 23.0.0
 # We prefer to use the released versions of tempest for stable branches, but
 # we deploy the latest for the master branch.
-tempest_developer_mode: "{{ test_branch == 'master' }}"
+
+# NOTE(erikberg)
+# https://setuptools.readthedocs.io/en/latest/python%202%20sunset.html
+# add and pin setuptools<45 for xenial
+tempest_developer_mode: "{{ ansible_distribution_release | lower == 'xenial' }}"
+tempest_developer_constraints:
+  - setuptools<45
 tempest_venv_download: False
 # tempest_venv_bin is set to use the same naming convention
 # as the other venvs (with the tag 'testing')

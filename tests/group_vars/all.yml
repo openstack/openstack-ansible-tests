@@ -1,0 +1,27 @@
+---
+pip_upstream_url: https://bootstrap.pypa.io/pip/3.3/get-pip.py
+pip_fallback_url: https://raw.githubusercontent.com/pypa/get-pip/main/3.3/get-pip.py
+
+# NOTE(erikberg) cherry-pick c52784341834de13bb04cedd9b4529d1b3ca12ea to lxc_hosts.
+# tests are only for xenial/bionic/centos, so we can probably get away with this until that patch lands.
+_lxc_hosts_container_image_url_overrides:
+  xenial: http://cdimage.ubuntu.com/ubuntu-base/releases/16.04/release/ubuntu-base-16.04.6-base-amd64.tar.gz
+  bionic: http://cdimage.ubuntu.com/ubuntu-base/releases/18.04/release/ubuntu-base-18.04.5-base-amd64.tar.gz
+  core: https://github.com/CentOS/sig-cloud-instance-images/raw/CentOS-7/docker/centos-7-docker.tar.xz
+lxc_hosts_container_image_url: "{{ _lxc_hosts_container_image_url_overrides[ansible_distribution_release | lower] }}"
+
+# NOTE(erikberg)
+# pin tempest-plugins to latest tag before dropping python 2.7
+tempest_plugins:
+  - name: cinder-tempest-plugin
+    repo: https://git.openstack.org/openstack/cinder-tempest-plugin
+    branch: 0.3.1
+  - name: heat-tempest-plugin
+    repo: https://git.openstack.org/openstack/heat-tempest-plugin
+    branch: 0.4.0
+  - name: keystone-tempest-plugin
+    repo: https://git.openstack.org/openstack/keystone-tempest-plugin
+    branch: 0.3.0
+  - name: neutron-tempest-plugin
+    repo: https://git.openstack.org/openstack/neutron-tempest-plugin
+    branch: 0.9.0

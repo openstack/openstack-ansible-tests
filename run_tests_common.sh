@@ -78,7 +78,7 @@ eval sudo ${pkg_mgr_cmd} ${pkg_list}
 # Install pip
 if ! which pip &>/dev/null; then
     curl --silent --show-error --retry 5 \
-        https://bootstrap.pypa.io/3.3/get-pip.py | sudo python2.7
+        https://bootstrap.pypa.io/pip/3.3/get-pip.py | sudo python2.7
 fi
 
 # Install bindep and tox

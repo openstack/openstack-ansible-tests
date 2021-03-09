@@ -13,15 +13,21 @@
     check:
       jobs:
         - openstack-ansible-linters
-        - openstack-ansible-functional-debian-stable
-        - openstack-ansible-functional-centos-7
-        - openstack-ansible-functional-ubuntu-bionic
+        - openstack-ansible-functional-debian-stable:
+            voting: false
+        - openstack-ansible-functional-centos-7:
+            voting: false
+        - openstack-ansible-functional-ubuntu-bionic:
+            voting: false
     gate:
       jobs:
         - openstack-ansible-linters
-        - openstack-ansible-functional-debian-stable
-        - openstack-ansible-functional-centos-7
-        - openstack-ansible-functional-ubuntu-bionic
+        - openstack-ansible-functional-debian-stable:
+            voting: false
+        - openstack-ansible-functional-centos-7:
+            voting: false
+        - openstack-ansible-functional-ubuntu-bionic:
+            voting: false
     experimental:
       jobs:
         - openstack-ansible-integrated-deploy-aio

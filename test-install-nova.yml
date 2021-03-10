@@ -34,18 +34,6 @@
         - libffi-devel
         - pkgconfig
         - libvirt-devel
-      yum:
-        - libxml2-devel
-        - libxslt-devel
-        - libffi-devel
-        - pkgconfig
-        - libvirt-devel
-      zypper:
-        - libxml2-devel
-        - libxslt-devel
-        - libffi-devel
-        - pkg-config
-        - libvirt-devel
   vars_files:
     - test-vars.yml
   tasks:

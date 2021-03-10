@@ -44,12 +44,6 @@ BINDEP_FILE=${BINDEP_FILE:-bindep.txt}
 # Perform the initial distribution package install
 # to allow pip and bindep to work.
 case "${ID,,}" in
-    *suse*)
-        # Need to pull libffi and python-pyOpenSSL early
-        # because we install ndg-httpsclient from pip on Leap 42.1
-        [[ "${VERSION}" == "42.1" ]] && extra_suse_deps="libffi-devel python-pyOpenSSL"
-        pkg_list="ca-certificates-mozilla python-devel python-xml lsb-release ${extra_suse_deps:-}"
-        ;;
     amzn|centos|rhel)
         pkg_list="python3-devel python3-virtualenv redhat-lsb-core"
         ;;
@@ -59,10 +53,6 @@ case "${ID,,}" in
     ubuntu|debian)
         pkg_list="python3-dev python3-pip virtualenv lsb-release curl"
         sudo apt-get update
-        ;;
-    gentoo)
-        pkg_list="app-misc/ca-certificates sys-apps/lsb-release dev-python/pyopenssl"
-        sudo emerge-webrsync
         ;;
     *)
         echo "Unsupported distribution: ${ID,,}"
@@ -82,9 +72,6 @@ sudo "${PIP_EXEC_PATH}" install 'bindep>=2.4.0' tox
 
 if [[ "${ID,,}" == "fedora" ]]; then
     sudo dnf -y install redhat-lsb-core yum-utils
-# openSUSE 42.1 does not have python-ndg-httpsclient
-elif [[ "${ID,,}" == *suse* ]] && [[ ${VERSION} == "42.1" ]]; then
-    sudo python -m pip install ndg-httpsclient
 fi
 
 # Get a list of packages to install with bindep. If packages need to be
@@ -95,9 +82,6 @@ echo "Packages to install: ${BINDEP_PKGS}"
 # Install OS packages using bindep
 if [[ ${#BINDEP_PKGS} > 0 ]]; then
     case "${ID,,}" in
-        *suse*)
-            sudo zypper -n in ${BINDEP_PKGS}
-            ;;
         centos|fedora)
             sudo dnf install -y ${BINDEP_PKGS}
             ;;
@@ -106,9 +90,6 @@ if [[ ${#BINDEP_PKGS} > 0 ]]; then
             sudo DEBIAN_FRONTEND=noninteractive \
                 apt-get -q --option "Dpkg::Options::=--force-confold" \
                 --assume-yes install ${BINDEP_PKGS}
-            ;;
-        gentoo)
-            sudo emerge -q --jobs="$(nrpoc)" ${BINDEP_PKGS}
             ;;
     esac
 fi

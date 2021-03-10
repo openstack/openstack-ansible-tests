@@ -25,7 +25,6 @@
     experimental:
       jobs:
         - openstack-ansible-integrated-deploy-aio
-        - openstack-ansible-functional-gentoo-17-0-systemd
 
 - project-template:
     name: openstack-ansible-upgrade
@@ -35,9 +34,6 @@
     gate:
       jobs:
         - openstack-ansible-upgrade-ubuntu-bionic
-    experimental:
-      jobs:
-        - openstack-ansible-upgrade-gentoo-17-0-systemd
 
 - project-template:
     name: openstack-ansible-role-distro_install-jobs
@@ -47,10 +43,3 @@
     gate:
       jobs:
         - openstack-ansible-functional-distro_install-centos-8
-    experimental:
-      jobs:
-        # NOTE(hwoarang) SUSE and Ubuntu distro jobs remain non-voting
-        # on master branches. See
-        # http://eavesdrop.openstack.org/meetings/openstack_ansible_meeting/2018/openstack_ansible_meeting.2018-10-23-16.01.log.html#l-188
-        - openstack-ansible-functional-distro_install-gentoo-17-0-systemd
-        - openstack-ansible-functional-distro_install-ubuntu-bionic

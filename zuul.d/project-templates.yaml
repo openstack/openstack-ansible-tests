@@ -14,13 +14,15 @@
       jobs:
         - openstack-ansible-linters
         - openstack-ansible-functional-debian-stable
-        - openstack-ansible-functional-centos-7
+        - openstack-ansible-functional-centos-7:
+            voting: false
         - openstack-ansible-functional-ubuntu-bionic
     gate:
       jobs:
         - openstack-ansible-linters
         - openstack-ansible-functional-debian-stable
-        - openstack-ansible-functional-centos-7
+        - openstack-ansible-functional-centos-7:
+            voting: false
         - openstack-ansible-functional-ubuntu-bionic
     experimental:
       jobs:

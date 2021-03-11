@@ -25,7 +25,7 @@
   any_errors_fatal: true
   vars:
     kernel_module_path:
-      apt: "lib/modules"
+      apt: "{{ ansible_facts['distribution_release'] != 'focal' | ternary('lib/modules', 'usr/lib/modules') }}"
       dnf: "usr/lib/modules"
       yum: "usr/lib/modules"
       zypper: "lib/modules"

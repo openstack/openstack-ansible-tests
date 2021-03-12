@@ -27,7 +27,6 @@
         echo "lxc_reverse_proxy=${NODEPOOL_MIRROR_HOST}"
         echo "uca_apt_repo_url=${NODEPOOL_UCA_MIRROR}"
         echo "openstack_hosts_centos_mirror_url=${NODEPOOL_CENTOS_MIRROR}"
-        echo "opensuse_mirror=${NODEPOOL_OPENSUSE_MIRROR}"
         echo "pip_default_index=${NODEPOOL_PYPI_MIRROR}"
         echo "pip_wheel_mirror=${NODEPOOL_WHEEL_MIRROR}"
         echo "centos_epel_mirror=${NODEPOOL_EPEL_MIRROR}"

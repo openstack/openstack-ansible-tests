@@ -60,7 +60,7 @@
     # be fixed (instead of timeouts).
     - name: Use present for package_state on CentOS
       set_fact:
-        package_state: "{{ (ansible_pkg_mgr == 'dnf') | ternary('present', 'latest') }}"
+        package_state: "{{ (ansible_facts['pkg_mgr'] == 'dnf') | ternary('present', 'latest') }}"
 
     - name: Setup clouds.yaml for the test user
       include_role:
@@ -193,15 +193,15 @@
                               ' gso off sg off tso off tx off'] %}
               {% for interface in (bridges | default([])) %}
               {%   if interface is string %}
-              {%     set _ = veths.append('-' + iptool_path[ansible_os_family | lower] + ' link set ' + interface + ' up') %}
+              {%     set _ = veths.append('-' + iptool_path[ansible_facts['os_family'] | lower] + ' link set ' + interface + ' up') %}
               {%     set _ = veths.append('-/sbin/ethtool -K ' + interface + ' gso off sg off tso off tx off') %}
               {%   else %}
               {%     set interface_name = (interface.name | default('br-mgmt')) %}
-              {%     set _ = veths.append('-' + iptool_path[ansible_os_family | lower] + ' link set ' + interface_name + ' up') %}
+              {%     set _ = veths.append('-' + iptool_path[ansible_facts['os_family'] | lower] + ' link set ' + interface_name + ' up') %}
               {%     set _ = veths.append('-/sbin/ethtool -K ' + interface_name + ' gso off sg off tso off tx off') %}
               {%     if interface.veth_peer is defined %}
-              {%       set _ = veths.append('-' + iptool_path[ansible_os_family | lower] + ' link set ' + interface_name + '-veth up') %}
-              {%       set _ = veths.append('-' + iptool_path[ansible_os_family | lower] + ' link set ' + interface.veth_peer + ' up') %}
+              {%       set _ = veths.append('-' + iptool_path[ansible_facts['os_family'] | lower] + ' link set ' + interface_name + '-veth up') %}
+              {%       set _ = veths.append('-' + iptool_path[ansible_facts['os_family'] | lower] + ' link set ' + interface.veth_peer + ' up') %}
               {%       set _ = veths.append('-/sbin/ethtool -K ' + interface.veth_peer + ' gso off sg off tso off tx off') %}
               {%     endif %}
               {%   endif %}

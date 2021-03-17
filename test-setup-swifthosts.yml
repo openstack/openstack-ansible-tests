@@ -32,13 +32,13 @@
     package:
       name: xfsprogs
       state: present
-      # NOTE(hwoarang) Use the ansible_pkg_mgr fact gathered by
+      # NOTE(hwoarang) Use the ansible_facts['pkg_mgr'] fact gathered by
       # the setup module for the container because package manager
       # detection does not work as expected when the task is delegated.
-      # The reason is that the package module expects hostvars['%s']['ansible_pkg_mgr']
+      # The reason is that the package module expects hostvars['%s']['ansible_facts']['pkg_mgr']
       # to be populated on delegated tasks but this is not the case here
       # because we haven't run the setup module on localhost.
-      use: "{{ ansible_pkg_mgr }}"
+      use: "{{ ansible_facts['pkg_mgr'] }}"
     delegate_to: "{{ physical_host }}"
     run_once: true
 

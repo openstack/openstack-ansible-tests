@@ -41,7 +41,7 @@
     #       nova wheel
     - name: Install packages required to build nova python package
       package:
-        name: "{{ required_packages[ansible_pkg_mgr] }}"
+        name: "{{ required_packages[ansible_facts['pkg_mgr']] }}"
         state: present
 
 

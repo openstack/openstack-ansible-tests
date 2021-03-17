@@ -69,7 +69,7 @@ lxc_net_bridge: lxcbr0
 lxc_kernel_options:
   - { key: 'fs.inotify.max_user_instances', value: 1024 }
 lxc_container_config_list:
-  - "lxc.apparmor.profile={{ (hostvars[physical_host]['ansible_distribution'] == 'Debian') | ternary('unconfined', 'lxc-openstack') }}"
+  - "lxc.apparmor.profile={{ (hostvars[physical_host]['ansible_facts']['distribution'] == 'Debian') | ternary('unconfined', 'lxc-openstack') }}"
 
 # Galera Settings
 galera_address: "{{ test_galera_host }}"

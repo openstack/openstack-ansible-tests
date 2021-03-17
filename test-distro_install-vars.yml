@@ -18,7 +18,7 @@
 # all their testing using the source-based installation of
 # tempest. As such, for all ubuntu distribution tests we
 # force the use of the source install for tempest.
-tempest_install_method: "{{ (ansible_distribution | lower == 'ubuntu') | ternary('source', 'distro') }}"
+tempest_install_method: "{{ (ansible_facts['distribution'] | lower == 'ubuntu') | ternary('source', 'distro') }}"
 
 #
 # Use $role_install_method=distro so we can test the combined

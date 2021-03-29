@@ -180,10 +180,9 @@ else
   wget "${TOX_CONSTRAINTS_FILE:-https://opendev.org/openstack/requirements/raw/${TESTING_BRANCH}/upper-constraints.txt}" -O /tmp/upper-constraints.txt
 fi
 
-# Filter out setuptools/pip/wheel from OpenStack upper constraints
+# Filter out pip/wheel from OpenStack upper constraints
 # These are already constrained in OSA global-requirement-pins.txt
 cp /tmp/upper-constraints.txt /tmp/upper-constraints-filtered.txt
-sed -i '/setuptools=/d' /tmp/upper-constraints-filtered.txt
 sed -i '/pip=/d' /tmp/upper-constraints-filtered.txt
 sed -i '/wheel=/d' /tmp/upper-constraints-filtered.txt
 

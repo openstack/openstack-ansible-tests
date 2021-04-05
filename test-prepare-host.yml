@@ -127,7 +127,7 @@
       vars:
         systemd_interface_cleanup: true
         systemd_run_networkd: true
-        systemd_netdevs: |-
+        systemd_netdevs: |- # noqa var-spacing
           {% set systemd_network_devices = [] %}
           {% for interface in (bridges | default([])) %}
           {%   if interface is string %}
@@ -139,7 +139,8 @@
           {%     set _ = systemd_network_devices.append({'NetDev': {'Name': interface_name, 'Kind': 'bridge'}}) %}
           {%     if interface.veth_peer is defined %}
           {%       set _ = systemd_network_devices.append({'NetDev': {'Name': interface_name + '-veth', 'Kind': 'veth'},
-                                                                      'Peer': {'Name': interface.veth_peer}}) %}
+                                                            'Peer': {'Name': interface.veth_peer}
+                                                          }) %}
           {%     endif %}
           {%   endif %}
           {% endfor %}
@@ -158,7 +159,8 @@
           {%       set _ = systemd_network_networks.append({'interface': interface_name,
                                                             'netmask': (interface.netmask | default('255.255.255.0')),
                                                             'config_overrides': {'Network': {'Address': {(interface.ip_addr | default('10.1.0.1')): null,
-                                                                                                         (interface.alias | string): null}}}}) %}
+                                                                                                         (interface.alias | string): null}
+                                                                                                        }}}) %}
           {%     else %}
           {%       set _ = systemd_network_networks.append({'interface': 'dummy-' + interface_name, 'bridge': interface_name}) %}
           {%       set _ = systemd_network_networks.append({'interface': interface_name,

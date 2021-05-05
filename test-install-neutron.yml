@@ -35,11 +35,11 @@
       lxc_container:
         name: "{{ container_name }}"
         container_command: |
-          [[ ! -d "/{{ kernel_module_path[ansible_pkg_mgr] }}" ]] && mkdir -p "/{{ kernel_module_path[ansible_pkg_mgr] }}"
+          [[ ! -d "/{{ kernel_module_path[ansible_facts['pkg_mgr']] }}" ]] && mkdir -p "/{{ kernel_module_path[ansible_facts['pkg_mgr']] }}"
         container_config:
           - "lxc.apparmor.profile=unconfined"
           - "lxc.cgroup.devices.allow=a *:* rmw"
-          - "lxc.mount.entry=/{{ kernel_module_path[ansible_pkg_mgr] }} {{ kernel_module_path[ansible_pkg_mgr] }} none bind 0 0"
+          - "lxc.mount.entry=/{{ kernel_module_path[ansible_facts['pkg_mgr']] }} {{ kernel_module_path[ansible_facts['pkg_mgr']] }} none bind 0 0"
       delegate_to: "{{ physical_host }}"
 
     - name: Wait for container connectivity
@@ -70,7 +70,7 @@
     #       neutron wheel
     - name: Install packages required to build neutron python package
       package:
-        name: "{{ required_packages[ansible_pkg_mgr] }}"
+        name: "{{ required_packages[ansible_facts['pkg_mgr']] }}"
         state: present
       register: install_packages
       until: install_packages is success

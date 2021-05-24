@@ -45,5 +45,5 @@ source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
 # Execute ansible-lint. We do not want to test dependent roles located
 # in $HOME/.ansible/roles since we only care about the role we are currently
 # testing.
-ANSIBLE_LINT_WARNINGS="-w 208 -w 306 -w 502 -w 503 -w 106 -w metadata"
+ANSIBLE_LINT_WARNINGS="-w 208 -w 306 -w 502 -w 503 -w metadata"
 ansible-lint ${ANSIBLE_LINT_PARAMS} ${ANSIBLE_LINT_WARNINGS} --exclude=$HOME/.ansible/roles ${TEST_PLAYBOOK}

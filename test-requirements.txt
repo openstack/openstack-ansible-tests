@@ -19,7 +19,7 @@
 # Used for lint tests
 bashate>=0.5.1 # Apache-2.0
 flake8==3.8.3 # MIT
-ansible-lint==5.0.9 # MIT
+ansible-lint==5.0.10 # MIT
 
 # Used to help make SNI connections work from python
 # if python itself does not support it properly (<2.7.9).

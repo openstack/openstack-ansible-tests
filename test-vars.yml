@@ -72,6 +72,7 @@ lxc_container_config_list:
   - "lxc.apparmor.profile={{ (hostvars[physical_host]['ansible_facts']['distribution'] == 'Debian') | ternary('unconfined', 'lxc-openstack') }}"
 
 is_metal: "{{ not (ansible_facts['virtualization_type'] in ['lxc', 'systemd-nspawn']) }}"
+physical_host: localhost
 
 # Galera Settings
 galera_address: "{{ test_galera_host }}"

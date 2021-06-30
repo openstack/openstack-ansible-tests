@@ -15,6 +15,7 @@
 
 - project:
     templates:
+      - openstack-ansible-linters
       - openstack-ansible-role-jobs
       - check-requirements
       - publish-openstack-docs-pti

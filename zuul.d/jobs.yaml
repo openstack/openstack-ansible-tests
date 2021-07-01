@@ -23,6 +23,7 @@
     required-projects:
       - name: openstack/ansible-hardening
       - name: openstack/ansible-role-python_venv_build
+      - name: openstack/ansible-role-pki
       - name: openstack/ansible-role-systemd_mount
       - name: openstack/ansible-role-systemd_networkd
       - name: openstack/ansible-role-systemd_service

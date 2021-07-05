@@ -12,14 +12,12 @@
     name: openstack-ansible-role-jobs
     check:
       jobs:
-        - openstack-ansible-linters
         - openstack-ansible-functional-debian-buster
         - openstack-ansible-functional-centos-8
         - openstack-ansible-functional-ubuntu-bionic
         - openstack-ansible-functional-ubuntu-focal
     gate:
       jobs:
-        - openstack-ansible-linters
         - openstack-ansible-functional-ubuntu-focal
     experimental:
       jobs:

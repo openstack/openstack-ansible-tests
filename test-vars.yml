@@ -358,7 +358,7 @@ horizon_secret_key: "SuperSecreteHorizonKey"
 horizon_external_ssl: False
 
 # Tempest specific settings
-tempest_git_repo: https://opendev.org/openstack/tempest
+#tempest_git_repo: https://opendev.org/openstack/tempest
 # We prefer to use the released versions of tempest for stable branches, but
 # we deploy the latest for the master branch.
 tempest_developer_mode: "{{ test_branch == 'master' }}"

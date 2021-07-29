@@ -123,10 +123,9 @@
     vars:
       tox_env: upgrade
 
-- job:
-    name: openstack-ansible-functional-debian-stable
-    parent: openstack-ansible-functional
-    nodeset: debian-stable
+# NOTE(ianw) 2021-07-30 : debian-stretch used to be tested here, but
+# infra have removed the images as they only support buster/bullseye
+# now.
 
 - job:
     name: openstack-ansible-functional-ubuntu-bionic

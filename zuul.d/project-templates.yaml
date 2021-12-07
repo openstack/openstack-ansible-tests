@@ -13,7 +13,7 @@
     check:
       jobs:
         - openstack-ansible-functional-debian-buster
-        - openstack-ansible-functional-centos-8
+        - openstack-ansible-functional-centos-8-stream
         - openstack-ansible-functional-ubuntu-focal
     gate:
       jobs:
@@ -31,11 +31,3 @@
       jobs:
         - openstack-ansible-upgrade-ubuntu-focal
 
-- project-template:
-    name: openstack-ansible-role-distro_install-jobs
-    check:
-      jobs:
-        - openstack-ansible-functional-distro_install-centos-8
-    gate:
-      jobs:
-        - openstack-ansible-functional-distro_install-centos-8

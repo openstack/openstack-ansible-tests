@@ -130,16 +130,9 @@
     nodeset: ubuntu-focal
 
 - job:
-    name: openstack-ansible-functional-centos-8
+    name: openstack-ansible-functional-centos-8-stream
     parent: openstack-ansible-functional
-    nodeset: centos-8
-
-- job:
-    name: openstack-ansible-functional-distro_install-centos-8
-    parent: openstack-ansible-functional
-    nodeset: centos-8
-    vars:
-      tox_env: distro_install
+    nodeset: centos-8-stream
 
 - job:
     name: openstack-ansible-cross-repo-functional

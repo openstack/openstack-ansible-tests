@@ -24,7 +24,7 @@
         regexp: 'https'
         replace: "http"
       when:
-        - ansible_facts['distribution_release'] in ['bionic', 'focal']
+        - ansible_facts['distribution_release'] in ['focal']
 
     - name: Remove package blacklist for dnf
       lineinfile:

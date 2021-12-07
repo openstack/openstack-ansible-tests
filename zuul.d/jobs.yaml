@@ -125,57 +125,13 @@
       tox_env: upgrade
 
 - job:
-    name: openstack-ansible-functional-debian-buster
-    parent: openstack-ansible-functional
-    nodeset: debian-buster
-    voting: false
-
-- job:
-    name: openstack-ansible-functional-ubuntu-bionic
-    parent: openstack-ansible-functional
-    nodeset: ubuntu-bionic
-
-- job:
     name: openstack-ansible-functional-ubuntu-focal
     parent: openstack-ansible-functional
     nodeset: ubuntu-focal
 
 - job:
-    name: openstack-ansible-upgrade-ubuntu-bionic
-    parent: openstack-ansible-upgrade
-    nodeset: ubuntu-bionic
-
-- job:
-    name: openstack-ansible-functional-distro_install-ubuntu-bionic
-    parent: openstack-ansible-functional-ubuntu-bionic
-    vars:
-      tox_env: distro_install
-
-- job:
-    name: openstack-ansible-upgrade-gentoo-17-0-systemd
-    parent: openstack-ansible-upgrade
-    nodeset: gentoo-17-0-systemd
-
-- job:
-    name: openstack-ansible-functional-gentoo-17-0-systemd
-    parent: openstack-ansible-functional
-    nodeset: gentoo-17-0-systemd
-
-- job:
-    name: openstack-ansible-functional-distro_install-gentoo-17-0-systemd
-    parent: openstack-ansible-functional
-    nodeset: gentoo-17-0-systemd
-    vars:
-      tox_env: distro_install
-
-- job:
     name: openstack-ansible-functional-centos-8
     parent: openstack-ansible-functional
-    nodeset: centos-8
-
-- job:
-    name: openstack-ansible-upgrade-centos-8
-    parent: openstack-ansible-upgrade
     nodeset: centos-8
 
 - job:
@@ -196,27 +152,3 @@
       to execute the tests from must be specified in the
       ``osa_test_repo`` variable.
     nodeset: ubuntu-bionic
-
-- job:
-    name: openstack-ansible-integrated-deploy-aio
-    parent: openstack-ansible-deploy-aio
-    nodeset: ubuntu-bionic
-    voting: false
-    required-projects:
-      - openstack/openstack-ansible
-    description: |
-      Run AIO tests for an OpenStack-Ansible project.
-      This uses the integrated repository openstack-ansible
-      on Ubuntu Bionic with the scenario ``deploy`` ``aio``.
-      Any project can then use
-      the ``openstack-ansible-integrated-deploy-aio`` job in
-      whatever pipeline is appropriate.
-    vars:
-      osa_test_repo: "openstack/openstack-ansible"
-
-- job:
-    name: openstack-ansible-integrated-deploy-ceph
-    parent: openstack-ansible-integrated-deploy-aio
-    voting: false
-    vars:
-      scenario: ceph

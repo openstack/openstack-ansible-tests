@@ -14,7 +14,6 @@
       jobs:
         - openstack-ansible-linters
         - openstack-ansible-functional-debian-buster
-        - openstack-ansible-functional-centos-8
         - openstack-ansible-functional-ubuntu-bionic
         - openstack-ansible-functional-ubuntu-focal
     gate:
@@ -37,8 +36,6 @@
 - project-template:
     name: openstack-ansible-role-distro_install-jobs
     check:
-      jobs:
-        - openstack-ansible-functional-distro_install-centos-8
+      jobs: []
     gate:
-      jobs:
-        - openstack-ansible-functional-distro_install-centos-8
+      jobs: []

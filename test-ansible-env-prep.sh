@@ -151,7 +151,7 @@ fi
 # If the repo has its own test-requirements file, then use
 # it with the common one.
 if [[ -f "${WORKING_DIR}/test-requirements.txt" ]]; then
-  PIP_OPTS+=" --requirement ${WORKING_DIR}/test-requirements.txt"
+  PIP_OPTS+=" --requirement ${WORKING_DIR}/test-requirements.txt rich>=9.5.1,<11.0.0"
 fi
 
 # We add the common requirements after the in-repo requirements

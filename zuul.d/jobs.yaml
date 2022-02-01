@@ -167,23 +167,6 @@
       tox_env: distro_install
 
 - job:
-    name: openstack-ansible-functional-centos-8
-    parent: openstack-ansible-functional
-    nodeset: centos-8
-
-- job:
-    name: openstack-ansible-upgrade-centos-8
-    parent: openstack-ansible-upgrade
-    nodeset: centos-8
-
-- job:
-    name: openstack-ansible-functional-distro_install-centos-8
-    parent: openstack-ansible-functional
-    nodeset: centos-8
-    vars:
-      tox_env: distro_install
-
-- job:
     name: openstack-ansible-cross-repo-functional
     parent: openstack-ansible-functional
     description: |

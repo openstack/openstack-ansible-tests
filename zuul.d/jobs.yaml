@@ -173,12 +173,6 @@
     nodeset: centos-7
 
 - job:
-    name: openstack-ansible-functional-centos-8
-    parent: openstack-ansible-functional
-    nodeset: centos-8
-    voting: false
-
-- job:
     name: openstack-ansible-upgrade-centos-7
     parent: openstack-ansible-upgrade
     nodeset: centos-7

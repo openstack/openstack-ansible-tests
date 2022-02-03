@@ -71,6 +71,7 @@ COMMON_ETC_LOG_NAMES="almanach \
                       octavia \
                       panko \
                       pip.conf \
+                      pki \
                       qpid-dispatch \
                       rabbitmq \
                       rally \

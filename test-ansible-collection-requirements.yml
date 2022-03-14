@@ -24,6 +24,12 @@ collections:
   - name: openvswitch.openvswitch
     version: 2.0.2
     source: https://galaxy.ansible.com
+  - name: ansible.netcommon
+    version: 2.5.1
+    source: https://galaxy.ansible.com
+  - name: ansible.utils
+    version: 2.5.2
+    source: https://galaxy.ansible.com
   - name: https://opendev.org/openstack/openstack-ansible-plugins
     version: master
     type: git

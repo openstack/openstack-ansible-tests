@@ -21,3 +21,9 @@ collections:
   - name: openvswitch.openvswitch
     version: 1.0.5
     source: https://galaxy.ansible.com
+  - name: ansible.netcommon
+    version: 2.5.1
+    source: https://galaxy.ansible.com
+  - name: ansible.utils
+    version: 2.5.2
+    source: https://galaxy.ansible.com

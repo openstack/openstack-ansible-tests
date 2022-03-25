@@ -44,7 +44,7 @@ BINDEP_FILE=${BINDEP_FILE:-bindep.txt}
 # Perform the initial distribution package install
 # to allow pip and bindep to work.
 case "${ID,,}" in
-    amzn|centos|rhel)
+    amzn|centos|rhel|rocky)
         pkg_list="python3-devel python3-virtualenv redhat-lsb-core"
         ;;
     fedora)

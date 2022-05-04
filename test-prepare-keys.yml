@@ -119,3 +119,63 @@
         user: "{{ ansible_user_id }}"
         key: "{{ root_public_key }}"
       when: ansible_user_id != 'root'
+
+- name: Create SSHD CA
+  hosts: "{{ openstack_ssh_keypairs_setup_host | default('localhost') }}"
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: "Create SSHD certificate authority"
+      include_role:
+        name: openstack.osa.ssh_keypairs
+      vars:
+        ssh_keypairs_setup_host: localhost
+        ssh_keypairs_dir: "/etc/openstack_deploy/ssh_keypairs"
+        ssh_keypairs:
+          - name: "OpenStack-Ansible-SSH-Signing-Key"
+        ssh_keypairs_install_authorities: false
+        ssh_keypairs_install_keypairs: false
+        ssh_keypairs_install_authorized_keys: false
+
+- name: Create CA certificates
+  hosts: "{{ openstack_pki_setup_host | default('localhost') }}"
+  gather_facts: "false"
+  become: true
+  tasks:
+    - name: "Create CA certificates"
+      include_role:
+        name: pki
+        tasks_from: main_ca.yml
+      vars:
+        pki_dir: "/etc/openstack_deploy/pki"
+        pki_create_ca: true
+        pki_authorities:
+          - name: "ExampleCorpRoot"
+            provider: selfsigned
+            basic_constraints: "CA:TRUE"
+            cn: "Example Corp Root CA"
+            email_address: "pki@example.com"
+            country_name: "GB"
+            state_or_province_name: "England"
+            organization_name: "Example Corporation"
+            organizational_unit_name: "IT Security"
+            key_usage:
+              - digitalSignature
+              - cRLSign
+              - keyCertSign
+            not_after: "+3650d"
+          - name: "ExampleCorpIntermediate"
+            provider: ownca
+            basic_constraints: "CA:TRUE,pathlen:0"
+            cn: "Example Corp Openstack Infrastructure Intermediate CA"
+            email_address: "pki@example.com"
+            country_name: "GB"
+            state_or_province_name: "England"
+            organization_name: "Example Corporation"
+            organizational_unit_name: "IT Security"
+            key_usage:
+              - digitalSignature
+              - cRLSign
+              - keyCertSign
+            not_after: "+3650d"
+            signed_by: "ExampleCorpRoot"

@@ -496,3 +496,17 @@ uwsgi_python_executable: "{{ openstack_venv_python_executable }}"
 
 ## OpenStack db setup host
 openstack_db_setup_host: infra1
+
+## ssh keypairs
+openstack_ssh_keypairs_dir: "/etc/openstack_deploy/ssh_keypairs"
+openstack_ssh_signing_key: "OpenStack-Ansible-SSH-Signing-Key"
+openstack_ssh_keypairs_authorities:
+  - name: "{{ openstack_ssh_signing_key }}"
+
+## certificate authority
+openstack_pki_authorities:
+  # placeholder to ensure that this var is defined and list is length > 0
+  - true
+
+openstack_pki_dir: "/etc/openstack_deploy/pki"
+openstack_pki_service_intermediate_cert_name: "ExampleCorpIntermediate"

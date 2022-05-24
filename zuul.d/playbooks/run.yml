@@ -35,3 +35,4 @@
         chdir: "{{ ansible_user_dir }}/src/{{ current_test_repo }}"
       environment:
         TESTING_BRANCH: "{{ testing_branch | default('') }}"
+        SERVICES_BRANCH: "{{ services_branch | default('') }}"

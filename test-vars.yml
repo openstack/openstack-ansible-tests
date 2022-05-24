@@ -19,6 +19,7 @@ external_lb_vip_address: 127.0.0.1
 internal_lb_vip_address: 127.0.0.1
 debug: true
 test_branch: "{{ lookup('env', 'TESTING_BRANCH') | default('master', true) }}"
+services_branch: "{{ lookup('env', 'SERVICES_BRANCH') | default('master', true) }}"
 
 ## Container destruction when testing repeatedly
 force_containers_destroy: True
@@ -144,7 +145,7 @@ keystone_oslomsg_notify_password: "{{ oslomsg_notify_password }}"
 keystone_container_mysql_password: "SuperSecrete"
 keystone_venv_tag: "testing"
 keystone_developer_mode: true
-keystone_git_install_branch: "{{ test_branch }}"
+keystone_git_install_branch: "{{ services_branch }}"
 keystone_service_region: RegionOne
 keystone_cache_servers: "[{% for host in groups[test_memcached_group] %}\"{{ hostvars[host]['ansible_host'] }}:11211\"{% if not loop.last %},{% endif %}{% endfor %}]"
 
@@ -159,7 +160,7 @@ glance_service_port: 9292
 glance_service_user_name: glance
 glance_container_mysql_password: "SuperSecrete"
 glance_developer_mode: true
-glance_git_install_branch: "{{ test_branch }}"
+glance_git_install_branch: "{{ services_branch }}"
 glance_profiler_hmac_key: "secrete"
 glance_oslomsg_rpc_password: "{{ oslomsg_rpc_password }}"
 glance_oslomsg_notify_password: "{{ oslomsg_notify_password }}"
@@ -172,7 +173,7 @@ nova_api_container_mysql_password: "SuperSecrete"
 nova_glance_api_servers: "http://{{ test_glance_host }}:9292"
 nova_container_mysql_password: "SuperSecrete"
 nova_developer_mode: true
-nova_git_install_branch: "{{ test_branch }}"
+nova_git_install_branch: "{{ services_branch }}"
 nova_keystone_auth_plugin: password
 nova_management_address: "{{ ansible_host }}"
 nova_metadata_port: 8775
@@ -209,15 +210,15 @@ nova_cell0_database: "nova_cell0"
 # Neutron specific settings
 neutron_container_mysql_password: SuperSecrete
 neutron_developer_mode: true
-neutron_git_install_branch: "{{ test_branch }}"
-neutron_fwaas_git_install_branch: "{{ test_branch }}"
-neutron_vpnaas_git_install_branch: "{{ test_branch }}"
-neutron_dynamic_routing_git_install_branch: "{{ test_branch }}"
+neutron_git_install_branch: "{{ services_branch }}"
+neutron_fwaas_git_install_branch: "{{ services_branch }}"
+neutron_vpnaas_git_install_branch: "{{ services_branch }}"
+neutron_dynamic_routing_git_install_branch: "{{ services_branch }}"
 # networking-calico is branchless
 networking_calico_git_install_branch: "3.12.0"
-networking_odl_git_install_branch: "{{ test_branch }}"
-networking_sfc_git_install_branch: "{{ test_branch }}"
-networking_bgpvpn_git_install_branch: "{{ test_branch }}"
+networking_odl_git_install_branch: "{{ services_branch }}"
+networking_sfc_git_install_branch: "{{ services_branch }}"
+networking_bgpvpn_git_install_branch: "{{ services_branch }}"
 
 neutron_ha_vrrp_auth_password: secrete
 neutron_management_address: "{{ test_neutron_server_host }}"
@@ -244,7 +245,7 @@ cinder_backends_rbd_inuse: false
 cinder_ceph_client: cinder
 cinder_container_mysql_password: "SuperSecrete"
 cinder_developer_mode: true
-cinder_git_install_branch: "{{ test_branch }}"
+cinder_git_install_branch: "{{ services_branch }}"
 cinder_glance_api_servers: "http://{{ test_glance_host }}:9292"
 cinder_profiler_hmac_key: "secrete"
 cinder_oslomsg_rpc_password: "{{ oslomsg_rpc_password }}"
@@ -282,7 +283,7 @@ swift_hash_path_prefix: "secrete_prefx"
 swift_hash_path_suffix: "secrete_suffix"
 swift_service_password: "secrete"
 swift_developer_mode: true
-swift_git_install_branch: "{{ test_branch }}"
+swift_git_install_branch: "{{ services_branch }}"
 swift_venv_tag: untagged
 swift_venv_bin: "/openstack/venvs/swift-{{ swift_venv_tag }}/bin"
 swift_service_publicuri: "http://{{ test_swift_proxy_host }}:8080"
@@ -311,7 +312,7 @@ swift_proxy_server_conf_overrides:
 # Heat specific settings
 heat_venv_tag: "testing"
 heat_developer_mode: True
-heat_git_install_branch: "{{ test_branch }}"
+heat_git_install_branch: "{{ services_branch }}"
 heat_service_password: secrete
 heat_stack_domain_admin_password: secrete
 heat_auth_encryption_key: 32characterslongboguskeyvaluefoo
@@ -333,7 +334,7 @@ gnocchi_ssl_external: false
 # Ironic specific settings
 ironic_venv_tag: "testing"
 ironic_developer_mode: True
-ironic_git_install_branch: "{{ test_branch }}"
+ironic_git_install_branch: "{{ services_branch }}"
 ironic_service_publicuri: "http://{{ test_ironic_api_host }}:6385"
 ironic_service_publicurl: "{{ ironic_service_publicuri }}"
 ironic_service_adminuri: "http://{{ test_ironic_api_host }}:6385"
@@ -353,8 +354,8 @@ ironic_glance_api_servers: "http://{{ test_glance_host }}:9292"
 # Horizon Settings
 horizon_developer_mode: true
 horizon_venv_tag: "testing"
-horizon_git_install_branch: "{{ test_branch }}"
-horizon_requirements_git_install_branch: "{{ test_branch }}"
+horizon_git_install_branch: "{{ services_branch }}"
+horizon_requirements_git_install_branch: "{{ services_branch }}"
 horizon_container_mysql_password: "SuperSecrete"
 horizon_secret_key: "SuperSecreteHorizonKey"
 horizon_external_ssl: False
@@ -364,7 +365,6 @@ horizon_external_ssl: False
 #tempest_git_repo: https://opendev.org/openstack/tempest
 # We prefer to use the released versions of tempest for stable branches, but
 # we deploy the latest for the master branch.
-tempest_developer_mode: "{{ test_branch == 'master' }}"
 tempest_venv_download: False
 # tempest_venv_bin is set to use the same naming convention
 # as the other venvs (with the tag 'testing')
@@ -440,7 +440,7 @@ ironic_wsgi_processes: 2
 pip_install_options: "--no-binary libvirt-python"
 
 # The URL/path of a constraints file to use when installing the additional pip packages.
-pip_install_upper_constraints: "https://opendev.org/openstack/openstack-ansible/raw/{{ test_branch }}/global-requirement-pins.txt --constraint https://opendev.org/openstack/requirements/raw/{{ test_branch }}/upper-constraints.txt"
+pip_install_upper_constraints: "https://opendev.org/openstack/openstack-ansible/raw/{{ test_branch }}/global-requirement-pins.txt --constraint https://opendev.org/openstack/requirements/raw/{{ services_branch }}/upper-constraints.txt"
 
 # apply openstack-ansible global constraints for python_venv_build
 _global_pins_file_url: "https://opendev.org/openstack/openstack-ansible/raw/{{ test_branch }}/global-requirement-pins.txt"
@@ -448,11 +448,7 @@ _global_pins_file_url: "https://opendev.org/openstack/openstack-ansible/raw/{{ t
 venv_build_global_constraints: >-
   {{ lookup('url', _global_pins_file_url, wantlist=True) | reject('match','^#.*$') | reject('equalto', '') | list }}
 
-requirements_git_install_branch: "{{ test_branch.split('/')[-1] }}"
-
-# Overriding the developer_constraints allows us to install from local disk as a precedence
-# if the repo is present.
-pip_install_developer_constraints: "--constraint {{ development_repo_directory }}/local-package-constraints-{{ test_branch | replace('/','_') }}.txt --constraint /opt/developer-pip-constraints.txt"
+requirements_git_install_branch: "{{ services_branch.split('/')[-1] }}"
 
 # As role tests are executed in temporary environments, we don't need
 # to always fetch the latest get-pip.py script

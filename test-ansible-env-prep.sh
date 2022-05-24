@@ -56,12 +56,15 @@ if [[ "${TESTING_BRANCH}" == "" ]]; then
   export TESTING_BRANCH="master"
 fi
 
+export SERVICES_BRANCH=${SERVICES_BRANCH:-$TESTING_BRANCH}
+
 # Use pip opts to add options to the pip install command.
 # This can be used to tell it which index to use, etc.
 export PIP_OPTS=${PIP_OPTS:-""}
 
 echo "TESTING_HOME: ${TESTING_HOME}"
 echo "TESTING_BRANCH: ${TESTING_BRANCH}"
+echo "SERVICES_BRANCH: ${SERVICES_BRANCH}"
 echo "WORKING_DIR: ${WORKING_DIR}"
 echo "ROLE_NAME: ${ROLE_NAME}"
 echo "ANSIBLE_INVENTORY: ${ANSIBLE_INVENTORY}"
@@ -178,7 +181,7 @@ REQS_REPO_HOME="${TESTING_HOME}/src/opendev.org/openstack/requirements"
 if [[ -d "${REQS_REPO_HOME}" ]]; then
   cp "${REQS_REPO_HOME}/upper-constraints.txt" /tmp/upper-constraints.txt
 else
-  wget "${TOX_CONSTRAINTS_FILE:-https://opendev.org/openstack/requirements/raw/${TESTING_BRANCH}/upper-constraints.txt}" -O /tmp/upper-constraints.txt
+  wget "${TOX_CONSTRAINTS_FILE:-https://opendev.org/openstack/requirements/raw/${SERVICES_BRANCH}/upper-constraints.txt}" -O /tmp/upper-constraints.txt
 fi
 
 # Filter out pip/wheel from OpenStack upper constraints

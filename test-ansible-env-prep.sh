@@ -151,12 +151,12 @@ fi
 # If the repo has its own test-requirements file, then use
 # it with the common one.
 if [[ -f "${WORKING_DIR}/test-requirements.txt" ]]; then
-  PIP_OPTS+=" --requirement ${WORKING_DIR}/test-requirements.txt rich>=9.5.1,<11.0.0"
+  PIP_OPTS+=" --requirement ${WORKING_DIR}/test-requirements.txt"
 fi
 
 # We add the common requirements after the in-repo requirements
 # so that the in-repo ones take precedence.
-PIP_OPTS+=" --requirement ${COMMON_TESTS_PATH}/test-requirements.txt"
+PIP_OPTS+=" --requirement ${COMMON_TESTS_PATH}/test-requirements.txt rich>=9.5.1,<11.0.0"
 
 # If the repo has a doc/requirements.txt file, add it to the
 # requirements list. This is necessary for the linters test

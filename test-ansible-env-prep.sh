@@ -26,6 +26,7 @@
 ## Shell Opts ----------------------------------------------------------------
 
 set -e
+set -x
 
 ## Vars ----------------------------------------------------------------------
 
@@ -50,7 +51,7 @@ ZUUL_PLUGINS_CLONE_LOCATION="/home/zuul/src/opendev.org/openstack/openstack-ansi
 
 # Use .gitreview as the key to determine the appropriate
 # branch to clone for tests.
-export TESTING_BRANCH=$(awk -F'=' '/defaultbranch/ {print $2}' "${WORKING_DIR}/.gitreview")
+export TESTING_BRANCH=${TESTING_BRANCH:-`awk -F'=' '/defaultbranch/ {print $2}' "${WORKING_DIR}/.gitreview"`}
 if [[ "${TESTING_BRANCH}" == "" ]]; then
   export TESTING_BRANCH="master"
 fi

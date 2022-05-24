@@ -33,3 +33,5 @@
       args:
         executable: "/bin/bash"
         chdir: "{{ ansible_user_dir }}/src/{{ current_test_repo }}"
+      environment:
+        TESTING_BRANCH: "{{ testing_branch | default('') }}"

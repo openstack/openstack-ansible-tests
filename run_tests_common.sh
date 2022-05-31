@@ -44,11 +44,18 @@ BINDEP_FILE=${BINDEP_FILE:-bindep.txt}
 # Perform the initial distribution package install
 # to allow pip and bindep to work.
 case "${ID,,}" in
-    amzn|centos|rhel|rocky)
-        pkg_list="python3-devel python3-virtualenv redhat-lsb-core"
-        ;;
-    fedora)
-        pkg_list="python3-devel python3-virtualenv redhat-lsb-core redhat-rpm-config yum-utils"
+    rocky)
+        pkg_list="python38 python38-devel redhat-lsb-core"
+       ;;
+    amzn|centos|rhel)
+        case ${VERSION_ID} in
+            8)
+                pkg_list="python38 python38-devel redhat-lsb-core"
+                ;;
+            9)
+                pkg_list="python3 python3-devel redhat-lsb-core"
+               ;;
+        esac
         ;;
     ubuntu|debian)
         pkg_list="python3-dev python3-pip virtualenv lsb-release curl"
@@ -64,7 +71,7 @@ eval sudo ${pkg_mgr_cmd} ${pkg_list}
 PIP_EXEC_PATH=$(which pip3 || which pip)
 
 if [[ "${ID,,}" == "centos" ]] && [[ ${VERSION_ID} == "8" ]]; then
-    sudo alternatives --set python /usr/bin/python3
+    sudo alternatives --set python3 /usr/bin/python3.8
 fi
 
 # Install bindep and tox
@@ -82,7 +89,7 @@ echo "Packages to install: ${BINDEP_PKGS}"
 # Install OS packages using bindep
 if [[ ${#BINDEP_PKGS} > 0 ]]; then
     case "${ID,,}" in
-        centos|fedora)
+        centos|fedora|rhel|rocky)
             sudo dnf install -y ${BINDEP_PKGS}
             ;;
         ubuntu|debian)

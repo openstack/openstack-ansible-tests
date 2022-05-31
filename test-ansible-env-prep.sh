@@ -190,10 +190,6 @@ sed -i '/wheel=/d' /tmp/upper-constraints-filtered.txt
 PIP_OPTS+=" --constraint /tmp/upper-constraints-filtered.txt"
 
 source /etc/os-release || source /usr/lib/os-release
-# Install selinux into venv
-if [[ ${ID,,} =~ (centos|rhel|fedora) ]]; then
-    PIP_OPTS+=" selinux"
-fi
 
 # Install ARA from PyPi
 PIP_OPTS+=" ara[server]"

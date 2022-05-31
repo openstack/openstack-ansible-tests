@@ -40,6 +40,10 @@
         haproxy_state: disabled
       when:
         - "groups['keystone_all'] | length > 1"
+    - name: "Pre-service deployment tasks from os_keystone role"
+      include_role:
+        name: os_keystone
+        tasks_from: main_pre.yml
   roles:
     - role: "os_keystone"
   post_tasks:

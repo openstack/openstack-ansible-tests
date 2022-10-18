@@ -88,7 +88,7 @@ elif [[ "${ID,,}" == "centos" ]] && [[ ${VERSION_ID} == "8" ]]; then
     sudo alternatives --set python /usr/bin/python3
     sudo pip3 install 'bindep>=2.4.0' tox 'virtualenv<20.2.2'
 else
-    sudo pip3 install 'bindep>=2.4.0' tox 'virtualenv<20.2.2'
+    sudo pip3 install 'bindep>=2.4.0' tox 'virtualenv<20.2.2' 'importlib-metadata<5.0.0'
 fi
 
 if [[ "${ID,,}" == "fedora" ]]; then

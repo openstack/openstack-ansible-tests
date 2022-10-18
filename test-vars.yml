@@ -72,6 +72,11 @@ lxc_config_key_apparmor: "{{ lookup('pipe', 'lxc-info --version || echo 2.0.0') 
 lxc_container_config_list:
   - "{{ (hostvars[physical_host]['ansible_distribution'] == 'Debian') | ternary('lxc.' ~ lxc_config_key_apparmor~'=unconfined', 'lxc.' ~ lxc_config_key_apparmor ~ '=lxc-openstack') }}"
 
+## images.linuxcontainers.org reverse proxy
+lxc_image_cache_server_mirrors:
+  - "{{ (nodepool_vars is defined) | ternary('http://' ~ nodepool_vars.NODEPOOL_LXC_IMAGE_PROXY, 'https://us.lxd.images.canonical.com/') }}"
+
+
 # Galera Settings
 galera_address: "{{ test_galera_host }}"
 galera_root_password: secrete

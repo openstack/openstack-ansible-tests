@@ -82,7 +82,8 @@ if ! which pip &>/dev/null; then
 fi
 
 # Install bindep and tox
-sudo pip install 'bindep>=2.4.0' tox 'virtualenv<16.7.11'
+
+sudo pip install 'bindep>=2.4.0' tox 'virtualenv<16.7.11' 'importlib-metadata<5.0.0'
 
 if [[ "${ID,,}" == "fedora" ]]; then
     sudo dnf -y install redhat-lsb-core yum-utils

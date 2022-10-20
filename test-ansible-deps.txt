@@ -17,4 +17,4 @@ ansible-lint==3.4.21
 netaddr
 
 # Used for the ansible openssl_* modules
-pyOpenSSL
+pyOpenSSL>=17.1.0,<20.0.0

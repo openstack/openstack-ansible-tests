@@ -23,15 +23,3 @@
         - propose-updates:
             vars:
               update_target: openstack-ansible-tests
-    check:
-      jobs:
-        - openstack-ansible-functional-centos-7:
-            voting: false
-        - openstack-ansible-functional-ubuntu-bionic:
-            voting: false
-    gate:
-      jobs:
-        - openstack-ansible-functional-centos-7:
-            voting: false
-        - openstack-ansible-functional-ubuntu-bionic:
-            voting: false

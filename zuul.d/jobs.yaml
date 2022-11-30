@@ -137,6 +137,11 @@
     nodeset: centos-8-stream
 
 - job:
+    name: openstack-ansible-functional-centos-9-stream
+    parent: openstack-ansible-functional
+    nodeset: centos-9-stream
+
+- job:
     name: openstack-ansible-cross-repo-functional
     parent: openstack-ansible-functional
     description: |

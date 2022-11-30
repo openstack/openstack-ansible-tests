@@ -44,16 +44,13 @@ BINDEP_FILE=${BINDEP_FILE:-bindep.txt}
 # Perform the initial distribution package install
 # to allow pip and bindep to work.
 case "${ID,,}" in
-    rocky)
-        pkg_list="python38 python38-devel redhat-lsb-core"
-       ;;
-    amzn|centos|rhel)
+    amzn|centos|rhel|rocky)
         case ${VERSION_ID} in
             8)
                 pkg_list="python38 python38-devel redhat-lsb-core"
                 ;;
             9)
-                pkg_list="python3 python3-devel redhat-lsb-core"
+                pkg_list="python3 python3-devel"
                ;;
         esac
         ;;

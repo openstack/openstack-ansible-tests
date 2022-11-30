@@ -13,7 +13,7 @@
     check:
       jobs:
         - openstack-ansible-functional-debian-buster
-        - openstack-ansible-functional-centos-8-stream
+        - openstack-ansible-functional-centos-9-stream
         - openstack-ansible-functional-ubuntu-focal
     gate:
       jobs:

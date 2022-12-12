@@ -72,7 +72,7 @@ if [[ "${ID,,}" == "centos" ]] && [[ ${VERSION_ID} == "8" ]]; then
 fi
 
 # Install bindep and tox
-sudo "${PIP_EXEC_PATH}" install 'bindep>=2.4.0' tox
+sudo "${PIP_EXEC_PATH}" install 'bindep>=2.4.0' 'tox<4'
 
 if [[ "${ID,,}" == "fedora" ]]; then
     sudo dnf -y install redhat-lsb-core yum-utils

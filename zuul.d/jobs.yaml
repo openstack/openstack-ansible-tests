@@ -127,9 +127,9 @@
       tox_env: upgrade
 
 - job:
-    name: openstack-ansible-functional-ubuntu-focal
+    name: openstack-ansible-functional-ubuntu-jammy
     parent: openstack-ansible-functional
-    nodeset: ubuntu-focal
+    nodeset: ubuntu-jammy
 
 - job:
     name: openstack-ansible-functional-centos-8-stream

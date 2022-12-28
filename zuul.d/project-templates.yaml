@@ -12,22 +12,8 @@
     name: openstack-ansible-role-jobs
     check:
       jobs:
-        - openstack-ansible-functional-debian-buster
         - openstack-ansible-functional-centos-9-stream
-        - openstack-ansible-functional-ubuntu-focal
+        - openstack-ansible-functional-ubuntu-jammy
     gate:
       jobs:
-        - openstack-ansible-functional-ubuntu-focal
-    experimental:
-      jobs:
-        - openstack-ansible-integrated-deploy-aio
-
-- project-template:
-    name: openstack-ansible-upgrade
-    check:
-      jobs:
-        - openstack-ansible-upgrade-ubuntu-focal
-    gate:
-      jobs:
-        - openstack-ansible-upgrade-ubuntu-focal
-
+        - openstack-ansible-functional-ubuntu-jammy

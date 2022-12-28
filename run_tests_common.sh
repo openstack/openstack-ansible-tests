@@ -50,7 +50,7 @@ case "${ID,,}" in
                 pkg_list="python38 python38-devel redhat-lsb-core"
                 ;;
             9)
-                pkg_list="python3 python3-devel"
+                pkg_list="python3 python3-devel curl"
                ;;
         esac
         ;;

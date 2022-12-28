@@ -58,7 +58,7 @@ case "${ID,,}" in
         esac
         ;;
     ubuntu|debian)
-        pkg_list="python3-dev python3-pip virtualenv lsb-release curl"
+        pkg_list="python3-dev python3-pip lsb-release curl"
         sudo apt-get update
         ;;
     *)

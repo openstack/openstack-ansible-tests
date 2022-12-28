@@ -55,7 +55,7 @@ case "${ID,,}" in
         esac
         ;;
     ubuntu|debian)
-        pkg_list="python3-dev python3-pip virtualenv lsb-release curl"
+        pkg_list="python3-dev python3-pip lsb-release curl"
         sudo apt-get update
         ;;
     *)
@@ -72,7 +72,7 @@ if [[ "${ID,,}" == "centos" ]] && [[ ${VERSION_ID} == "8" ]]; then
 fi
 
 # Install bindep and tox
-sudo "${PIP_EXEC_PATH}" install 'bindep>=2.4.0' 'tox<4'
+sudo "${PIP_EXEC_PATH}" install 'bindep>=2.4.0' tox
 
 if [[ "${ID,,}" == "fedora" ]]; then
     sudo dnf -y install redhat-lsb-core yum-utils

@@ -45,13 +45,13 @@ BINDEP_FILE=${BINDEP_FILE:-bindep.txt}
 # to allow pip and bindep to work.
 case "${ID,,}" in
     amzn|centos|rhel)
-        pkg_list="python3-devel python3-virtualenv redhat-lsb-core"
+        pkg_list="python3-devel redhat-lsb-core"
         ;;
     fedora)
-        pkg_list="python3-devel python3-virtualenv redhat-lsb-core redhat-rpm-config yum-utils"
+        pkg_list="python3-devel redhat-lsb-core redhat-rpm-config yum-utils"
         ;;
     ubuntu|debian)
-        pkg_list="python3-dev python3-pip virtualenv lsb-release curl"
+        pkg_list="python3-dev python3-pip lsb-release curl"
         sudo apt-get update
         ;;
     *)

@@ -181,7 +181,7 @@ REQS_REPO_HOME="${TESTING_HOME}/src/opendev.org/openstack/requirements"
 if [[ -d "${REQS_REPO_HOME}" ]]; then
   cp "${REQS_REPO_HOME}/upper-constraints.txt" /tmp/upper-constraints.txt
 else
-  wget "${TOX_CONSTRAINTS_FILE:-https://opendev.org/openstack/requirements/raw/${SERVICES_BRANCH}/upper-constraints.txt}" -O /tmp/upper-constraints.txt
+  curl -L "${TOX_CONSTRAINTS_FILE:-https://opendev.org/openstack/requirements/raw/${SERVICES_BRANCH}/upper-constraints.txt}" -o /tmp/upper-constraints.txt
 fi
 
 # Filter out pip/wheel from OpenStack upper constraints

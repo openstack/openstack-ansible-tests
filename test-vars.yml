@@ -385,7 +385,10 @@ tempest_service_available_nova: "{{ ((groups['nova_all'] is defined) and (groups
 tempest_service_available_swift: "{{ ((groups['swift_all'] is defined) and (groups['swift_all'] | length > 0)) }}"
 tempest_service_available_zaqar: "{{ ((groups['zaqar_all'] is defined) and (groups['zaqar_all'] | length > 0)) }}"
 tempest_use_tempestconf: false
+tempest_run_stackviz: False
 tempest_image_dir: "/opt/cache/files"
+tempest_test_includelist:
+  - smoke
 
 # openrc settings
 openrc_os_password: "{{ keystone_auth_admin_password }}"
@@ -453,6 +456,9 @@ requirements_git_install_branch: "{{ services_branch.split('/')[-1] }}"
 # As role tests are executed in temporary environments, we don't need
 # to always fetch the latest get-pip.py script
 pip_get_pip_force: no
+
+# We do not have a repo container, thus we should not attempt to build wheels
+venv_wheel_build_enable: False
 
 # Test install options
 install_test_packages: True

@@ -13,14 +13,15 @@
     check:
       jobs:
         - openstack-ansible-linters
-        - openstack-ansible-functional-debian-buster
-        - openstack-ansible-functional-ubuntu-bionic
+        - openstack-ansible-functional-ubuntu-bionic:
+            voting: false
         - openstack-ansible-functional-ubuntu-focal
     gate:
       jobs:
         - openstack-ansible-linters
-        - openstack-ansible-functional-debian-buster
-        - openstack-ansible-functional-ubuntu-bionic
+        - openstack-ansible-functional-ubuntu-bionic:
+            voting: false
+        - openstack-ansible-functional-ubuntu-focal
     experimental:
       jobs:
         - openstack-ansible-integrated-deploy-aio

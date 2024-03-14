@@ -125,12 +125,6 @@
       tox_env: upgrade
 
 - job:
-    name: openstack-ansible-functional-debian-buster
-    parent: openstack-ansible-functional
-    nodeset: debian-buster
-    voting: false
-
-- job:
     name: openstack-ansible-functional-ubuntu-bionic
     parent: openstack-ansible-functional
     nodeset: ubuntu-bionic

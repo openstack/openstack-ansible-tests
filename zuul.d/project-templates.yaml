@@ -12,7 +12,6 @@
     name: openstack-ansible-role-jobs
     check:
       jobs:
-        - openstack-ansible-functional-debian-buster
         - openstack-ansible-functional-ubuntu-bionic
         - openstack-ansible-functional-ubuntu-focal
     gate:

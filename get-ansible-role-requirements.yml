@@ -62,6 +62,12 @@
     - name: Clone git repos (outside openstack-ci)
       when: not _openstack_ci.stat.exists
       block:
+        - name: Make all git directories safe
+          git_config:
+            scope: global
+            name: safe.directory
+            value: "*"
+
         - name: Clone git repos
           git:
             repo: "{{ item['src'] }}"

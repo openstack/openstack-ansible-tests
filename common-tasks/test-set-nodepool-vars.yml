@@ -20,6 +20,7 @@
   delegate_to: localhost
 
 - name: Set nodepool vars
+  when: ci_mirror_info.stat.exists
   block:
     - name: Discover variables from OpenStack's CI environment when in nodepool
       shell: |
@@ -66,4 +67,3 @@
         pip_links:
           - name: "infra_wheel_mirror"
             link: "{{ pip_wheel_mirror }}"
-  when: ci_mirror_info.stat.exists

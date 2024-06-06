@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- import_playbook: test-install-memcached.yml
+- name: Importing test-install-memcached
+  import_playbook: test-install-memcached.yml
 
-- import_playbook: test-install-rabbitmq.yml
+- name: Importing test-install-rabbitmq
+  import_playbook: test-install-rabbitmq.yml
 
-- import_playbook: test-install-galera.yml
+- name: Importing test-install-galera
+  import_playbook: test-install-galera.yml

@@ -14,22 +14,29 @@
 # limitations under the License.
 
 # Prepare the user ssh keys
-- import_playbook: common/test-prepare-keys.yml
+- name: Importing test-prepare-keys
+  import_playbook: common/test-prepare-keys.yml
 
 # Prepare the host
-- import_playbook: common/test-prepare-host.yml
+- name: Importing test-prepare-host
+  import_playbook: common/test-prepare-host.yml
 
 # Prepare the containers
-- import_playbook: common/test-prepare-containers.yml
+- name: Importing test-prepare-containers
+  import_playbook: common/test-prepare-containers.yml
 
 # Install RabbitMQ/MariaDB/Memcached
-- import_playbook: common/test-install-infra.yml
+- name: Importing test-install-infra
+  import_playbook: common/test-install-infra.yml
 
 # Install Keystone
-- import_playbook: common/test-install-keystone.yml
+- name: Importing test-install-keystone
+  import_playbook: common/test-install-keystone.yml
 
 # Install Tempest
-- import_playbook: common/test-install-tempest.yml
+- name: Importing test-install-tempest
+  import_playbook: common/test-install-tempest.yml
 
 # Gather port status
-- import_playbook: common/listening-port-report.yml
+- name: Importing listening-port-report
+  import_playbook: common/listening-port-report.yml

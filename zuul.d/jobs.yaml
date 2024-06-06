@@ -75,7 +75,6 @@
       - name: openstack/openstack-ansible-nspawn_container_create
       - name: openstack/openstack-ansible-nspawn_hosts
       - name: openstack/requirements
-        override-checkout: stable/2023.2
     pre-run: zuul.d/playbooks/pre-gate-cleanup.yml
     run: zuul.d/playbooks/run.yml
     post-run: zuul.d/playbooks/post.yml
@@ -99,7 +98,6 @@
     timeout: 5400 # 90 mins
     vars:
       tox_env: functional
-      services_branch: stable/2023.2
 
 - job:
     name: openstack-ansible-linters
@@ -108,7 +106,7 @@
       Run lint tests for an OpenStack-Ansible project.
       Uses tox with the ``linters`` environment.
     timeout: 1800 # 30 mins
-    nodeset: ubuntu-focal
+    nodeset: ubuntu-jammy
     vars:
       tox_env: linters
 

@@ -33,11 +33,9 @@
         mode: "0700"
 
     - name: Create ssh key pair for root
-      user:
-        name: root
-        generate_ssh_key: yes
-        ssh_key_bits: 2048
-        ssh_key_file: /root/.ssh/id_rsa
+      community.crypto.openssh_keypair:
+        path: /root/.ssh/id_rsa
+        comment: "openstack-ansible-tests generated"
 
     - name: Get root private key
       slurp:
@@ -55,13 +53,11 @@
       set_fact:
         root_public_key: "{{ public_key_get.content | b64decode }}"
         root_private_key: "{{ private_key_get.content | b64decode }}"
-        lxc_container_ssh_key: "{{ public_key_get.content | b64decode }}"
 
-    - name: Ensure root can ssh to localhost
+    - name: Add root ssh key to authorized_keys
       authorized_key:
         user: "root"
         key: "{{ root_public_key }}"
-
 
 # Note(hwoarang):
 # This uses local connection for the initial key setup
@@ -72,53 +68,55 @@
   connection: local
   become: no
   any_errors_fatal: true
+  vars:
+    _user_id: "{{ lookup('env', 'USER') }}"
   tasks:
-    # Shell used because facts may not be ready yet
-    - name: Get user home directory
-      shell: |
-        set -o pipefail
-        getent passwd '{{ ansible_user_id }}' | cut -d':' -f6
-      args:
-        executable: /bin/bash
-      register: user_home
-      changed_when: false
+    - name: Run following tasks only when current user is not root
+      when:
+        - _user_id != 'root'
+      block:
+        # Shell used because facts may not be ready yet
+        - name: Get user home directory
+          shell: |
+            set -o pipefail
+            getent passwd '{{ _user_id }}' | cut -d':' -f6
+          args:
+            executable: /bin/bash
+          register: user_home
+          changed_when: false
 
-    - name: Set local user home fact
-      set_fact:
-        calling_user_home: "{{ user_home.stdout }}"
+        - name: Set local user home fact
+          set_fact:
+            calling_user_home: "{{ user_home.stdout }}"
 
-    - name: Ensure user has a .ssh directory
-      file:
-        path: "{{ calling_user_home }}/.ssh"
-        state: directory
-        owner: "{{ ansible_user_id }}"
-        group: "{{ ansible_user_gid }}"
-        mode: "0700"
-      when: ansible_user_id != 'root'
+        - name: Ensure user has a .ssh directory
+          file:
+            path: "{{ calling_user_home }}/.ssh"
+            state: directory
+            owner: "{{ _user_id }}"
+            group: "{{ _user_id }}"
+            mode: "0700"
 
-    - name: Ensure user has the known private key
-      copy:
-        content: "{{ root_private_key }}"
-        dest: "{{ calling_user_home }}/.ssh/id_rsa"
-        owner: "{{ ansible_user_id }}"
-        group: "{{ ansible_user_gid }}"
-        mode: "0600"
-      when: ansible_user_id != 'root'
+        - name: Ensure user has the known private key
+          copy:
+            content: "{{ root_private_key }}"
+            dest: "{{ calling_user_home }}/.ssh/id_rsa"
+            owner: "{{ _user_id }}"
+            group: "{{ _user_id }}"
+            mode: "0600"
 
-    - name: Ensure user has the known public key
-      copy:
-        content: "{{ root_public_key }}"
-        dest: "{{ calling_user_home }}/.ssh/id_rsa.pub"
-        owner: "{{ ansible_user_id }}"
-        group: "{{ ansible_user_gid }}"
-        mode: "0600"
-      when: ansible_user_id != 'root'
+        - name: Ensure user has the known public key
+          copy:
+            content: "{{ root_public_key }}"
+            dest: "{{ calling_user_home }}/.ssh/id_rsa.pub"
+            owner: "{{ _user_id }}"
+            group: "{{ _user_id }}"
+            mode: "0600"
 
-    - name: Ensure local user can ssh to localhost
-      authorized_key:
-        user: "{{ ansible_user_id }}"
-        key: "{{ root_public_key }}"
-      when: ansible_user_id != 'root'
+        - name: Ensure local user can ssh to localhost
+          authorized_key:
+            user: "{{ _user_id }}"
+            key: "{{ root_public_key }}"
 
 - name: Create SSHD CA
   hosts: "{{ openstack_ssh_keypairs_setup_host | default('localhost') }}"
@@ -139,7 +137,7 @@
 
 - name: Create CA certificates
   hosts: "{{ openstack_pki_setup_host | default('localhost') }}"
-  gather_facts: "false"
+  gather_facts: false
   become: true
   tasks:
     - name: "Create CA certificates"

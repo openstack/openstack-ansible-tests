@@ -132,11 +132,6 @@
     nodeset: ubuntu-focal
 
 - job:
-    name: openstack-ansible-functional-centos-8-stream
-    parent: openstack-ansible-functional
-    nodeset: centos-8-stream
-
-- job:
     name: openstack-ansible-functional-centos-9-stream
     parent: openstack-ansible-functional
     nodeset: centos-9-stream

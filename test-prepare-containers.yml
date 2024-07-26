@@ -25,7 +25,8 @@
   tasks:
     - include_tasks: "common-tasks/test-set-nodepool-vars.yml"
 
-- import_playbook: destroy_containers.yml
+- name: Importing destroy_containers
+  import_playbook: destroy_containers.yml
   when: destroy_first | default(True) | bool
 
 - name: Playbook for creating containers

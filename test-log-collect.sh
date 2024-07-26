@@ -82,6 +82,7 @@ COMMON_ETC_LOG_NAMES="almanach \
                       searchlight \
                       sasl2 \
                       swift \
+                      ssh \
                       sysconfig/network-scripts \
                       sysconfig/network \
                       systemd/network \

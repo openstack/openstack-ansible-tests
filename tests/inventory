@@ -1,7 +1,7 @@
 [all]
-localhost
-infra1 ansible_host=10.1.0.2 ansible_become=True ansible_user=root container_name=infra1
-keystone1 ansible_host=10.1.0.3 ansible_become=True ansible_user=root container_name=keystone1
+localhost ansible_connection=local ansible_become=True is_metal=true physical_host=aio1
+infra1 ansible_host=10.1.0.2 ansible_become=True ansible_user=root container_name=infra1 container_tech=lxc
+keystone1 ansible_host=10.1.0.3 ansible_become=True ansible_user=root container_name=keystone1 container_tech=lxc
 
 [all_containers]
 infra1

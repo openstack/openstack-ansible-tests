@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- import_playbook: test-repo-setup.yml
+- name: Importing test-repo-setup
+  import_playbook: test-repo-setup.yml
 
 - name: Playbook for configuring hosts
   hosts: localhost
@@ -33,16 +34,6 @@
       register: iptables_clear
       tags:
         - skip_ansible_lint
-
-    - name: Set ssh key fact
-      set_fact:
-        lxc_container_ssh_key: "{{ hostvars['localhost']['lxc_container_ssh_key'] }}"
-
-    - name: Ensure roots new public ssh key is in authorized_keys
-      authorized_key:
-        user: root
-        key: "{{ hostvars['localhost']['lxc_container_ssh_key'] }}"
-        manage_dir: no
 
     # This is a very dirty hack due to images.linuxcontainers.org
     # constantly failing to resolve in openstack-infra.
@@ -82,7 +73,8 @@
         openrc_openstack_client_config_dir_owner: "root"
         openrc_clouds_yml_file_owner: "root"
 
-- import_playbook: test-install-openstack-hosts.yml
+- name: Importing test-install-openstack-hosts
+  import_playbook: test-install-openstack-hosts.yml
 
 - name: Playbook for configuring the LXC host
   hosts: localhost
@@ -104,7 +96,7 @@
         - (lxc_net_manage_iptables is defined) and (lxc_net_manage_iptables | bool)
         - (iptables_clear is defined) and (iptables_clear is changed)
       notify:
-      - Restart dnsmasq
+        - Restart dnsmasq
 
 - name: Playbook for configuring test host networking
   hosts: localhost
@@ -127,14 +119,14 @@
       vars:
         systemd_interface_cleanup: true
         systemd_run_networkd: true
-        systemd_netdevs: |- # noqa var-spacing
+        systemd_netdevs: |- # noqa jinja[spacing]
           {% set systemd_network_devices = [] %}
           {% for interface in (bridges | default([])) %}
           {%   if interface is string %}
           {%     set _ = systemd_network_devices.append({'NetDev': {'Name': 'dummy-' + interface, 'Kind': 'dummy'}}) %}
           {%     set _ = systemd_network_devices.append({'NetDev': {'Name': interface, 'Kind': 'bridge'}}) %}
           {%   else %}
-          {%     set interface_name = (interface.name | default('br-mgmt')) %}
+          {%     set interface_name = interface.name | default('br-mgmt') %}
           {%     set _ = systemd_network_devices.append({'NetDev': {'Name': 'dummy-' + interface_name, 'Kind': 'dummy'}}) %}
           {%     set _ = systemd_network_devices.append({'NetDev': {'Name': interface_name, 'Kind': 'bridge'}}) %}
           {%     if interface.veth_peer is defined %}
@@ -228,9 +220,9 @@
           {%   if interface is string %}
           {%     set interface_name = interface %}
           {%   else %}
-          {%     set interface_name = (interface.name | default('br-mgmt')) %}
+          {%     set interface_name = interface.name | default('br-mgmt') %}
           {%   endif %}
-          {%   set _ = interfaces.append(hostvars[inventory_hostname][('ansible_' + (interface_name | replace('-', '_')))]['active'] | bool ) %}
+          {%   set _ = interfaces.append(hostvars[inventory_hostname][('ansible_' + (interface_name | replace('-', '_')))]['active'] | bool) %}
           {% endfor %}
           {{ interfaces }}
 

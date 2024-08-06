@@ -201,7 +201,8 @@ PIP_OPTS+=" ara[server]"
 python -m pip install ${PIP_OPTS}
 
 # Install all ansible collections
-ansible-galaxy collection install -r ${COMMON_TESTS_PATH}/test-ansible-collection-requirements.yml
+ANSIBLE_COLLECTION_REQUIREMENTS_PATH="${COMMON_TESTS_PATH}/test-ansible-collection-requirements.yml" \
+  ansible-playbook -i ${ANSIBLE_INVENTORY} ${COMMON_TESTS_PATH}/get-ansible-collection-requirements.yml -v
 
 # Download the Ansible role repositories if they are not present on the host.
 # This is ignored if there is no ansible-role-requirements file.

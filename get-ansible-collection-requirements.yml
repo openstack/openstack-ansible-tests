@@ -60,6 +60,7 @@
         dest: "{{ collection_requirements_tmpfile.path }}"
 
     - name: Install collection requirements with ansible galaxy
+      become: True
       command: >
         {{ ansible_venv | ternary(ansible_venv, '/usr') }}/bin/ansible-galaxy collection install --force
         -r "{{ collection_requirements_tmpfile.path }}" -p /etc/ansible

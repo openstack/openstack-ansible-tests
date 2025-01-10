@@ -61,7 +61,6 @@
       - name: openstack/openstack-ansible-os_panko
       - name: openstack/openstack-ansible-os_placement
       - name: openstack/openstack-ansible-os_rally
-      - name: openstack/openstack-ansible-os_sahara
       - name: openstack/openstack-ansible-os_swift
       - name: openstack/openstack-ansible-os_tacker
       - name: openstack/openstack-ansible-os_tempest

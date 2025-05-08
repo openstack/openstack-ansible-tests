@@ -66,7 +66,6 @@
       - name: openstack/openstack-ansible-os_tempest
       - name: openstack/openstack-ansible-os_trove
       - name: openstack/openstack-ansible-plugins
-      - name: openstack/ansible-role-qdrouterd
       - name: openstack/openstack-ansible-rabbitmq_server
       - name: openstack/openstack-ansible-repo_server
       - name: openstack/openstack-ansible-rsyslog_client
@@ -74,7 +73,7 @@
       - name: openstack/openstack-ansible-nspawn_container_create
       - name: openstack/openstack-ansible-nspawn_hosts
       - name: openstack/requirements
-        override-checkout: stable/2023.2
+        override-checkout: stable/2023.1
     pre-run: zuul.d/playbooks/pre-gate-cleanup.yml
     run: zuul.d/playbooks/run.yml
     post-run: zuul.d/playbooks/post.yml
@@ -98,7 +97,7 @@
     timeout: 5400 # 90 mins
     vars:
       tox_env: functional
-      services_branch: stable/2023.2
+      services_branch: unmaintained/2023.1
 
 - job:
     name: openstack-ansible-linters
